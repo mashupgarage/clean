@@ -1,0 +1,26 @@
+venv/
+db.sqlite3
+.env
+.DS_Store
+__pycache__ 
+media
+logfile.log
+
+# celery 
+celerybeat-schedule.* 
+
+# React code
+static/dist/
+
+# static files for production
+# Generated files
+staticfiles/
+/static/
+
+# Initial dispenser settings
+initial_settings.json
+
+# Misc
+requirements-old.txt
+node_modules
+.tool-versions
