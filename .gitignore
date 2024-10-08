@@ -34,6 +34,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+install-state.gz
 dist
 dist-ssr
 *.local

@@ -1,43 +1,56 @@
 # Python Server Instructions
 
-Install ```python v3.9.13```
+## Install Python v3.9.13
+Recommended: In `.tool-versions` add python v3.9.13 then run `asdf install`
 
-## requirements.txt
+## Install Pip
+```bash
+sudo apt install python3-pip
+```
 
-Install required packages
+## Install Django
+```bash
+sudo pip3 install Django
+```
+
+## Run Migrations
+```bash
+python manage.py migrate
+```
+
+## Install Required Packages
 ```bash
 pip install -r requirements.txt
 ```
 
 ## .env
-
 ```bash
 SERIAL_PORT=/dev/ttyACM0
 ```
 
-## intial settings
-
+## Create Initial Settings File
 Create a copy of `initial_settings_sample.json` and rename it to `initial_settings.json`
 
-## Run the python server
-  
+## Run the Python Server  
 ```bash
 yarn run-py
 ```
+> Access via http://127.0.0.1:8000/
 
-Access via http://127.0.0.1:8000/
+---
 
+# React App Instructions
+## Install Node
+- Recommended: In `.tool-versions` nodejs 22.9.0 then run `asdf install` (you may need to install nodejs plugin for asdf)
 
-# React Instructions
+## Run Yarn
+```bash
+yarn
+```
 
-## Install asdf & yarn
-- in .tool-versions: nodejs 22.9.0 then run asdf install (you may need to install nodejs plugin for asdf)
-- install packages by running ```yarn```
-
-## Run the React application
+## Run React App
 
 ```bash 
 yarn dev
 ``` 
-
-Access via http://localhost:5173
+> Access via http://localhost:5173
