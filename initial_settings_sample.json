@@ -1,0 +1,52 @@
+{
+  "Initial_settings": [
+    {
+      "remark": "Coffee Pump Power Setting (around 70% = 178/255)",
+      "data": ["FA", "E1", "B2", "B2", "FF"]
+    },
+    {
+      "remark": "Clean Pump Power Setting (100% = 255/255)",
+      "data": ["FA", "E2", "FF", "FF", "FF"]
+    },
+    {
+      "remark": "Max. Coffee Pump Time (20 seconds)",
+      "data": ["FA", "E3", "00", "14", "FF"]
+    },
+    {
+      "remark": "Heating Cycle Time (N x 4 seconds = 4 x 4 = 16)",
+      "data": ["FA", "E5", "00", "04", "FF"]
+    },
+    {
+      "remark": "Weight Sensor Gain (0: Gain = 128)",
+      "data": ["FA", "EA", "00", "00", "FF"]
+    },
+    {
+      "remark": "Weight Sensing Value Scaling ( 2x or double the value )",
+      "data": ["FA", "EB", "02", "02", "FF"]
+    },
+    {
+      "remark": "Set A Mapping Point at 0g (0x027B = 635)",
+      "data": ["FA", "EC", "02", "7B", "FF"]
+    },
+    {
+      "remark": "Set A Mapping Point at 5kg (0x08CB = 2251)",
+      "data": ["FA", "ED", "08", "CB", "FF"]
+    },
+    {
+      "remark": "Set A Mapping Point at 10kg (0x0F18 = 3864)",
+      "data": ["FA", "EE", "0F", "18", "FF"]
+    },
+    {
+      "remark": "Set B Mapping Point at 0g (0x032A = 810)",
+      "data": ["FA", "EF", "03", "2A", "FF"]
+    },
+    {
+      "remark": "Set B Mapping Point at 5kg (0x09B3 = 2483)",
+      "data": ["FA", "F0", "09", "B3", "FF"]
+    },
+    {
+      "remark": "Set B Mapping Point at 10kg (0x103E = 4158)",
+      "data": ["FA", "F1", "10", "3E", "FF"]
+    }
+  ]
+}

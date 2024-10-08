@@ -1,6 +1,6 @@
 # Python Server Instructions
 
-Install python v3.9.13
+Install ```python v3.9.13```
 
 ## requirements.txt
 
@@ -15,13 +15,17 @@ pip install -r requirements.txt
 SERIAL_PORT=/dev/ttyACM0
 ```
 
+## intial settings
+
+Create a copy of `initial_settings_sample.json` and rename it to `initial_settings.json`
+
 ## Run the python server
   
 ```bash
 yarn run-py
 ```
 
-Access via http://0.0.0.0:8000
+Access via http://127.0.0.1:8000/
 
 
 # React Instructions
