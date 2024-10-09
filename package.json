@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prettier:check": "prettier --list-different 'src/.css'",
+    "prettier:fix": "prettier --write 'src/.css'",
     "lint": "eslint .",
     "preview": "vite preview",
     "run-py": "python manage.py runserver 0.0.0.0:8000"
