@@ -7,6 +7,6 @@
 - [ ] 
 
 ## Testing Instructions
-<!-- Any instructions to be able test and replicate this ticket? -->
+<!-- Any instructions to be able to replicate this ticket? -->
 
 ## Screenshots
