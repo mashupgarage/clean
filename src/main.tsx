@@ -5,13 +5,17 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { ErrorPage } from "./error-page.tsx";
 import { ItemSelectionPage } from "./pages/ItemSelectionPage.tsx";
+import { ItemSizePage } from "./pages/ItemSizePage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <ErrorPage />,
-    children: [{ path: "/", element: <ItemSelectionPage /> }],
+    children: [
+      { path: "/", element: <ItemSelectionPage /> },
+      { path: ":item/size/", element: <ItemSizePage /> },
+    ],
   },
 ]);
 
