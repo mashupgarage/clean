@@ -8,7 +8,7 @@ export const Footer = ({
   const navigate = useNavigate();
 
   return (
-    <div className="mx-10 mb-4 flex w-full flex-row justify-between px-16 py-3 uppercase">
+    <div className="mb-4 flex w-full flex-row justify-between px-16 py-3 uppercase">
       <NavButton
         {...props}
         label={"Cancel    取消"}
