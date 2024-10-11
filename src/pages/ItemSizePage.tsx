@@ -3,7 +3,6 @@ import { Item } from "../components/Item";
 import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
 
-// TAP_A and TAP_B values can be later configured
 const ITEM_SIZE_HEADER = {
   line1: "Please select the size of your drink",
   line2: "請選擇您飲品的大小",

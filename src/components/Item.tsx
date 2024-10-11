@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
 type ItemProps = {
-  label1: string;
-  label2: string;
+  label1?: string;
+  label2?: string;
   imageUrl: string;
   link: string;
 };

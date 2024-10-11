@@ -6,6 +6,7 @@ import "./index.css";
 import { ErrorPage } from "./error-page.tsx";
 import { ItemSelectionPage } from "./pages/ItemSelectionPage.tsx";
 import { ItemSizePage } from "./pages/ItemSizePage.tsx";
+import { PaymentPage } from "./pages/PaymentPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <ItemSelectionPage /> },
       { path: ":item/size/", element: <ItemSizePage /> },
+      { path: ":item/size/:size/payment", element: <PaymentPage /> },
     ],
   },
 ]);
