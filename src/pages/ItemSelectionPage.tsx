@@ -30,7 +30,7 @@ export const ItemSelectionPage: React.FC = () => {
         <Item {...TAP_B} link="/size/b" />
       </div>
 
-      <Footer />
+      <Footer disabled />
     </div>
   );
 };

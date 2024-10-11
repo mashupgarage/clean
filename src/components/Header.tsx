@@ -8,7 +8,7 @@ export const Header = ({ line1, line2 }: { line1: string; line2?: string }) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="mt-6 flex flex-col">
       <Title label={line1} />
       {line2 && <Title label={line2} />}
     </div>
