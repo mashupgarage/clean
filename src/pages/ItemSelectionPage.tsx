@@ -26,8 +26,8 @@ export const ItemSelectionPage: React.FC = () => {
       <Header {...ITEM_SELECTION_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
-        <Item {...TAP_A} link="/size/a" />
-        <Item {...TAP_B} link="/size/b" />
+        <Item {...TAP_A} link="/a/size" />
+        <Item {...TAP_B} link="/b/size" />
       </div>
 
       <Footer disabled />
