@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { Fragment, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -9,6 +9,9 @@ import { ItemSizePage } from "./pages/ItemSizePage.tsx";
 import { PaymentPage } from "./pages/PaymentPage.tsx";
 import { DetectCupPage } from "./pages/DetectCupPage.tsx";
 import { DispensingPage } from "./pages/DispensingPage.tsx";
+import { PaperProvider } from "react-native-paper";
+import { Platform } from "react-native";
+import MaterialCommunityIconsFont from "react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +30,19 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <PaperProvider>
+      <Fragment>
+        {Platform.OS === "web" ? (
+          <style type="text/css">{`
+        @font-face {
+          font-family: 'MaterialCommunityIcons';
+          src: url(${MaterialCommunityIconsFont}) format('truetype');
+        }
+      `}</style>
+        ) : null}
+
+        <RouterProvider router={router} />
+      </Fragment>
+    </PaperProvider>
   </StrictMode>,
 );
