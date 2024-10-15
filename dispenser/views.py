@@ -1178,3 +1178,95 @@ from django.http import JsonResponse
 
 def get_react_config(request):
     return JsonResponse(settings.REACT_CONFIG)
+
+# MOCK VIEWS
+
+@api_view(["GET"])
+def dispenser_test_mock(request):
+    response_data = {}
+    mock_dispenser_controller = {
+        "open_serial_connection": True,
+        "get_temperatureA": 26,
+        "set_heaterA": True,
+        "get_versionS": "1.0",
+        "get_versionH": "2.0",
+        "close_serial_connection": True,
+    }
+
+    if not mock_dispenser_controller["open_serial_connection"]:
+        response_data["error"] = "Failed to open the serial connection to the dispenser"
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    temperature_A = mock_dispenser_controller["get_temperatureA"]
+    if temperature_A is not None:
+        response_data["temperature_A"] = temperature_A
+
+    success = mock_dispenser_controller["set_heaterA"]
+    if success:
+        response_data["heater_A_status"] = "on"
+
+    firmware_version = mock_dispenser_controller["get_versionS"]
+    if firmware_version is not None:
+        response_data["firmware_version"] = firmware_version
+
+    dispenser_version = mock_dispenser_controller["get_versionH"]
+    if dispenser_version is not None:
+        response_data["dispenser_version"] = dispenser_version
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def check_cup_presence(request):
+    dispenser = request.GET.get("dispenser", default="Tap-A")
+    cup_status = request.GET.get("dispenser", default=False)
+
+    res_data = {}
+    res_data[dispenser] = dispenser
+    res_data["cup_status"] = cup_status
+
+    dispenser_object = Dispenser.objects.get(name=dispenser)
+    dispenser_object.cup_status = res_data["cup_status"]
+    dispenser_object.save()
+
+    return Response(res_data, status=status.HTTP_200_OK)
+
+@api_view(["POST"])
+def start_drink_dispensing_mock(request):
+    dispenser_name = request.GET.get("dispenser", default="Tap-A")
+    drink_size = request.GET.get("size", default="Small").capitalize()
+
+    response_data = {}
+
+    dispenser = Dispenser.objects.get(name=dispenser_name)
+
+    if drink_size == "Small":
+        dispense_time = dispenser.dispense_time_small
+    elif drink_size == "Large":
+        dispense_time = dispenser.dispense_time_large
+
+    vening_machine = dispenser.vending_machine
+    vening_machine.status = "serving"
+    vening_machine.save()
+
+    response_data["dispenser"] = dispenser_name
+    response_data["dispense_time"] = dispense_time
+    response_data["drink_size"] = drink_size
+
+    return Response(response_data, status=status.HTTP_202_ACCEPTED)
+
+@api_view(["POST"])
+def stop_drink_dispensing_mock(request):
+    dispenser_name = request.GET.get("dispenser", default="Tap-A")
+
+    response_data = {}
+
+    dispenser = Dispenser.objects.get(name=dispenser_name)
+
+    vening_machine = dispenser.vending_machine
+    vening_machine.status = "idle"
+    vening_machine.save()
+
+    response_data["dispenser"] = dispenser_name
+    response_data["message"] = "Drink dispensing stopped successfully."
+
+    return Response(response_data, status=status.HTTP_202_ACCEPTED)
