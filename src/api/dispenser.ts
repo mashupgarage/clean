@@ -1,8 +1,16 @@
 import axios from 'axios'
 import queryString from 'query-string'
 
+// Vending Machine Appearance
+export const fetchVendingMachineAppearance = async () => {
+  const endpoint = 'http://127.0.0.1:8000/api/dispenser/vending-machine-appearance'
+
+  return axios.get(endpoint).then(res => res.data)
+}
+
+// Dispenser Functions
 export const fetchDispenserTest = async () => {
-  const endpoint = 'http://127.0.0.1:8000/api/dispenser/test'
+  const endpoint = 'http://127.0.0.1:8000/api/dispenser/test-mock'
 
   return axios.get(endpoint).then(res => res.data)
 }

@@ -1216,7 +1216,7 @@ def dispenser_test_mock(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
-def check_cup_presence(request):
+def check_cup_presence_mock(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     cup_status = request.GET.get("dispenser", default=False)
 
