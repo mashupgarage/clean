@@ -7,23 +7,23 @@ import classNames from "classnames";
 
 function App() {
   const [bgColor, setBgColor] = useState('#cffafe')
+  const [bgImage, setBgImage] = useState('')
 
   useEffect(() => {
     fetchVendingMachineAppearanceData()
   }, [])
 
   const fetchVendingMachineAppearanceData = async () => {
-    const { background_color } = await fetchVendingMachineAppearance()
-
+    const { background_color, background_image } = await fetchVendingMachineAppearance()
     setBgColor(background_color)
+    setBgImage(background_image)
   }
 
   // Base layout
   return (
     <div
       className={classNames(styles.wrapperClass)}
-      style={{ backgroundColor: bgColor }}
-      // style={{ backgroundImage: "url('')" }} // Set background image
+      style={{ backgroundImage: bgImage, backgroundColor: bgColor }}
     >
       <div className="h-full">
         <Outlet />
