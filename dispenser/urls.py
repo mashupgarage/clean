@@ -139,4 +139,26 @@ urlpatterns = [
         views.get_react_config,
         name="get_react_config",
     ),
+
+    # mock urls
+    path(
+        "test-mock",
+        views.dispenser_test_mock,
+        name="dispenser_test_mock"
+    ),
+    path(
+        "check-cup-presence-mock/",
+        views.check_cup_presence_mock,
+        name="check_cup_presence_mock",
+    ),
+    path(
+        "start-drink-dispensing-mock",
+        views.start_drink_dispensing_mock,
+        name="start_drink_dispensing_mock"
+    ),
+    path(
+        "stop-drink-dispensing-mock",
+        views.stop_drink_dispensing_mock,
+        name="stop_drink_dispensing_mock"
+    ),
 ]
