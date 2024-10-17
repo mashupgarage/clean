@@ -8,18 +8,22 @@ import classNames from "classnames";
 function App() {
   const [bgColor, setBgColor] = useState('#cffafe')
   const [bgImage, setBgImage] = useState('')
+  const [fontFamily, setFontFamily] = useState('')
 
   useEffect(() => {
     fetchVendingMachineAppearanceData()
   }, [])
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--font-family', fontFamily)
+  }, [fontFamily])
+
   const fetchVendingMachineAppearanceData = async () => {
-    const { background_color, background_image } = await fetchVendingMachineAppearance()
+    const { background_color, background_image, font_name } = await fetchVendingMachineAppearance()
     setBgColor(background_color)
     setBgImage(background_image)
+    setFontFamily(font_name)
   }
-
-  console.log(bgImage)
 
   // Base layout
   return (
