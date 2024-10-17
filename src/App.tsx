@@ -1,11 +1,31 @@
 import { Outlet } from "react-router-dom";
+import { useState, useEffect } from 'react'
+import { fetchVendingMachineAppearance } from "./api/dispenser";
+
+import styles from './styles.module.scss'
+import classNames from "classnames";
 
 function App() {
+  const [bgColor, setBgColor] = useState('#cffafe')
+  const [bgImage, setBgImage] = useState('')
+
+  useEffect(() => {
+    fetchVendingMachineAppearanceData()
+  }, [])
+
+  const fetchVendingMachineAppearanceData = async () => {
+    const { background_color, background_image } = await fetchVendingMachineAppearance()
+    setBgColor(background_color)
+    setBgImage(background_image)
+  }
+
+  console.log(bgImage)
+
   // Base layout
   return (
     <div
-      className="max-h-s max-h-screen min-h-screen bg-cyan-100 bg-cover"
-      // style={{ backgroundImage: "url('')" }} // Set background image
+      className={classNames(styles.wrapperClass)}
+      style={{ backgroundImage: `url(${bgImage})`, backgroundColor: bgColor }}
     >
       <Outlet />
     </div>
