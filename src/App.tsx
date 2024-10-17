@@ -19,11 +19,13 @@ function App() {
     setBgImage(background_image)
   }
 
+  console.log(bgImage)
+
   // Base layout
   return (
     <div
       className={classNames(styles.wrapperClass)}
-      style={{ backgroundImage: bgImage, backgroundColor: bgColor }}
+      style={{ backgroundImage: `url(${bgImage})`, backgroundColor: bgColor }}
     >
       <div className="h-full">
         <Outlet />
