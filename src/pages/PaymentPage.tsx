@@ -3,6 +3,7 @@ import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
+import { ImgButton } from "../components/ImgButton";
 
 const PAYMENT_HEADER = {
   line1: "Please choose payment method",
@@ -55,25 +56,14 @@ export const PaymentPage: React.FC = () => {
       <Header {...PAYMENT_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
-        <div
+        <ImgButton
           onClick={showPaymentModal}
-          className="relative m-10 flex h-4/5 justify-center text-3xl font-bold uppercase text-black"
-        >
-          <img
-            className="size-full rounded-3xl"
-            src="https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png"
-          />
-        </div>
-
-        <div
+          imageSrc="https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png"
+        />
+        <ImgButton
           onClick={showPaymentModal}
-          className="relative m-10 flex h-4/5 justify-center text-3xl font-bold uppercase text-black"
-        >
-          <img
-            className="size-full rounded-3xl"
-            src="https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1"
-          />
-        </div>
+          imageSrc="https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1"
+        />
       </div>
 
       <Footer />
