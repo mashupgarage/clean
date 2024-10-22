@@ -33,3 +33,10 @@ export const setLockState = async (lockState: boolean) => {
 
   return axios.post(endpoint, body).then(res => res.data)
 }
+
+export const setPinCode = async (pinCode: string) => {
+  const endpoint = 'http://127.0.0.1:8000/api/dispenser/vending_machine/set-pin/'
+  const body = JSON.stringify({ pin_code: pinCode })
+
+  return axios.post(endpoint, body).then(res => res.data)
+}
