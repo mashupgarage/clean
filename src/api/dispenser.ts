@@ -47,3 +47,18 @@ export const verifyPinCode = async (pinCode: string) => {
 
   return axios.post(endpoint, body).then(res => res.data)
 }
+
+export const updateVendingMachineStatus = async (
+  status: string,
+  message: string,
+  dispenser_name: string
+) => {
+  const endpoint = 'http://127.0.0.1:8000/api/dispenser/vending_machine/status/update'
+  const body = JSON.stringify({
+    status: status,
+    message: message,
+    dispenser_name: dispenser_name,
+  })
+
+  return axios.post(endpoint, body).then(res => res.data)
+}
