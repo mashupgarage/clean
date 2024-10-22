@@ -26,3 +26,10 @@ export const getLockState = async () => {
 
   return axios.get(endpoint).then(res => res.data)
 }
+
+export const setLockState = async (lockState: boolean) => {
+  const endpoint = 'http://127.0.0.1:8000/api/dispenser/vending_machine/lock-state/set/'
+  const body = JSON.stringify({ is_locked: lockState })
+
+  return axios.post(endpoint, body).then(res => res.data)
+}
