@@ -20,3 +20,9 @@ export const fetchVendingMachineStatus = async () => {
 
   return axios.get(endpoint).then(res => res.data)
 }
+
+export const getLockState = async () => {
+  const endpoint = 'http://127.0.0.1:8000/api/dispenser/vending_machine/lock-state/'
+
+  return axios.get(endpoint).then(res => res.data)
+}
