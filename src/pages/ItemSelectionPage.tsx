@@ -1,6 +1,7 @@
 import { Header } from "../components/Header";
-import { Item } from "../components/Item";
 import { Footer } from "../components/Footer";
+import { useState } from "react";
+import { Item } from "../components/Item";
 
 // TAP_A and TAP_B values can be later configured
 const ITEM_SELECTION_HEADER = {
@@ -10,27 +11,37 @@ const ITEM_SELECTION_HEADER = {
 
 const TAP_A = {
   label1: "Coffee A",
-  label2: "咖啡 A",
   imageUrl: "https://placehold.co/600x600",
 };
 
 const TAP_B = {
   label1: "Coffee B",
-  label2: "咖啡 B",
   imageUrl: "https://placehold.co/600x600",
 };
 
 export const ItemSelectionPage: React.FC = () => {
+  const [item, setItem] = useState<string>("");
+
   return (
     <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
       <Header {...ITEM_SELECTION_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
-        <Item {...TAP_A} link="/a/size" />
-        <Item {...TAP_B} link="/b/size" />
+        <Item
+          {...TAP_A}
+          stateSelection={item}
+          setStateSelection={setItem}
+          selection="a"
+        />
+        <Item
+          {...TAP_B}
+          stateSelection={item}
+          setStateSelection={setItem}
+          selection="b"
+        />
       </div>
 
-      <Footer disabled />
+      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}/size`} />
     </div>
   );
 };
