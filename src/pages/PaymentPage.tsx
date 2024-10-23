@@ -3,11 +3,21 @@ import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
-import { ImgButton } from "../components/ImgButton";
+import { Item } from "../components/Item";
 
 const PAYMENT_HEADER = {
   line1: "Please choose payment method",
   line2: "請選擇付款方式",
+};
+
+const OPTION_A = {
+  imageUrl:
+    "https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png",
+};
+
+const OPTION_B = {
+  imageUrl:
+    "https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1",
 };
 
 export const PaymentPage: React.FC = () => {
@@ -15,6 +25,7 @@ export const PaymentPage: React.FC = () => {
   console.dir({ item, size });
   const [visible, setVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
+  const [option, setOption] = useState<string>("");
   const navigate = useNavigate();
 
   const showPaymentModal = () => {
@@ -56,17 +67,30 @@ export const PaymentPage: React.FC = () => {
       <Header {...PAYMENT_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
-        <ImgButton
+        {/* <ImgButton
           onClick={showPaymentModal}
           imageSrc="https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png"
         />
         <ImgButton
           onClick={showPaymentModal}
           imageSrc="https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1"
+        /> */}
+
+        <Item
+          {...OPTION_A}
+          stateSelection={option}
+          setStateSelection={setOption}
+          selection="a"
+        />
+        <Item
+          {...OPTION_B}
+          stateSelection={option}
+          setStateSelection={setOption}
+          selection="b"
         />
       </div>
 
-      <Footer />
+      <Footer nextProps={{ disabled: !option }} onClick={showPaymentModal} />
     </div>
   );
 };
