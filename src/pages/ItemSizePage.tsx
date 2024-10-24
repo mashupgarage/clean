@@ -2,6 +2,7 @@ import { Header } from "../components/Header";
 import { Item } from "../components/Item";
 import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
+import { useState } from "react";
 
 const ITEM_SIZE_HEADER = {
   line1: "Please select the size of your drink",
@@ -22,6 +23,7 @@ const SIZE_B = {
 
 export const ItemSizePage: React.FC = () => {
   const { item } = useParams();
+  const [size, setSize] = useState<string>("");
   console.log(`SELECTED ITEM: ${item?.toUpperCase()}`);
 
   return (
@@ -29,11 +31,24 @@ export const ItemSizePage: React.FC = () => {
       <Header {...ITEM_SIZE_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
-        <Item {...SIZE_A} link={`/${item}/size/a/payment`} />
-        <Item {...SIZE_B} link={`/${item}/size/b/payment`} />
+        <Item
+          {...SIZE_A}
+          stateSelection={size}
+          setStateSelection={setSize}
+          selection="a"
+        />
+        <Item
+          {...SIZE_B}
+          stateSelection={size}
+          setStateSelection={setSize}
+          selection="b"
+        />
       </div>
 
-      <Footer />
+      <Footer
+        nextProps={{ disabled: !size }}
+        nextLink={`/${item}/size/${size}/payment`}
+      />
     </div>
   );
 };
