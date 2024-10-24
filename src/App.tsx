@@ -4,7 +4,7 @@ function App() {
   // Base layout
   return (
     <div
-      className="max-h-s max-h-screen min-h-screen bg-cyan-100 bg-cover"
+      className="max-h-screen min-h-screen bg-cyan-100 bg-cover"
       // style={{ backgroundImage: "url('')" }} // Set background image
     >
       <Outlet />
