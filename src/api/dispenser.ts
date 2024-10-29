@@ -3,6 +3,13 @@ import queryString from 'query-string'
 
 const baseUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`
 
+// Menu
+export const getMenuItems = async () => {
+  const endpoint = `${baseUrl}/api/dispenser/menu-items`
+
+  return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Machine Actions
 export const startDrinkDispensing = async (dispenserName: string, size: string) => {
   const endpoint = `${baseUrl}/api/dispenser/start-drink-dispensing/`
