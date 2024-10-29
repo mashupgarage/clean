@@ -39,6 +39,13 @@ export const setTempRegulation = async (dispenserName: string, tempRegulation: b
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const turnOnTap = async (dispenserName: string) => {
+  const endpoint = `${baseUrl}/api/dispenser/turn-on-tap/`
+  const body = { "dispenser_name": dispenserName }
+
+  return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Dispenser
 export const dispenserTest = async () => {
   const endpoint = `${baseUrl}/api/dispenser/test/`
