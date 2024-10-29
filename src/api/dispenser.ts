@@ -32,7 +32,7 @@ export const cleanDispenser = async (dispenserName: string, mode: number) => {
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
-export const setHeater = async (dispenserName: string, heaterStatus: number) => {
+export const setHeater = async (dispenserName: string, heaterStatus: boolean) => {
   const endpoint = `${baseUrl}/api/dispenser/set-heater/`
   const body = JSON.stringify({ dispenser_name: dispenserName, heater_status: heaterStatus })
 
