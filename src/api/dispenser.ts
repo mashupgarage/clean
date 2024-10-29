@@ -13,49 +13,49 @@ export const getMenuItems = async () => {
 // Machine Actions
 export const startDrinkDispensing = async (dispenserName: string, size: string) => {
   const endpoint = `${baseUrl}/api/dispenser/start-drink-dispensing/`
-  const body = { "dispenser": dispenserName, "size": size }
+  const body = JSON.stringify({ dispenser: dispenserName, size: size })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const stopDrinkDispensing = async (dispenserName: string) => {
   const endpoint = `${baseUrl}/api/dispenser/stop-drink-dispensing/`
-  const body = { "dispenser": dispenserName }
+  const body = JSON.stringify({ dispenser: dispenserName })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const cleanDispenser = async (dispenserName: string, mode: number) => {
   const endpoint = `${baseUrl}/api/dispenser/clean/`
-  const body = { "dispenser_name": dispenserName, "mode": mode }
+  const body = JSON.stringify({ dispenser_name: dispenserName, mode: mode })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const setHeater = async (dispenserName: string, heaterStatus: number) => {
   const endpoint = `${baseUrl}/api/dispenser/set-heater/`
-  const body = { "dispenser_name": dispenserName, "heater_status": heaterStatus }
+  const body = JSON.stringify({ dispenser_name: dispenserName, heater_status: heaterStatus })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const setTempRegulation = async (dispenserName: string, tempRegulation: boolean) => {
   const endpoint = `${baseUrl}/api/dispenser/set-temp-regulation/`
-  const body = { "dispenser_name": dispenserName, "temperature_regulation": tempRegulation }
+  const body = JSON.stringify({ dispenser_name: dispenserName, temperature_regulation: tempRegulation })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const turnOnTap = async (dispenserName: string) => {
   const endpoint = `${baseUrl}/api/dispenser/turn-on-tap/`
-  const body = { "dispenser_name": dispenserName }
+  const body = JSON.stringify({ dispenser_name: dispenserName })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const turnOffTap = async (dispenserName: string) => {
   const endpoint = `${baseUrl}/api/dispenser/turn-off-tap/`
-  const body = { "dispenser_name": dispenserName }
+  const body = JSON.stringify({ dispenser_name: dispenserName })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
