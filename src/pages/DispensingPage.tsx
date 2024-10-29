@@ -1,5 +1,4 @@
 import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
 
 const DISPENSING_HEADER = {
@@ -34,8 +33,6 @@ export const DispensingPage: React.FC = () => {
           0%
         </div>
       </div>
-
-      <Footer disabled />
     </div>
   );
 };

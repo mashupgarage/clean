@@ -1,5 +1,4 @@
 import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import CountdownTimer from "../components/CountdownTimer";
 
@@ -43,8 +42,6 @@ export const DetectCupPage: React.FC = () => {
         )}
         <CountdownTimer />
       </div>
-
-      <Footer disabled />
     </div>
   );
 };
