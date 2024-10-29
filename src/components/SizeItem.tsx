@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-type ItemProps = {
+type SizeItemProps = {
   name?: string;
   size?: string;
   price?: string;
@@ -18,7 +18,7 @@ export const SizeItem = ({
   selection,
   stateSelection,
   setStateSelection,
-}: ItemProps) => {
+}: SizeItemProps) => {
   return (
     <div
       className={`m-10 flex size-[600px] flex-col items-center justify-center gap-2 rounded-3xl bg-white shadow-2xl ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
