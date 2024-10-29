@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CountdownTimer from "../components/CountdownTimer";
 
 const DETECT_CUP_HEADER = {
-  title: "Please hold your cup under the tap",
+  title: "Please place your cup under the tap",
 };
 
 export const DetectCupPage: React.FC = () => {
@@ -25,7 +25,7 @@ export const DetectCupPage: React.FC = () => {
             onClick={() => navigate(`/${item}/size/${size}/dispense`)}
           >
             <img
-              src="http://localhost:5173/media/dispenser/image/Tap-A-place-cup.png"
+              src="/media/tap.png"
               className="size-full rounded-3xl object-contain"
             />
           </div>
@@ -35,8 +35,8 @@ export const DetectCupPage: React.FC = () => {
             onClick={() => navigate(`/${item}/size/${size}/dispense`)}
           >
             <img
-              src="http://localhost:5173/media/dispenser/image/Tap-B-place-cup.png"
-              className="size-full rounded-3xl object-contain"
+              src="/media/tap.png"
+              className="size-full -scale-x-100 rounded-3xl object-contain"
             />
           </div>
         )}
