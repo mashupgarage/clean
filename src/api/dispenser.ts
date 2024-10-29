@@ -32,6 +32,13 @@ export const setHeater = async (dispenserName: string, heaterStatus: number) => 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const setTempRegulation = async (dispenserName: string, tempRegulation: boolean) => {
+  const endpoint = `${baseUrl}/api/dispenser/set-temp-regulation/`
+  const body = { "dispenser_name": dispenserName, "temperature_regulation": tempRegulation }
+
+  return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Dispenser
 export const dispenserTest = async () => {
   const endpoint = `${baseUrl}/api/dispenser/test/`
