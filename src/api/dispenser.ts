@@ -10,9 +10,16 @@ export const dispenserTest = async () => {
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
-export const checkCupPresence = async (name: string) => {
-  const params = queryString.stringify({ name })
+export const checkCupPresence = async (dispenserName: string) => {
+  const params = queryString.stringify({ name: dispenserName })
   const endpoint = `${baseUrl}/api/dispenser/check-cup-presence?${params}`
+
+  return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
+}
+
+export const getTemperature = async (dispenserName: string) => {
+  const params = queryString.stringify({ name: dispenserName })
+  const endpoint = `${baseUrl}/api/dispenser/get-temperature?${params}`
 
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
