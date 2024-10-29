@@ -10,6 +10,13 @@ export const dispenserTest = async () => {
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const checkCupPresence = async (name: string) => {
+  const params = queryString.stringify({ name })
+  const endpoint = `${baseUrl}/api/dispenser/check-cup-presence?${params}`
+
+  return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Vending Machine
 export const selectVendingMachine = async (name: string) => {
   const params = queryString.stringify({ name: name })
