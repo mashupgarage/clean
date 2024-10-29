@@ -21,7 +21,7 @@ export const Item = ({
 }: ItemProps) => {
   return (
     <div
-      className={`m-10 flex size-[600px] flex-col rounded-3xl bg-white ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
+      className={`m-10 flex size-[600px] flex-col rounded-3xl bg-white shadow-2xl ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
       onClick={() => setStateSelection(selection)}
     >
       <img

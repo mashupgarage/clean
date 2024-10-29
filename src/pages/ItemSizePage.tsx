@@ -1,8 +1,8 @@
 import { Header } from "../components/Header";
-import { Item } from "../components/Item";
 import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
+import { SizeItem } from "../components/SizeItem";
 
 const ITEM_SIZE_HEADER = {
   line1: "Please select the size of your drink",
@@ -10,15 +10,17 @@ const ITEM_SIZE_HEADER = {
 };
 
 const SIZE_A = {
-  label1: "Small (小)",
-  label2: "HK$1.00",
-  imageUrl: "https://placehold.co/600x600",
+  name: "Small",
+  price: "HK$ 2.20",
+  size: "354 ml (12oz)",
+  imageUrl: "/media/small.png",
 };
 
 const SIZE_B = {
-  label1: "Large (大)",
-  label2: "HK$1.00",
-  imageUrl: "https://placehold.co/600x600",
+  name: "Large",
+  price: "HK$ 3.00",
+  size: "473 ml (16oz)",
+  imageUrl: "/media/large.png",
 };
 
 export const ItemSizePage: React.FC = () => {
@@ -31,13 +33,13 @@ export const ItemSizePage: React.FC = () => {
       <Header {...ITEM_SIZE_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
-        <Item
+        <SizeItem
           {...SIZE_A}
           stateSelection={size}
           setStateSelection={setSize}
           selection="a"
         />
-        <Item
+        <SizeItem
           {...SIZE_B}
           stateSelection={size}
           setStateSelection={setSize}
