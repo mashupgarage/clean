@@ -31,6 +31,12 @@ export const getThermosWeight = async (dispenserName: string) => {
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const getVersion = async () => {
+  const endpoint = `${baseUrl}/api/dispenser/get-version`
+
+  return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
+} 
+
 export const setHeaterStrength = async (dispenserName: string, strength: number) => {
   const params = queryString.stringify({ name: dispenserName, strength: strength })
   const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
