@@ -18,6 +18,13 @@ export const stopDrinkDispensing = async (dispenserName: string) => {
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const cleanDispenser = async (dispenserName: string, mode: number) => {
+  const endpoint = `${baseUrl}/api/dispenser/clean/`
+  const body = { "dispenser_name": dispenserName, "mode": mode }
+
+  return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Dispenser
 export const dispenserTest = async () => {
   const endpoint = `${baseUrl}/api/dispenser/test/`
