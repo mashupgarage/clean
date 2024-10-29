@@ -45,6 +45,13 @@ export const setHeaterDuration = async (dispenserName: string, duration: number)
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const setPump = async (dispenserName: string, duration: number) => {
+  const params = queryString.stringify({ name: dispenserName, duration: duration })
+  const endpoint = `${baseUrl}/api/dispenser/set-pump?${params}`
+
+  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
+} 
+
 export const setCleaner = async (dispenserName: string, mode: number) => {
   const params = queryString.stringify({ name: dispenserName, mode: mode })
   const endpoint = `${baseUrl}/api/dispenser/set-cleaner?${params}`
