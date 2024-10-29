@@ -5,8 +5,15 @@ const baseUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`
 
 // Machine Actions
 export const startDrinkDispensing = async (dispenserName: string, size: string) => {
-  const endpoint = `${baseUrl}/api/dispenser/start-drink-dispensing`
-  const body = { "name": dispenserName, "size": size }
+  const endpoint = `${baseUrl}/api/dispenser/start-drink-dispensing/`
+  const body = { "dispenser": dispenserName, "size": size }
+
+  return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+}
+
+export const stopDrinkDispensing = async (dispenserName: string) => {
+  const endpoint = `${baseUrl}/api/dispenser/stop-drink-dispensing/`
+  const body = { "dispenser": dispenserName }
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
@@ -19,21 +26,21 @@ export const dispenserTest = async () => {
 }
 
 export const checkCupPresence = async (dispenserName: string) => {
-  const params = queryString.stringify({ name: dispenserName })
+  const params = queryString.stringify({ dispenser: dispenserName })
   const endpoint = `${baseUrl}/api/dispenser/check-cup-presence?${params}`
 
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const getTemperature = async (dispenserName: string) => {
-  const params = queryString.stringify({ name: dispenserName })
+  const params = queryString.stringify({ dispenser: dispenserName })
   const endpoint = `${baseUrl}/api/dispenser/get-temperature?${params}`
 
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const getThermosWeight = async (dispenserName: string) => {
-  const params = queryString.stringify({ name: dispenserName })
+  const params = queryString.stringify({ dispenser: dispenserName })
   const endpoint = `${baseUrl}/api/dispenser/get-thermos-weight?${params}`
 
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
@@ -46,28 +53,28 @@ export const getVersion = async () => {
 } 
 
 export const setHeaterStrength = async (dispenserName: string, strength: number) => {
-  const params = queryString.stringify({ name: dispenserName, strength: strength })
+  const params = queryString.stringify({ dispenser: dispenserName, strength: strength })
   const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
 
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const setHeaterDuration = async (dispenserName: string, duration: number) => {
-  const params = queryString.stringify({ name: dispenserName, duration: duration })
+  const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
   const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
 
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const setPump = async (dispenserName: string, duration: number) => {
-  const params = queryString.stringify({ name: dispenserName, duration: duration })
+  const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
   const endpoint = `${baseUrl}/api/dispenser/set-pump?${params}`
 
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 } 
 
 export const setCleaner = async (dispenserName: string, mode: number) => {
-  const params = queryString.stringify({ name: dispenserName, mode: mode })
+  const params = queryString.stringify({ dispenser: dispenserName, mode: mode })
   const endpoint = `${baseUrl}/api/dispenser/set-cleaner?${params}`
 
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
