@@ -45,6 +45,13 @@ export const setHeaterDuration = async (dispenserName: string, duration: number)
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const setCleaner = async (dispenserName: string, mode: number) => {
+  const params = queryString.stringify({ name: dispenserName, mode: mode })
+  const endpoint = `${baseUrl}/api/dispenser/set-cleaner?${params}`
+
+  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Vending Machine
 export const selectVendingMachine = async (name: string) => {
   const params = queryString.stringify({ name: name })
