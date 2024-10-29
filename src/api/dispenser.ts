@@ -24,6 +24,13 @@ export const getTemperature = async (dispenserName: string) => {
   return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
+export const getThermosWeight = async (dispenserName: string) => {
+  const params = queryString.stringify({ name: dispenserName })
+  const endpoint = `${baseUrl}/api/dispenser/get-thermos-weight?${params}`
+
+  return axios.get(endpoint).then(res => res.data).catch(err => err.response.data.error)
+}
+
 // Vending Machine
 export const selectVendingMachine = async (name: string) => {
   const params = queryString.stringify({ name: name })
