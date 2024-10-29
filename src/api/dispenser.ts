@@ -101,12 +101,15 @@ export const setHeaterStrength = async (dispenserName: string, strength: number)
   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
-export const setHeaterDuration = async (dispenserName: string, duration: number) => {
-  const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
-  const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
+// This API request is using the same action as setHeaterStrength
+// To-do: Figure out what's the `duration` should be use for from the backend.
+// This might be the heating cycle time?
+// export const setHeaterDuration = async (dispenserName: string, duration: number) => {
+//   const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
+//   const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
 
-  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
-}
+//   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
+// }
 
 export const setPump = async (dispenserName: string, duration: number) => {
   const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
