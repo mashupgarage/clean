@@ -21,7 +21,7 @@ export const SizeItem = ({
 }: SizeItemProps) => {
   return (
     <div
-      className={`m-10 flex size-[600px] flex-col items-center justify-center gap-2 rounded-3xl bg-white shadow-2xl ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
+      className={`m-10 flex size-[600px] flex-col items-center justify-center gap-2 rounded-3xl bg-white shadow-2xl shadow-slate-400 ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
       onClick={() => setStateSelection(selection)}
     >
       <img className="mb-4 w-40" src={imageUrl} />
