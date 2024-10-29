@@ -5,8 +5,7 @@ import { useState } from "react";
 import { SizeItem } from "../components/SizeItem";
 
 const ITEM_SIZE_HEADER = {
-  line1: "Please select the size of your drink",
-  line2: "請選擇您飲品的大小",
+  title: "Please select the size of your drink",
 };
 
 const SIZE_A = {

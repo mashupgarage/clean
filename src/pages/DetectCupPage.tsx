@@ -4,8 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CountdownTimer from "../components/CountdownTimer";
 
 const DETECT_CUP_HEADER = {
-  line1: "Please hold your cup under the tap",
-  line2: "請將杯放在感應掣上",
+  title: "Please hold your cup under the tap",
 };
 
 export const DetectCupPage: React.FC = () => {

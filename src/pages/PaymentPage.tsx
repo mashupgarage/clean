@@ -6,8 +6,7 @@ import { useState } from "react";
 import { Item } from "../components/Item";
 
 const PAYMENT_HEADER = {
-  line1: "Please choose payment method",
-  line2: "請選擇付款方式",
+  title: "Please choose payment method",
 };
 
 const OPTION_A = {

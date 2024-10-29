@@ -5,8 +5,7 @@ import { Item } from "../components/Item";
 
 // TAP_A and TAP_B values can be later configured
 const ITEM_SELECTION_HEADER = {
-  line1: "Please choose your drink",
-  line2: "請選擇飲品",
+  title: "Please choose your drink",
 };
 
 const TAP_A = {

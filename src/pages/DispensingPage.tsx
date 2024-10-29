@@ -3,8 +3,7 @@ import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
 
 const DISPENSING_HEADER = {
-  line1: "Please hold your cup under the tap",
-  line2: "請將杯放在感應掣上",
+  title: "Please hold your cup under the tap",
 };
 
 // const TIME = 10; Variable timer depending on the cup size
