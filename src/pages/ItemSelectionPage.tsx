@@ -29,7 +29,7 @@ export const ItemSelectionPage: React.FC = () => {
   const [item, setItem] = useState<string>("");
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[15%,65%,20%]">
       <Header {...ITEM_SELECTION_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">

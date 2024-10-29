@@ -42,7 +42,7 @@ export const PaymentPage: React.FC = () => {
   };
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[15%,65%,20%]">
       <Portal>
         <Modal
           visible={loadingVisible}
@@ -90,7 +90,11 @@ export const PaymentPage: React.FC = () => {
         />
       </div>
 
-      <Footer nextProps={{ disabled: !option }} onClick={showPaymentModal} />
+      <Footer
+        cancelButton={true}
+        nextProps={{ disabled: !option }}
+        onClick={showPaymentModal}
+      />
     </div>
   );
 };
