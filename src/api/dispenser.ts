@@ -95,10 +95,10 @@ export const getVersion = async () => {
 } 
 
 export const setHeaterStrength = async (dispenserName: string, strength: number) => {
-  const params = queryString.stringify({ dispenser: dispenserName, strength: strength })
-  const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
+  const endpoint = `${baseUrl}/api/dispenser/set-heater`
+  const body = JSON.stringify({ dispenser: dispenserName, strength: strength })
 
-  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
+  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 // This API request is using the same action as setHeaterStrength
@@ -112,17 +112,17 @@ export const setHeaterStrength = async (dispenserName: string, strength: number)
 // }
 
 export const setPump = async (dispenserName: string, duration: number) => {
-  const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
-  const endpoint = `${baseUrl}/api/dispenser/set-pump?${params}`
+  const endpoint = `${baseUrl}/api/dispenser/set-pump`
+  const body = JSON.stringify({ dispenser: dispenserName, duration: duration })
 
-  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
+  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 } 
 
 export const setCleaner = async (dispenserName: string, mode: number) => {
-  const params = queryString.stringify({ dispenser: dispenserName, mode: mode })
-  const endpoint = `${baseUrl}/api/dispenser/set-cleaner?${params}`
+  const endpoint = `${baseUrl}/api/dispenser/set-cleaner`
+  const body = JSON.stringify({ dispenser: dispenserName, mode: mode })
 
-  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
+  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 // Vending Machine
