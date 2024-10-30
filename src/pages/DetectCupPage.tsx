@@ -18,26 +18,20 @@ export const DetectCupPage: React.FC = () => {
     <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
       <Header {...DETECT_CUP_HEADER} />
 
-      <div className="flex h-full flex-col items-center justify-center">
+      <div className="flex h-full flex-col items-center">
         {item === "a" ? (
           <div
-            className="relative m-10 flex h-4/5 rounded-3xl"
+            className="relative m-10 flex w-[650px]"
             onClick={() => navigate(`/${item}/size/${size}/dispense`)}
           >
-            <img
-              src="/media/tap.png"
-              className="size-full rounded-3xl object-contain"
-            />
+            <img src="/media/tap.png" className="size-full rounded-3xl" />
           </div>
         ) : (
           <div
-            className="relative m-10 flex h-4/5 rounded-3xl"
+            className="relative m-10 flex w-[650px]"
             onClick={() => navigate(`/${item}/size/${size}/dispense`)}
           >
-            <img
-              src="/media/tap.png"
-              className="size-full -scale-x-100 rounded-3xl object-contain"
-            />
+            <img src="/media/tap.png" className="size-full -scale-x-100" />
           </div>
         )}
         <CountdownTimer />
