@@ -25,11 +25,20 @@ export const stopDrinkDispensing = async (dispenserName: string) => {
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
+// Similar to setCleaner but operates on the dispenser instance and the specified mode
 export const cleanDispenser = async (dispenserName: string, mode: number) => {
   const endpoint = `${baseUrl}/api/dispenser/clean/`
   const body = JSON.stringify({ dispenser_name: dispenserName, mode: mode })
 
   return axios.post(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+}
+
+// Set Cleaner is to restart the cleaner mode to 0 and operate it again into given mode number
+export const setCleaner = async (dispenserName: string, mode: number) => {
+  const endpoint = `${baseUrl}/api/dispenser/set-cleaner`
+  const body = JSON.stringify({ dispenser: dispenserName, mode: mode })
+
+  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const setHeater = async (dispenserName: string, heaterStatus: boolean) => {
@@ -117,13 +126,6 @@ export const setPump = async (dispenserName: string, duration: number) => {
 
   return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
 } 
-
-export const setCleaner = async (dispenserName: string, mode: number) => {
-  const endpoint = `${baseUrl}/api/dispenser/set-cleaner`
-  const body = JSON.stringify({ dispenser: dispenserName, mode: mode })
-
-  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
-}
 
 // Vending Machine
 export const selectVendingMachine = async (name: string) => {
