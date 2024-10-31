@@ -35,10 +35,10 @@ export const cleanDispenser = async (dispenserName: string, mode: number) => {
 
 // Set Cleaner is to restart the cleaner mode to 0 and operate it again into given mode number
 export const setCleaner = async (dispenserName: string, mode: number) => {
-  const endpoint = `${baseUrl}/api/dispenser/set-cleaner`
-  const body = JSON.stringify({ dispenser: dispenserName, mode: mode })
+  const params = queryString.stringify({ dispenser: dispenserName, mode: mode })
+  const endpoint = `${baseUrl}/api/dispenser/set-cleaner?${params}`
 
-  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
 export const setHeater = async (dispenserName: string, heaterStatus: boolean) => {
@@ -104,10 +104,10 @@ export const getVersion = async () => {
 } 
 
 export const setHeaterStrength = async (dispenserName: string, strength: number) => {
-  const endpoint = `${baseUrl}/api/dispenser/set-heater`
-  const body = JSON.stringify({ dispenser: dispenserName, strength: strength })
+  const params = queryString.stringify({ dispenser: dispenserName, strength: strength })
+  const endpoint = `${baseUrl}/api/dispenser/set-heater?${params}`
 
-  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 }
 
 // This API request is using the same action as setHeaterStrength
@@ -121,10 +121,10 @@ export const setHeaterStrength = async (dispenserName: string, strength: number)
 // }
 
 export const setPump = async (dispenserName: string, duration: number) => {
-  const endpoint = `${baseUrl}/api/dispenser/set-pump`
-  const body = JSON.stringify({ dispenser: dispenserName, duration: duration })
+  const params = queryString.stringify({ dispenser: dispenserName, duration: duration })
+  const endpoint = `${baseUrl}/api/dispenser/set-pump?${params}`
 
-  return axios.put(endpoint, body).then(res => res.data).catch(err => err.response.data.error)
+  return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 } 
 
 // Vending Machine
