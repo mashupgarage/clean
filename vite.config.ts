@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { config } from 'dotenv';
 import react from "@vitejs/plugin-react";
 
 // Added .web.* extensions to be compatible with react-native-web.
@@ -24,6 +25,7 @@ export default defineConfig({
   plugins: [react()],
   define: {
     global: "window", // needed for react-native-web
+    'process.env': config()
   },
 
   resolve: {

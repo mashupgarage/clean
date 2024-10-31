@@ -699,7 +699,7 @@ def dispenser_test(request):
             if temperature_A is not None:
                 response_data["temperature_A"] = temperature_A
 
-            success = dispenser_controller.set_heaterA_on(2)
+            success = dispenser_controller.set_heaterA(2)
             if success:
                 response_data["heater_A_status"] = "on"
 
