@@ -260,7 +260,7 @@ def get_vending_machine_appearance(request):
     try:
         vending_machine = VendingMachine.objects.first()
         if not vending_machine:
-            return Response({"error": "Vending machine not found"}, status=404)
+            raise VendingMachine.DoesNotExist
 
         serializer = VendingMachineAppearanceSerializer(vending_machine, context={"request": request})
         return Response(serializer.data)
@@ -272,6 +272,9 @@ def get_vending_machine_appearance(request):
 def get_machine_status(request):
     try:
         machine = VendingMachine.objects.first()  # Assuming there's only one machine record
+        if not machine:
+            raise VendingMachine.DoesNotExist
+
         response_data = {
             "status": machine.status,
         }

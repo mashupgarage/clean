@@ -13,6 +13,8 @@
     "run-py": "python manage.py runserver 0.0.0.0:8000"
   },
   "dependencies": {
+    "axios": "^1.7.7",
+    "query-string": "^9.1.1",
     "react": "^18.3.1",
     "react-art": "^18.3.1",
     "react-dom": "^18.3.1",
