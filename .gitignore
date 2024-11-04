@@ -15,7 +15,6 @@ static/dist/
 # static files for production
 # Generated files
 staticfiles/
-/static/
 
 # Initial dispenser settings
 initial_settings.json
