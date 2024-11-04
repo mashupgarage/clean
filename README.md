@@ -4,18 +4,22 @@
 Recommended: In `.tool-versions` add python v3.9.13 then run `asdf install`
 
 ## Install Pip
+make sure you are in the correct projects directory
+and that the directory is empty.
+preferrably outside the project repository.
 ```bash
-sudo apt install python3-pip
+python -m pip install
+pip install pipenv
+pipenv --python 3.9.13
 ```
 
 ## Install Django
 ```bash
-sudo pip3 install Django
+pipenv install "django"
 ```
-
-## Run Migrations
+Once django is installed, you will need to fire it up:
 ```bash
-python manage.py migrate
+pipenv shell
 ```
 
 ## Install Required Packages
@@ -30,6 +34,21 @@ SERIAL_PORT=/dev/ttyACM0
 
 ## Create Initial Settings File
 Create a copy of `initial_settings_sample.json` and rename it to `initial_settings.json`
+
+## Run Migrations
+```bash
+python manage.py migrate
+```
+
+## Create a superuser
+```bash
+python manage.py createsuperuser
+```
+
+## Create static folder
+```bash
+python manage.py collectstatic
+```
 
 ## Run the Python Server  
 ```bash
