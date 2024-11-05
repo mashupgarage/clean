@@ -25,7 +25,6 @@ const SIZE_B = {
 export const ItemSizePage: React.FC = () => {
   const { item } = useParams();
   const [size, setSize] = useState<string>("");
-  console.log(`SELECTED ITEM: ${item?.toUpperCase()}`);
 
   return (
     <div className="grid h-screen w-screen grid-rows-[15%,65%,20%]">
@@ -36,13 +35,13 @@ export const ItemSizePage: React.FC = () => {
           {...SIZE_A}
           stateSelection={size}
           setStateSelection={setSize}
-          selection="a"
+          selection="Small"
         />
         <SizeItem
           {...SIZE_B}
           stateSelection={size}
           setStateSelection={setSize}
-          selection="b"
+          selection="Large"
         />
       </div>
 
