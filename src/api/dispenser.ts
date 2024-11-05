@@ -14,6 +14,26 @@ export const getMenuItems = async () => {
 };
 
 // Machine Actions
+
+// NOTE: setPump allows to run the pump for a given duration.
+// This is different from startDrinkDispensing which infers the duration from the size of the drink
+// Current types in the backend are the ff:
+// dispenser: Tap-A | Tap-B
+// size: Small | Large
+
+export const setPump = async (dispenserName: string, duration: number) => {
+  const params = queryString.stringify({
+    dispenser: dispenserName,
+    duration: duration,
+  });
+  const endpoint = `${baseUrl}/api/dispenser/set-pump?${params}`;
+
+  return axios
+    .put(endpoint)
+    .then((res) => res.data)
+    .catch((err) => err.response.data.error);
+};
+
 export const startDrinkDispensing = async (
   dispenserName: string,
   size: string,
@@ -188,19 +208,6 @@ export const setHeaterStrength = async (
 
 //   return axios.put(endpoint).then(res => res.data).catch(err => err.response.data.error)
 // }
-
-export const setPump = async (dispenserName: string, duration: number) => {
-  const params = queryString.stringify({
-    dispenser: dispenserName,
-    duration: duration,
-  });
-  const endpoint = `${baseUrl}/api/dispenser/set-pump?${params}`;
-
-  return axios
-    .put(endpoint)
-    .then((res) => res.data)
-    .catch((err) => err.response.data.error);
-};
 
 // Vending Machine
 export const selectVendingMachine = async (name: string) => {
