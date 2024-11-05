@@ -29,7 +29,6 @@ const OPTION_D = {
 
 export const PaymentPage: React.FC = () => {
   const { item, size } = useParams();
-  console.dir({ item, size });
   const [visible, setVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
   const [option, setOption] = useState<string>("");
@@ -74,15 +73,6 @@ export const PaymentPage: React.FC = () => {
       <Header {...PAYMENT_HEADER} />
 
       <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
-        {/* <ImgButton
-          onClick={showPaymentModal}
-          imageSrc="https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png"
-        />
-        <ImgButton
-          onClick={showPaymentModal}
-          imageSrc="https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1"
-        /> */}
-
         <PaymentItem
           {...OPTION_A}
           stateSelection={option}

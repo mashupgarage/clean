@@ -7,6 +7,7 @@ const IDLE_PAGE_HEADER = {
 
 export const IdlePage: React.FC = () => {
   const navigate = useNavigate();
+
   return (
     <div className="h-screen w-screen">
       <video
