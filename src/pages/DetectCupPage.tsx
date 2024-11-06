@@ -30,6 +30,8 @@ export const DetectCupPage: React.FC = () => {
     setTimeout(() => {
       clearInterval(interval);
     }, 30000);
+
+    return () => clearInterval(interval);
   }, [item]);
 
   return (
