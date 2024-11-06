@@ -10,19 +10,10 @@ export const IdlePage: React.FC = () => {
 
   return (
     <div className="h-screen w-screen">
-      <video
+      <img
         className="absolute left-0 top-0 size-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source
-          src="http://localhost:5173/media/coffee-placeholder.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
+        src="/media/coffee-placeholder.gif"
+      />
 
       <div
         className="absolute inset-0 flex flex-col items-center justify-center text-center text-white"
