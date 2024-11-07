@@ -9,15 +9,16 @@ const DISPENSING_HEADER = {
   title: "Please do not remove the cup until pouring is complete",
 };
 
-export const DispensingPage: React.FC = () => {
+export const DispensingPage = () => {
   const navigate = useNavigate();
   const { item, size } = useParams();
-  const [dispenseTime, setDispenseTime] = useState<number>(0);
+  const [dispenseTime, setDispenseTime] = useState<number>(10);
+
   useEffect(() => {
     if (!item || !size) return;
 
     startDrinkDispensing(item, size).then((data) => {
-      setDispenseTime(data.dispense_time);
+      setDispenseTime(data?.dispense_time);
     });
   }, [item]);
 
@@ -41,6 +42,7 @@ export const DispensingPage: React.FC = () => {
             <img src="/media/pour.png" className="size-full -scale-x-100" />
           </div>
         )}
+
         <div className="flex flex-col gap-4">
           <ProgressBar duration={dispenseTime} />
           <CountdownTimer duration={dispenseTime} />

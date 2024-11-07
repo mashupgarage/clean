@@ -5,10 +5,10 @@ export const CountdownTimer = ({
   duration,
   redirect,
 }: {
-  duration?: number;
+  duration: number;
   redirect?: string;
 }) => {
-  const [timeLeft, setTimeLeft] = useState<number>(duration || 30);
+  const [timeLeft, setTimeLeft] = useState<number>(duration);
 
   // Note: Rewrite this so that uses keyframes and animation time in CSS instead of counting time in JS
   useEffect(() => {
