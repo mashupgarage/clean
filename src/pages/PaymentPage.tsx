@@ -64,8 +64,13 @@ export const PaymentPage: React.FC = () => {
           dismissable={false}
           contentContainerStyle={{ height: "100%" }}
         >
-          <div className="m-auto rounded-xl bg-white px-20 py-10 text-3xl font-semibold text-blue-500">
-            Payment Successful!
+          <div className="m-auto flex flex-col gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl">
+            <div className="text-3xl font-extrabold text-emerald-600">
+              Payment Successful
+            </div>
+            <div className="text-2xl font-semibold text-slate-600">
+              We will be dispensing your drink shortly
+            </div>
           </div>
         </Modal>
       </Portal>
@@ -97,6 +102,7 @@ export const PaymentPage: React.FC = () => {
           stateSelection={option}
           setStateSelection={setOption}
           selection="d"
+          containerStyles="p-4"
         />
       </div>
 
