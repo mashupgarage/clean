@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { checkCupPresence } from "../api/dispenser";
 import { Header } from "../components/Header";
-import CountdownTimer from "../components/CountdownTimer";
+import { CountdownTimer } from "../components/CountdownTimer";
+import { ProgressBar } from "../components/ProgressBar";
 
 const DETECT_CUP_HEADER = {
   title: "Please place your cup under the tap",
@@ -54,7 +55,10 @@ export const DetectCupPage: React.FC = () => {
             <img src="/media/tap.png" className="size-full -scale-x-100" />
           </div>
         )}
-        <CountdownTimer />
+        <div className="flex flex-col gap-4">
+          <ProgressBar duration={30} />
+          <CountdownTimer duration={30} />
+        </div>
       </div>
     </div>
   );
