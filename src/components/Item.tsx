@@ -26,7 +26,7 @@ export const Item = ({
     >
       <img
         src={imageUrl}
-        className={`h-[350px] w-[600px] rounded-t-3xl object-contain`}
+        className={`h-[350px] w-[600px] rounded-t-3xl object-cover`}
       />
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-row justify-between text-3xl font-extrabold">
