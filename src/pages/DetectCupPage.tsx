@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { checkCupPresence } from "../api/dispenser";
 import { Header } from "../components/Header";
 import { CountdownTimer } from "../components/CountdownTimer";
 import { ProgressBar } from "../components/ProgressBar";
+import { ErrorModal } from "../components/ErrorModal";
+import { Portal } from "react-native-paper";
 
 const DETECT_CUP_HEADER = {
   title: "Please place your cup under the tap",
@@ -12,14 +14,15 @@ const DETECT_CUP_HEADER = {
 export const DetectCupPage: React.FC = () => {
   const navigate = useNavigate();
   const { item, size } = useParams();
+  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
     // Detect for cup presence in 1 second intervals
     const interval = setInterval(() => {
       if (!item) return;
 
-      // cup_status === 0 -> coffee cup not detected
-      // cup_status === 2 -> coffee cup detected by infrarerd
+      // cup_status === 0 -> cup not detected
+      // cup_status === 2 -> cup detected by infrarerd
       checkCupPresence(item).then((data) => {
         if (data?.cup_status === 2) {
           clearInterval(interval);
@@ -30,6 +33,7 @@ export const DetectCupPage: React.FC = () => {
 
     setTimeout(() => {
       clearInterval(interval);
+      setVisible(true);
     }, 30000);
 
     return () => clearInterval(interval);
@@ -37,6 +41,16 @@ export const DetectCupPage: React.FC = () => {
 
   return (
     <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+      <Portal>
+        <ErrorModal
+          header="Error: No cup detected"
+          subheader="No cup has been detected. The order is now cancelled. Please contact a
+        staff member for assistance."
+          onClick={() => navigate("/")}
+          visible={visible}
+          transactionId="987654321"
+        />
+      </Portal>
       <Header {...DETECT_CUP_HEADER} />
 
       <div className="flex h-full flex-col items-center">
