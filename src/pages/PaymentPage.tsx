@@ -78,6 +78,7 @@ export const PaymentPage: React.FC = () => {
           stateSelection={option}
           setStateSelection={setOption}
           selection="a"
+          containerStyles="bg-[#22AC38]"
         />
         <PaymentItem
           {...OPTION_B}
