@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
-const CountdownTimer: React.FC = ({
+export const CountdownTimer = ({
   duration,
   redirect,
 }: {
@@ -15,7 +15,6 @@ const CountdownTimer: React.FC = ({
     if (timeLeft > 0) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
-        // Insert API call to detect cup
       }, 1000);
       return () => {
         clearTimeout(timer);
@@ -23,16 +22,13 @@ const CountdownTimer: React.FC = ({
     }
   }, [timeLeft]);
 
-  // Note: Can improve redirect to timeout page, or show timeout modal
   return (
     <div className="text-center text-4xl font-bold">
       {timeLeft > 0 ? (
-        `Time left: ${timeLeft}`
+        `${timeLeft} seconds left`
       ) : (
         <Navigate to={redirect || "/"} />
       )}
     </div>
   );
 };
-
-export default CountdownTimer;
