@@ -48,7 +48,7 @@ export const ItemSizePage: React.FC = () => {
       <Footer
         cancelButton={true}
         nextProps={{ disabled: !size }}
-        nextLink={`/${item}/size/${size}/payment`}
+        nextLink={`/${item}/${size}/payment`}
       />
     </div>
   );

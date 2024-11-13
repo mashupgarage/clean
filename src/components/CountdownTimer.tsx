@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
 
 export const CountdownTimer = ({
   duration,
-  redirect,
+  className,
 }: {
   duration: number;
-  redirect?: string;
+  className?: string;
 }) => {
   const [timeLeft, setTimeLeft] = useState<number>(duration);
 
@@ -23,12 +22,10 @@ export const CountdownTimer = ({
   }, [timeLeft]);
 
   return (
-    <div className="text-center text-4xl font-bold">
-      {timeLeft > 0 ? (
-        `${timeLeft} seconds left`
-      ) : (
-        <Navigate to={redirect || "/"} />
-      )}
+    <div
+      className={`text-center text-4xl font-bold text-slate-600 ${className}`}
+    >
+      {timeLeft} seconds left
     </div>
   );
 };
