@@ -43,7 +43,7 @@ export const PaymentPage: React.FC = () => {
 
     setTimeout(() => {
       setVisible(false);
-      navigate(`/${item}/size/${size}/detect-cup`);
+      navigate(`/${item}/${size}/detect-cup`);
     }, 4000);
   };
 

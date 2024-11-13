@@ -46,7 +46,7 @@ export const ItemSelectionPage: React.FC = () => {
         />
       </div>
 
-      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}/size`} />
+      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}`} />
     </div>
   );
 };

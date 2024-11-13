@@ -47,7 +47,7 @@ export const DispensingPage = () => {
       // Stop dispensing when dispense time has been consumed
       console.log("Dispensing completed");
       clearInterval(interval);
-      navigate(`/thank-you`);
+      navigate(`/${item}/${size}/thank-you`);
 
       return () => clearTimeout(timer);
     }, dispenseTime * 1000);
@@ -78,7 +78,7 @@ export const DispensingPage = () => {
           // Stop dispensing when cup removed and less than 1 second remaining
           if (dispenseTime - timeElapsed < 1) {
             console.log("Dispensing completed early");
-            return navigate(`/thank-you`);
+            return navigate(`/${item}/${size}/thank-you`);
           }
 
           console.log("dispensing stopped after", timeElapsed, "seconds");
@@ -174,14 +174,14 @@ export const DispensingPage = () => {
         {item === "Tap-A" ? (
           <div
             className="relative m-10 mb-20 flex w-[650px]"
-            onClick={() => navigate(`/thank-you`)}
+            onClick={() => navigate(`/${item}/${size}/thank-you`)}
           >
             <img src="/media/pour.png" className="size-full object-contain" />
           </div>
         ) : (
           <div
             className="relative m-10 mb-20 flex w-[650px]"
-            onClick={() => navigate(`/thank-you`)}
+            onClick={() => navigate(`/${item}/${size}/thank-you`)}
           >
             <img
               src="/media/pour.png"

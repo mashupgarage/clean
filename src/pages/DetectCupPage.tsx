@@ -31,7 +31,7 @@ export const DetectCupPage: React.FC = () => {
         }
         if (data?.cup_status === 2) {
           clearInterval(interval);
-          navigate(`/${item}/size/${size}/dispense`);
+          navigate(`/${item}/${size}/dispense`);
         }
       });
     }, 1000);
@@ -75,14 +75,14 @@ export const DetectCupPage: React.FC = () => {
         {item === "Tap-A" ? (
           <div
             className="relative m-10 flex w-[650px]"
-            onClick={() => navigate(`/${item}/size/${size}/dispense`)}
+            onClick={() => navigate(`/${item}/${size}/dispense`)}
           >
             <img src="/media/tap.png" className="size-full" />
           </div>
         ) : (
           <div
             className="relative m-10 flex w-[650px]"
-            onClick={() => navigate(`/${item}/size/${size}/dispense`)}
+            onClick={() => navigate(`/${item}/${size}/dispense`)}
           >
             <img src="/media/tap.png" className="size-full -scale-x-100" />
           </div>
