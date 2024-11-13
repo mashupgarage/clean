@@ -5,7 +5,7 @@ const IDLE_PAGE_HEADER = {
   line2: "Tap to Begin",
 };
 
-export const IdlePage: React.FC = () => {
+export const IdlePage = () => {
   const navigate = useNavigate();
 
   return (
@@ -25,8 +25,9 @@ export const IdlePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-10 flex w-full justify-center">
-        <button className="rounded-full border-2 border-white bg-transparent px-20 py-4 text-2xl font-bold text-white">
+      <div className="absolute bottom-24 flex w-full justify-center">
+        <button className="flex flex-row items-center justify-center rounded-full border-2 border-white bg-slate-600/15 px-20 py-4 text-2xl font-bold text-white">
+          <img className="mr-3 h-6" src="/media/globe-icon.png" />
           Language options
         </button>
       </div>

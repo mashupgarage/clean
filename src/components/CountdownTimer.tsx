@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 export const CountdownTimer = ({
   duration,
   className,
+  isDispensingPage,
 }: {
   duration: number;
   className?: string;
+  isDispensingPage?: boolean;
 }) => {
   const [timeLeft, setTimeLeft] = useState<number>(duration);
 
-  // Note: Rewrite this so that uses keyframes and animation time in CSS instead of counting time in JS
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => {
@@ -25,7 +26,11 @@ export const CountdownTimer = ({
     <div
       className={`text-center text-4xl font-bold text-slate-600 ${className}`}
     >
-      {timeLeft} seconds left
+      {timeLeft === 0 && isDispensingPage ? (
+        "Almost there!"
+      ) : (
+        <>{timeLeft} seconds left</>
+      )}
     </div>
   );
 };

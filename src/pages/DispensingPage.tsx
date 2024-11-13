@@ -190,12 +190,12 @@ export const DispensingPage = () => {
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           {!dispenseTime && !isDispensing && (
             <>
-              <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200" />
+              <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200 shadow-inner" />
               <div className="text-center text-4xl font-bold text-slate-600">
-                Standby
+                Please Standby
               </div>
             </>
           )}
@@ -203,7 +203,7 @@ export const DispensingPage = () => {
           {dispenseTime && isDispensing && (
             <>
               <ProgressBar duration={dispenseTime} />
-              <CountdownTimer duration={dispenseTime} />
+              <CountdownTimer isDispensingPage duration={dispenseTime} />
             </>
           )}
           {dispenseTime && !isDispensing && (
