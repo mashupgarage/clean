@@ -11,10 +11,6 @@ export default {
       },
       boxShadow: {
         'item': '0px 4px 12px 0px #94a3b8;',
-        // box-shadow: 
-
-        // box-shadow: 0px 4px 4px 0px #482F2B1A;
-
       }
     },
   },
