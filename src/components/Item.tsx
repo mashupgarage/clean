@@ -22,7 +22,7 @@ export const Item = ({
   return (
     <div
       // eslint-disable-next-line tailwindcss/classnames-order
-      className={`shadow-item mx-8 flex size-[650px] flex-col rounded-3xl bg-white ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
+      className={`shadow-item mx-8 flex h-[600px] w-[650px] flex-col rounded-3xl bg-white ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
       onClick={() => setStateSelection(selection)}
     >
       <img
