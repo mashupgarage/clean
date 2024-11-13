@@ -58,7 +58,7 @@ export const Footer = ({
       {cancelButton && (
         // <NavButton {...props} label={"Cancel"} onClick={() => navigate("/")} />
         <Link
-          className="rounded-full border-4 border-gray-400 px-20 py-3 text-3xl font-extrabold text-gray-400"
+          className="rounded-full border-4 border-gray-400 px-24 py-3 text-3xl font-extrabold text-gray-400"
           to="/"
         >
           Cancel
