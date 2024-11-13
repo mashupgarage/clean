@@ -1,5 +1,8 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { checkCupPresence } from "../api/dispenser";
+import { Portal } from "react-native-paper";
+import { WarningModal } from "../components/WarningModal";
 
 const THANK_YOU_HEADER = {
   line1: "Your order is complete. Thank you!",
@@ -8,18 +11,44 @@ const THANK_YOU_HEADER = {
 
 export const ThankYouPage: React.FC = () => {
   const navigate = useNavigate();
+  const { item } = useParams();
+  const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
 
-  // Automatically redirect to idle page after 10 seconds
   useEffect(() => {
+    // start 15 second timer, then check for cup presence
     const timer = setTimeout(() => {
-      navigate("/");
-    }, 10000);
+      const interval = setInterval(() => {
+        if (!item) return;
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+        // Detect for cup presence in 1 second intervals
+        checkCupPresence(item).then((data) => {
+          // Show warning modal if cup is detected
+          if (data?.cup_status === 2 && visibleWarning === false) {
+            setVisibleWarning(true);
+          }
+
+          // Redirect after 15 seconds of not detecting
+          if (data?.cup_status === 0) {
+            clearInterval(interval);
+            navigate("/");
+          }
+        });
+        return () => clearInterval(interval);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }, 3000);
+  }, []);
 
   return (
     <div className="h-screen w-screen">
+      <Portal>
+        <WarningModal
+          visible={visibleWarning}
+          header="Warning: Please remove cup"
+          subheader="To make a new order, please remove the cup from the tap."
+        />
+      </Portal>
       <img
         src="http://localhost:5173/media/coffee-placeholder.png"
         className="absolute left-0 top-0 size-full object-cover"
