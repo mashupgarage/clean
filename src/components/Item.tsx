@@ -21,12 +21,13 @@ export const Item = ({
 }: ItemProps) => {
   return (
     <div
-      className={`m-10 flex size-[600px] flex-col rounded-3xl bg-white shadow-2xl shadow-slate-400 ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
+      // eslint-disable-next-line tailwindcss/classnames-order
+      className={`shadow-item mx-8 flex size-[650px] flex-col rounded-3xl bg-white ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
       onClick={() => setStateSelection(selection)}
     >
       <img
         src={imageUrl}
-        className={`h-[350px] w-[600px] rounded-t-3xl object-cover`}
+        className={`h-[400px] w-[650px] rounded-t-3xl object-cover`}
       />
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-row justify-between text-3xl font-extrabold">
