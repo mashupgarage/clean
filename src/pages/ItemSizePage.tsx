@@ -27,7 +27,7 @@ export const ItemSizePage: React.FC = () => {
   const [size, setSize] = useState<string>("");
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[15%,65%,20%]">
+    <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
       <Header {...ITEM_SIZE_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
