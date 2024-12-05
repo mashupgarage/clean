@@ -1057,24 +1057,10 @@ def send_set_command(dispenser, device, parameter):
     return response_data, status.HTTP_200_OK, None
 
 def get_clean_pump_time(mode):
-    if mode == 1:
-        return 5
-    elif mode == 2:
-        return 10
-    elif mode == 3:
-        return 15
-    else:
-        return 0
+    return int(mode) * 5
     
 def get_coffee_pump_time(mode):
-    if mode == 1:
-        return 15
-    elif mode == 2:
-        return 30
-    elif mode == 3:
-        return 45
-    else:
-        return 0
+    return int(mode) * 15
 
 import logging
 
