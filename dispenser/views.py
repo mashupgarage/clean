@@ -9,10 +9,12 @@ from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import status, views, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
+from rest_framework.permissions import IsAuthenticated
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from dispenser.models import Dispenser, Store, VendingMachine
 
@@ -669,6 +671,8 @@ class TurnOffTapDispenserView(views.APIView):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_menu_items(request):
     dispensers = Dispenser.objects.all()
     serializer = MenuItemSerializer(dispensers, many=True, context={"request": request})

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",  # CORS
     "oauth2_provider",
+    "django_extensions",
     # Internal
     "dispenser",
 ]
@@ -57,6 +58,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "javamach_con.urls"
+LOGIN_URL = "/admin/"
 
 TEMPLATES = [
     {
