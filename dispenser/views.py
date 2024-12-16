@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.permissions import IsAuthenticated
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from oauth2_provider.models import Application
 
 from dispenser.models import Dispenser, Store, VendingMachine
 
@@ -27,11 +28,15 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def dispenser_periodic_task(request):
     # logger.info("Running temperature and thermos weight monitoring task...")
     print("Running temperature and thermos weight monitoring task...")
 
     try:
+        user = request.user
+        token = refresh_access_token(user)
         dispenser_controller = apps.get_app_config("dispenser").dispenser_controller
         dispensers = Dispenser.objects.all()
 
@@ -96,12 +101,28 @@ def dispenser_periodic_task(request):
 
         # logger.info("Temperature and weight monitoring task completed")
         print("Temperature and weight monitoring task completed")
-        return Response({"status": "Task completed successfully"}, status=status.HTTP_200_OK)
+        return Response({"status": "Task completed successfully", "token": token.token}, status=status.HTTP_200_OK)
 
     except Exception as e:
         # logger.error(f"Unexpected error: {str(e)}")
         print(f"Unexpected error: {str(e)}")
         return Response({"error": "Unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def refresh_access_token(user):
+    from oauth2_provider.models import AccessToken
+    from datetime import timedelta
+    from django.utils import timezone
+    from oauthlib.common import generate_token
+
+    application = Application.objects.get(name="clean")
+    token = AccessToken.objects.create(
+        user=user,
+        scope='read write',
+        expires=timezone.now() + timedelta(seconds=settings.OAUTH2_PROVIDER['ACCESS_TOKEN_EXPIRE_SECONDS']),
+        token=generate_token(),
+        application=application
+    )
+    return token
 
 
 def check_and_notify_weight(dispenser):
