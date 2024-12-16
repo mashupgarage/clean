@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # External
     "rest_framework",
     "corsheaders",  # CORS
+    "oauth2_provider",
     # Internal
     "dispenser",
 ]
@@ -76,6 +77,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "javamach_con.wsgi.application"
 
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'read': 'Read scope', 
+        'write': 'Write scope'
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -151,6 +168,7 @@ REST_FRAMEWORK = {
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_HEADERS = ["ngrok-skip-browser-warning", "bypass-tunnel-reminder", "User-Agent"]
 CORS_ALLOW_CREDENTIALS = True
 
 # CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
