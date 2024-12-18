@@ -224,6 +224,8 @@ def send_notification(notification_data):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def report_transaction(request):
     try:
         # Extract the transaction data from the request
@@ -279,6 +281,8 @@ class VendingMachineViewSet(viewsets.ModelViewSet):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_vending_machine_appearance(request):
     try:
         vending_machine = VendingMachine.objects.first()
@@ -292,6 +296,8 @@ def get_vending_machine_appearance(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_machine_status(request):
     try:
         machine = VendingMachine.objects.first()  # Assuming there's only one machine record
@@ -307,6 +313,8 @@ def get_machine_status(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def update_machine_status(request):
     try:
         machine = VendingMachine.objects.first()  # Assuming there's only one machine record
@@ -347,6 +355,8 @@ def update_machine_status(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_lock_state(request):
     try:
         machine = VendingMachine.objects.first()
@@ -359,6 +369,8 @@ def get_lock_state(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_lock_state(request):
     try:
         machine = VendingMachine.objects.first()
@@ -377,6 +389,8 @@ def set_lock_state(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_pin_code(request):
     try:
         machine = VendingMachine.objects.first()
@@ -395,6 +409,8 @@ def set_pin_code(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def verify_pin_code(request):
     try:
         machine = VendingMachine.objects.first()
@@ -416,6 +432,8 @@ def verify_pin_code(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def vending_machine_list(request):
     # Only authenticated users can access this viewset
     # permission_classes = [IsAuthenticated]
@@ -505,6 +523,7 @@ def handle_cleaner_mode(dispenser, mode):
 
 
 class CleanDispenserView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         dispenser_name = request.data.get("dispenser_name")
@@ -526,6 +545,7 @@ class CleanDispenserView(views.APIView):
 
 
 class SetHeaterDispenserView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         dispenser_name = request.data.get("dispenser_name")
@@ -570,6 +590,7 @@ class SetHeaterDispenserView(views.APIView):
 
 
 class SetTempRegulationDispenserView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         dispenser_name = request.data.get("dispenser_name")
@@ -599,6 +620,7 @@ class SetTempRegulationDispenserView(views.APIView):
 
 
 class TurnOnTapDispenserView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         dispenser_name = request.data.get("dispenser_name")
@@ -644,6 +666,8 @@ class TurnOnTapDispenserView(views.APIView):
 
 
 class TurnOffTapDispenserView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         dispenser_name = request.data.get("dispenser_name")
         response_data = {}
@@ -706,6 +730,8 @@ Emulated = settings.DISPENSER_EMULATED
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def dispenser_test(request):
     # Create a DispenserController object with the correct serial port
     # dispenser_controller = DispenserController("COM5")
@@ -751,6 +777,8 @@ def dispenser_test(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def check_cup_presence(request):
     # Get the dispenser name from the request
     dispenser = request.GET.get("dispenser", default="Tap-A")
@@ -788,6 +816,8 @@ def check_cup_presence(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_temperature(request):
     # Get the dispenser name from the request
     dispenser_name = request.GET.get("dispenser", default="Tap-A")
@@ -831,6 +861,8 @@ def get_temperature(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_thermos_weight(request):
     # Get the dispenser name from the request
     dispenser = request.GET.get("dispenser", default="Tap-A")
@@ -856,6 +888,8 @@ def get_thermos_weight(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_heater(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     strength = request.GET.get("strength", default="1")
@@ -875,6 +909,8 @@ def set_heater(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_heater(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     duration = request.GET.get("duration", default="5")
@@ -894,6 +930,8 @@ def set_heater(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_cleaner(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     mode = request.GET.get("mode", default="10")
@@ -921,6 +959,8 @@ def set_cleaner(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_pump(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     duration = request.GET.get("duration", default="10")
@@ -940,6 +980,8 @@ def set_pump(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_version(request):
     response_data = {}
 
@@ -1086,6 +1128,8 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def start_drink_dispensing(request):
     dispenser_name = request.GET.get("dispenser", default="Tap-A")
     drink_size = request.GET.get("size", default="Small").capitalize()
@@ -1146,6 +1190,8 @@ def start_drink_dispensing(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def stop_drink_dispensing(request):
     dispenser_name = request.GET.get("dispenser", default="Tap-A")
 
