@@ -56,7 +56,7 @@ urlpatterns = [
     ),
     path(
         "clean/",
-        views.CleanDispenserView.as_view(),
+        views.clean_dispenser,
         name="clean_dispenser",
     ),
     path(

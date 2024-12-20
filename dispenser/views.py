@@ -466,6 +466,7 @@ def vending_machine_list(request):
 class DispenserViewSet(viewsets.ModelViewSet):
     queryset = Dispenser.objects.all()
     serializer_class = DispenserSerializer
+    permission_classes = [IsAuthenticated]
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -522,26 +523,26 @@ def handle_cleaner_mode(dispenser, mode):
 #     return False, {"error": error}
 
 
-class CleanDispenserView(views.APIView):
-    permission_classes = [IsAuthenticated]
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def clean_dispenser(request):
+    dispenser_name = request.data.get("dispenser_name")
+    mode = request.data.get("mode")
 
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        mode = request.data.get("mode")
+    if not dispenser_name or mode is None:
+        return Response({"error": "dispenser_name and mode are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not dispenser_name or mode is None:
-            return Response({"error": "dispenser_name and mode are required"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        dispenser = Dispenser.objects.get(name=dispenser_name)
+    except Dispenser.DoesNotExist:
+        return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        try:
-            dispenser = Dispenser.objects.get(name=dispenser_name)
-        except Dispenser.DoesNotExist:
-            return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        success, response_data = handle_cleaner_mode(dispenser, mode)
-        if success:
-            return Response(response_data, status=status.HTTP_200_OK)
-        else:
-            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    success, response_data = handle_cleaner_mode(dispenser, mode)
+    if success:
+        return Response(response_data, status=status.HTTP_200_OK)
+    else:
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SetHeaterDispenserView(views.APIView):
