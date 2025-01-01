@@ -666,54 +666,54 @@ def turn_on_tap(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 
-class TurnOffTapDispenserView(views.APIView):
-    permission_classes = [IsAuthenticated]
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def turn_off_tap(request):
+    dispenser_name = request.data.get("dispenser_name")
+    response_data = {}
 
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        response_data = {}
-
-        # Validate dispenser_name presence
-        if dispenser_name is None:
-            return Response(
-                {"error": "dispenser_name is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Turn off the tap
-        _, _, error = send_set_command(
-            dispenser_name,
-            "pump",
-            0,  # 0 time to turn off
+    # Validate dispenser_name presence
+    if dispenser_name is None:
+        return Response(
+            {"error": "dispenser_name is required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-        # Handle potential error from send_set_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Turn off the tap
+    _, _, error = send_set_command(
+        dispenser_name,
+        "pump",
+        0,  # 0 time to turn off
+    )
 
-        # Read Thermos weight
-        resp_data, _, error = send_get_command(
-            dispenser_name,
-            "thermos_weight",
-        )
-        # print(f"resp_data: {resp_data}")
-        # - Response data: {'dispenser': 'Tap-B', 'thermos_weight': 541}
+    # Handle potential error from send_set_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Handle potential error from send_get_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Read Thermos weight
+    resp_data, _, error = send_get_command(
+        dispenser_name,
+        "thermos_weight",
+    )
+    # print(f"resp_data: {resp_data}")
+    # - Response data: {'dispenser': 'Tap-B', 'thermos_weight': 541}
 
-        # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
-        response_data["finalWeight"] = resp_data["thermos_weight"] * 10
+    # Handle potential error from send_get_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        print(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
+    # Prepare successful response
+    response_data["dispenser"] = resp_data["dispenser"]
+    response_data["finalWeight"] = resp_data["thermos_weight"] * 10
 
-        return Response(response_data, status=status.HTTP_200_OK)
-        # Optional: Add logging for debugging
-        # logger.info(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
+    print(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
+
+    return Response(response_data, status=status.HTTP_200_OK)
+    # Optional: Add logging for debugging
+    # logger.info(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
 
 
 @api_view(["GET"])

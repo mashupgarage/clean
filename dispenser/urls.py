@@ -76,7 +76,7 @@ urlpatterns = [
     ),
     path(
         "turn-off-tap/",
-        views.TurnOffTapDispenserView.as_view(),
+        views.turn_off_tap,
         name="turn_off_tap",
     ),
     path(
