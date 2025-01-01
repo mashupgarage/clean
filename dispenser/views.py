@@ -544,126 +544,126 @@ def clean_dispenser(request):
     else:
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def set_heater(request):
+    dispenser_name = request.data.get("dispenser_name")
+    heater_status = request.data.get("heater_status")
 
-class SetHeaterDispenserView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    print(f"dispenser_name: {dispenser_name}, heater_status: {heater_status}")
 
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        heater_status = request.data.get("heater_status")
-
-        print(f"dispenser_name: {dispenser_name}, heater_status: {heater_status}")
-
-        if not dispenser_name or heater_status is None:
-            return Response(
-                {"error": "dispenser_name and heater_status are required"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            dispenser = Dispenser.objects.get(name=dispenser_name)
-        except Dispenser.DoesNotExist:
-            return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        heater_strength = 0
-        if heater_status:
-            heater_strength = 3
-            dispenser.heater_strength = heater_strength
-            dispenser.heater_status = heater_status
-            dispenser.save()
-
-        else:
-            dispenser.heater_strength = 0
-            dispenser.heater_status = heater_status
-            dispenser.save()
-
-        response_data, response_status, error = send_set_command(
-            dispenser_name,
-            "heater",
-            heater_strength,
+    if not dispenser_name or heater_status is None:
+        return Response(
+            {"error": "dispenser_name and heater_status are required"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-        print(f"response_data: {response_data}, response_status: {response_status}, error: {error}")
+    try:
+        dispenser = Dispenser.objects.get(name=dispenser_name)
+    except Dispenser.DoesNotExist:
+        return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if response_data is not None:
-            return Response(response_data, status=response_status)
-        else:
-            return Response({"error": error}, status=response_status)
-
-
-class SetTempRegulationDispenserView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        temperature_regulation = request.data.get("temperature_regulation")
-
-        if not dispenser_name or temperature_regulation is None:
-            return Response(
-                {"error": "dispenser_name, temperature_regulation are required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            dispenser = Dispenser.objects.get(name=dispenser_name)
-        except Dispenser.DoesNotExist:
-            return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        dispenser.temperature_regulation = temperature_regulation
+    heater_strength = 0
+    if heater_status:
+        heater_strength = 3
+        dispenser.heater_strength = heater_strength
+        dispenser.heater_status = heater_status
         dispenser.save()
 
+    else:
+        dispenser.heater_strength = 0
+        dispenser.heater_status = heater_status
+        dispenser.save()
+
+    response_data, response_status, error = send_set_command(
+        dispenser_name,
+        "heater",
+        heater_strength,
+    )
+
+    print(f"response_data: {response_data}, response_status: {response_status}, error: {error}")
+
+    if response_data is not None:
+        return Response(response_data, status=response_status)
+    else:
+        return Response({"error": error}, status=response_status)
+
+
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def set_temp_regulation(request):
+    dispenser_name = request.data.get("dispenser_name")
+    temperature_regulation = request.data.get("temperature_regulation")
+
+    if not dispenser_name or temperature_regulation is None:
         return Response(
-            {
-                "dispenser": dispenser_name,
-                "temperature_regulation": temperature_regulation,
-            },
-            status=status.HTTP_200_OK,
+            {"error": "dispenser_name, temperature_regulation are required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
+    try:
+        dispenser = Dispenser.objects.get(name=dispenser_name)
+    except Dispenser.DoesNotExist:
+        return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
 
-class TurnOnTapDispenserView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    dispenser.temperature_regulation = temperature_regulation
+    dispenser.save()
 
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
+    return Response(
+        {
+            "dispenser": dispenser_name,
+            "temperature_regulation": temperature_regulation,
+        },
+        status=status.HTTP_200_OK,
+    )
 
-        # Validate dispenser_name presence
-        if dispenser_name is None:
-            return Response(
-                {"error": "dispenser_name is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
-        # Turn on the tap
-        _, _, error = send_set_command(
-            dispenser_name,
-            "pump",
-            20,  # max time
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def turn_on_tap(request):
+    dispenser_name = request.data.get("dispenser_name")
+
+    # Validate dispenser_nme presence
+    if dispenser_name is None:
+        return Response(
+            {"error": "dispenser_name is required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-        # Handle potential error from send_set_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Turn on the tap
+    _, _, error = send_set_command(
+        dispenser_name,
+        "pump",
+        20,  # max time
+    )
 
-        # Read Thermos weight
-        response_data = {}
-        resp_data, _, error = send_get_command(
-            dispenser_name,
-            "thermos_weight",
-        )
+    # Handle potential error from send_set_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Handle potential error from send_get_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Read Thermos weight
+    response_data = {}
+    resp_data, _, error = send_get_command(
+        dispenser_name,
+        "thermos_weight",
+    )
 
-        # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
-        response_data["initialWeight"] = resp_data["thermos_weight"] * 10
+    # Handle potential error from send_get_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        print(f"Tap turned on for dispenser: {dispenser_name}, Initial weight: {response_data['initialWeight']}")
+    # Prepare successful response
 
-        return Response(response_data, status=status.HTTP_200_OK)
+    response_data["dispenser"] = resp_data["dispenser"]
+    response_data["initialWeight"] = resp_data["thermos_weight"] * 10
+
+    print(f"Tap turned on for dispenser: {dispenser_name}, Initial weight: {response_data['initialWeight']}")
+
+    return Response(response_data, status=status.HTTP_200_OK)
 
 
 class TurnOffTapDispenserView(views.APIView):

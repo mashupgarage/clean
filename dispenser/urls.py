@@ -61,17 +61,17 @@ urlpatterns = [
     ),
     path(
         "set-heater/",
-        views.SetHeaterDispenserView.as_view(),
+        views.set_heater,
         name="set_heater",
     ),
     path(
         "set-temp-regulation/",
-        views.SetTempRegulationDispenserView.as_view(),
+        views.set_temp_regulation,
         name="set_temp_regulation",
     ),
     path(
         "turn-on-tap/",
-        views.TurnOnTapDispenserView.as_view(),
+        views.turn_on_tap,
         name="turn_on_tap",
     ),
     path(
