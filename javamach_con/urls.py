@@ -5,7 +5,7 @@ from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
 from rest_framework.routers import DefaultRouter
 
-from dispenser.views import DispenserViewSet, StoreViewSet, VendingMachineViewSet, react_app
+from dispenser.views import DispenserViewSet, StoreViewSet, VendingMachineViewSet, react_app, encrypt_rsa
 
 admin.site.site_header = "Coffee Machine Admin"
 admin.site.index_title = "Admin"
@@ -26,6 +26,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
     path("api/dispenser/", include("dispenser.urls")),
+    path("api/encrypt-rsa/", encrypt_rsa, name="encrypt-rsa"),
     # React app url
     path("", react_app, name="react-app"),
     # Redirect to the React app for all other paths

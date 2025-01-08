@@ -2,8 +2,11 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PaymentItem } from "../components/PaymentItem";
+import { getMenuItems } from "../api/dispenser";
+import { signInToKPay, startTransaction } from "../api/payments";
+import { usePrivKeyStore } from "../hooks/usePrivKeyStore";
 
 const PAYMENT_HEADER = {
   title: "Please choose payment method",
@@ -27,29 +30,94 @@ const OPTION_D = {
   imageUrl: "/media/paywave.png",
 };
 
-export const PaymentPage: React.FC = () => {
+const formatPrice = (price: string) => {
+  // Note: Kpay requires price to be a 12 digit string padded with zeroes
+  const priceInCents = Math.round(Number(price) * 100);
+
+  if (
+    typeof priceInCents !== "number" ||
+    priceInCents < 0 ||
+    isNaN(priceInCents)
+  ) {
+    throw new Error("Invalid price. Must be a positive number.");
+  }
+
+  return priceInCents.toString().padStart(12, "0");
+};
+
+export const PaymentPage = () => {
   const { item, size } = useParams();
   const [visible, setVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
   const [option, setOption] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
   const navigate = useNavigate();
+  const updatePrivKey = usePrivKeyStore((state) => state.updatePrivKey);
+  const privKey = usePrivKeyStore((state) => state.privKey);
+
+  useEffect(() => {
+    if (!item || !size) return; // Todo: add error catching
+
+    console.log(privKey);
+    const fetchMenuItems = async () => {
+      const dispensers = await getMenuItems();
+      const dispenser = dispensers.find((dispenser) => dispenser.name === item);
+
+      if (!dispenser) {
+        return;
+      }
+      const price =
+        size === "Small" ? dispenser.price_small : dispenser.price_large;
+
+      setPrice(formatPrice(price));
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const showPaymentModal = () => {
-    setLoadingVisible(true);
-    setTimeout(() => {
-      setLoadingVisible(false);
-      setVisible(true);
-    }, 2000);
+    // Start Transaction
+    console.log("showpaymentmodal and startTransaction");
 
-    setTimeout(() => {
-      setVisible(false);
-      navigate(`/${item}/${size}/detect-cup`);
-    }, 4000);
+    // Turn this into a hook that is called whenever a transaction fails
+    signInToKPay().then((data) => {
+      const privKey = data.data.appPrivateKey;
+      updatePrivKey(privKey);
+    });
+
+    startTransaction(
+      {
+        payAmount: price,
+        payCurrency: "344",
+        outTradeNo: "1234567890",
+        // tipsAmount: "000000000000",
+        paymentType: 1,
+        // callbackUrl: "http://192.168.8.39:18080",
+      },
+      privKey,
+    ).then((data) => {
+      setLoadingVisible(true);
+      console.log(data);
+
+      if (data) {
+        setTimeout(() => {
+          setLoadingVisible(false);
+          setVisible(true);
+        }, 2000);
+
+        setTimeout(() => {
+          setVisible(false);
+          navigate(`/${item}/${size}/detect-cup`);
+        }, 4000);
+      }
+    });
   };
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
       <Portal>
+        {/* Loading modal */}
+        {/* Note: User needs to pay on the KPay terminal to proceed */}
         <Modal
           visible={loadingVisible}
           onDismiss={() => setLoadingVisible(false)}
@@ -58,6 +126,8 @@ export const PaymentPage: React.FC = () => {
         >
           <ActivityIndicator animating={loadingVisible} size={"large"} />
         </Modal>
+
+        {/* Success modal */}
         <Modal
           visible={visible}
           onDismiss={() => setVisible(false)}
@@ -74,7 +144,9 @@ export const PaymentPage: React.FC = () => {
           </div>
         </Modal>
       </Portal>
+
       <Header {...PAYMENT_HEADER} />
+
       <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
         <PaymentItem
           {...OPTION_A}

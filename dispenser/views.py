@@ -1,13 +1,24 @@
 # dispenser\views.py
 import datetime
+import json
 import logging
 import random
+import secrets
+import string
+import time
+import base64
 from decimal import Decimal
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.backends import default_backend
+
 
 import requests
 from django.apps import apps
 from django.conf import settings
+from django.http import JsonResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, views, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ValidationError
@@ -1181,3 +1192,66 @@ from django.http import JsonResponse
 
 def get_react_config(request):
     return JsonResponse(settings.REACT_CONFIG)
+
+@csrf_exempt
+def encrypt_rsa(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            # Generate a random nonce
+            def generate_nonce(length=32):
+                characters = string.ascii_letters + string.digits
+                return ''.join(secrets.choice(characters) for _ in range(length))
+            
+            nonceStr = generate_nonce()
+            timestamp = str(int(time.time() * 1000))
+
+            signatureString = f"POST\n/v1/pos/sales\n{timestamp}\n{nonceStr}\n{data['body']}\n"
+
+            priv_key_pem = data.get("privKey")
+            if not priv_key_pem:
+                return JsonResponse({"error": "Private key not provided"}, status=400)
+
+            priv_key_pem = priv_key_pem.strip()
+            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+
+            # Load the private key
+            private_key = serialization.load_pem_private_key(
+                priv_key_pem.encode(),
+                password=None,
+                backend=default_backend(),
+            )
+            
+            # Sign the signature string with RSA SHA256 PKCS1v15 using the private key
+            signature = private_key.sign(
+                signatureString.encode(),
+                padding.PKCS1v15(),
+                hashes.SHA256()
+            )
+ 
+            # Base64 encode the signature
+            signature = base64.b64encode(signature).decode("utf-8")
+ 
+            headers = {
+              "appId": data["appId"],
+              "nonceStr": nonceStr,
+              "timestamp": timestamp,
+              "signature": signature,
+              "Content-Type": "application/json",
+            }
+            
+            print(data["endpoint"])
+            print(headers)
+            print(signatureString)
+
+            response = requests.post(data["endpoint"], json=eval(data["body"]), headers=headers)
+            print(response.json())
+            
+            return JsonResponse(response.json(), status=response.status_code)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
