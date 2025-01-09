@@ -1,10 +1,5 @@
 import axios from "axios";
-// import queryString from "query-string";
 
-// axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
-// axios.defaults.headers.common["User-Agent"] = "PostmanRuntime/7.42.0";
-
-// const baseUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
 const kPayAppSecret = import.meta.env.VITE_KPAY_APP_SECRET;
 const kPayDeviceUrl = import.meta.env.VITE_KPAY_DEVICE_URL;
 const kPayAppId = `${import.meta.env.VITE_KPAY_APP_ID}`;
@@ -13,10 +8,11 @@ const serverUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
 type TransactionBody = {
   outTradeNo: string; // max 32 chars
   payAmount: string; // 12 chars, i.e. 000000001250 === 12.50
-  tipsAmount?: string; // 12 chars
+  tipsAmount?: string; // 12 chars, NOTE: Optional when in Kiosk Mode
   payCurrency: string; // max 4 chars. NOTE: currently only supports HKD (344)
   memberCode?: string; // max 32 chars
   description?: string; // max 128 chars
+  // note: Only able to use 1,3,7 for API v1
   paymentType?: number; // 1: Card, 2: QR Code positive scan, 3: QR Code reverse scan, 4: Octopus, 5: Octopus QR Code, 6: Payme positive scan, 7: Payme reverse scan
   callbackUrl?: string; // max 256 chars
   qrCodeContent?: string; // max 256 chars
@@ -72,51 +68,19 @@ export const startTransaction = async (
   // Docs are not so clear what the return type for data is
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ code: string; data: any; message: string }> => {
-  // const signWithRSA = async () => {
-  // try {
-  // console.log("Signature String:", signatureString);
   const body = JSON.stringify(transactionBody);
-  const endpoint = `${kPayDeviceUrl}/v1/pos/sales`;
-  const response = await axios.post(`${serverUrl}/api/encrypt-rsa/`, {
-    // signatureString,
+  const endpoint = `/v1/pos/sales`;
+
+  const response = await axios.post(`${serverUrl}/api/sales/`, {
+    kPayDeviceUrl,
     endpoint,
     appId: kPayAppId,
-    // timestamp,
-    // nonceStr,
     body,
-    privKey,
+    privKey, // Transfer to backend later
   });
-  console.log("Encrypted Data:", response.data.signature);
+
   return response.data;
-  // } catch (error) {
-  //   console.log("Encryption error:", error);
-  //   // console.error("Encryption error:", error.response?.data || error.message);
-  // }
 };
-//   console.log(serverUrl, kPayDeviceUrl);
-
-//   // const timestamp = Math.floor(Date.now());
-//   // const nonceStr = Math.random().toString(36).substring(2, 15);
-//   // try generating the nonce & timestamp in the backend
-
-//   // const signatureString = `POST\n/v2/pos/sales\n${timestamp}\n${nonceStr}\n${body}\n`;
-//   const signature = await signWithRSA();
-
-//   console.log(signature);
-
-//   const headers = {
-//     appId: kPayAppId,
-//     signature,
-//     // timestamp: timestamp.toString(), // convert to str as required by API
-//     // nonceStr,
-//   };
-
-//   console.log(headers);
-//   return axios
-//     .post(endpoint, body, { headers })
-//     .then((res) => res.data)
-//     .catch((err) => err.response.data.error);
-// };
 
 // Print Receipt
 // Run this after transaction ??? Automatic??

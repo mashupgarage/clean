@@ -1194,7 +1194,7 @@ def get_react_config(request):
     return JsonResponse(settings.REACT_CONFIG)
 
 @csrf_exempt
-def encrypt_rsa(request):
+def sales(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -1207,7 +1207,7 @@ def encrypt_rsa(request):
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
 
-            signatureString = f"POST\n/v1/pos/sales\n{timestamp}\n{nonceStr}\n{data['body']}\n"
+            signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{data['body']}\n"
 
             priv_key_pem = data.get("privKey")
             if not priv_key_pem:
@@ -1242,12 +1242,9 @@ def encrypt_rsa(request):
               "Content-Type": "application/json",
             }
             
-            print(data["endpoint"])
-            print(headers)
-            print(signatureString)
-
-            response = requests.post(data["endpoint"], json=eval(data["body"]), headers=headers)
-            print(response.json())
+            endpointUrl = data['kPayDeviceUrl'] + data["endpoint"]
+            
+            response = requests.post(endpointUrl, json=eval(data["body"]), headers=headers)
             
             return JsonResponse(response.json(), status=response.status_code)
 

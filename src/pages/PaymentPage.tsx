@@ -90,9 +90,7 @@ export const PaymentPage = () => {
         payAmount: price,
         payCurrency: "344",
         outTradeNo: "1234567890",
-        // tipsAmount: "000000000000",
         paymentType: 1,
-        // callbackUrl: "http://192.168.8.39:18080",
       },
       privKey,
     ).then((data) => {
