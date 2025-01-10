@@ -87,3 +87,24 @@ export const startTransaction = async (
 
 // Query Transaction API
 // Use when transaction takes longer than 65 seconds (?)
+export const queryTransaction = async (
+  outTradeNo: string, // Merchant transaction ID
+  privKey: string, // remove later
+  remote?: boolean,
+  includeReceipt?: boolean,
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<{ code: string; data: any; message: string }> => {
+  const endpoint = `/v1/pos/query`;
+  const response = await axios.post(`${serverUrl}/api/query-transaction/`, {
+    kPayDeviceUrl,
+    endpoint,
+    appId: kPayAppId,
+    privKey, // Transfer to backend later
+    outTradeNo,
+    remote,
+    includeReceipt,
+  });
+
+  return response.data;
+};

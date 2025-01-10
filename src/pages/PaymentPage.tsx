@@ -5,7 +5,11 @@ import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { PaymentItem } from "../components/PaymentItem";
 import { getMenuItems } from "../api/dispenser";
-import { signInToKPay, startTransaction } from "../api/payments";
+import {
+  queryTransaction,
+  signInToKPay,
+  startTransaction,
+} from "../api/payments";
 import { usePrivKeyStore } from "../hooks/usePrivKeyStore";
 
 const PAYMENT_HEADER = {
@@ -13,21 +17,19 @@ const PAYMENT_HEADER = {
 };
 
 const OPTION_A = {
-  imageUrl:
-    "https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png",
+  imageUrl: "/media/paywave.png",
 };
 
 const OPTION_B = {
-  imageUrl:
-    "https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1",
+  imageUrl: "/media/qr.png",
 };
 
 const OPTION_C = {
-  imageUrl: "/media/octopus.png",
+  imageUrl: "/media/scan.png",
 };
 
 const OPTION_D = {
-  imageUrl: "/media/paywave.png",
+  imageUrl: "/media/PayMe-Icon-Logo.wine.svg",
 };
 
 const formatPrice = (price: string) => {
@@ -89,8 +91,10 @@ export const PaymentPage = () => {
       {
         payAmount: price,
         payCurrency: "344",
-        outTradeNo: "1234567890",
-        paymentType: 1,
+        outTradeNo: "9876543225",
+        paymentType: 2,
+        callbackUrl:
+          "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
       },
       privKey,
     ).then((data) => {
@@ -109,6 +113,8 @@ export const PaymentPage = () => {
         }, 4000);
       }
     });
+
+    queryTransaction("98765443217", privKey);
   };
 
   return (
@@ -151,7 +157,7 @@ export const PaymentPage = () => {
           stateSelection={option}
           setStateSelection={setOption}
           selection="a"
-          containerStyles="bg-[#22AC38]"
+          // containerStyles="bg-[#22AC38]"
         />
         <PaymentItem
           {...OPTION_B}
@@ -170,7 +176,7 @@ export const PaymentPage = () => {
           stateSelection={option}
           setStateSelection={setOption}
           selection="d"
-          containerStyles="p-4"
+          // containerStyles="p-4"
         />
       </div>
       <Footer

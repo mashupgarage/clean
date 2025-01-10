@@ -11,6 +11,7 @@ from decimal import Decimal
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
+from urllib.parse import urlencode, urljoin
 
 
 import requests
@@ -1203,7 +1204,7 @@ def sales(request):
             def generate_nonce(length=32):
                 characters = string.ascii_letters + string.digits
                 return ''.join(secrets.choice(characters) for _ in range(length))
-            
+
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
 
@@ -1245,6 +1246,79 @@ def sales(request):
             endpointUrl = data['kPayDeviceUrl'] + data["endpoint"]
             
             response = requests.post(endpointUrl, json=eval(data["body"]), headers=headers)
+            
+            return JsonResponse(response.json(), status=response.status_code)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+## QUERY TRANSACTION
+@csrf_exempt
+def query_transaction(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            # Generate a random nonce
+            def generate_nonce(length=32):
+                characters = string.ascii_letters + string.digits
+                return ''.join(secrets.choice(characters) for _ in range(length))
+            
+            nonceStr = generate_nonce()
+            timestamp = str(int(time.time() * 1000))
+            outTradeNo = data.get("outTradeNo")
+            remote = data.get("remote")
+            includeReceipt = data.get("includeReceipt")
+ 
+            params = {
+                "outTradeNo": outTradeNo,
+                "remote": remote,
+                "includeReceipt": includeReceipt,
+            }
+            filtered_params = {key: value for key, value in params.items() if value is not None}
+            
+            params_string = urlencode(filtered_params)
+            endpoint_with_params = f"{data['endpoint']}?{params_string}"
+            
+            signatureString = f"GET\n{endpoint_with_params}\n{timestamp}\n{nonceStr}\n"
+
+            priv_key_pem = data.get("privKey")
+            if not priv_key_pem:
+                return JsonResponse({"error": "Private key not provided"}, status=400)
+
+            priv_key_pem = priv_key_pem.strip()
+            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+
+            # Load the private key
+            private_key = serialization.load_pem_private_key(
+                priv_key_pem.encode(),
+                password=None,
+                backend=default_backend(),
+            )
+            
+            # Sign the signature string with RSA SHA256 PKCS1v15 using the private key
+            signature = private_key.sign(
+                signatureString.encode(),
+                padding.PKCS1v15(),
+                hashes.SHA256()
+            )
+ 
+            # Base64 encode the signature
+            signature = base64.b64encode(signature).decode("utf-8")
+ 
+            headers = {
+              "appId": data["appId"],
+              "nonceStr": nonceStr,
+              "timestamp": timestamp,
+              "signature": signature,
+            }
+            
+            endpointUrl = urljoin(data['kPayDeviceUrl'], endpoint_with_params)
+            
+            response = requests.get(endpointUrl, headers=headers)
             
             return JsonResponse(response.json(), status=response.status_code)
 
