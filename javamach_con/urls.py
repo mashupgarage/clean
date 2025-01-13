@@ -24,6 +24,7 @@ router.register(r"dispensers", DispenserViewSet, basename="dispenser")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("o/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("api/", include(router.urls)),
     path("api/dispenser/", include("dispenser.urls")),
     # React app url

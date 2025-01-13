@@ -9,10 +9,13 @@ from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import status, views, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
+from rest_framework.permissions import IsAuthenticated
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from oauth2_provider.models import Application
 
 from dispenser.models import Dispenser, Store, VendingMachine
 
@@ -25,11 +28,15 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def dispenser_periodic_task(request):
     # logger.info("Running temperature and thermos weight monitoring task...")
     print("Running temperature and thermos weight monitoring task...")
 
     try:
+        user = request.user
+        token = refresh_access_token(user)
         dispenser_controller = apps.get_app_config("dispenser").dispenser_controller
         dispensers = Dispenser.objects.all()
 
@@ -94,12 +101,28 @@ def dispenser_periodic_task(request):
 
         # logger.info("Temperature and weight monitoring task completed")
         print("Temperature and weight monitoring task completed")
-        return Response({"status": "Task completed successfully"}, status=status.HTTP_200_OK)
+        return Response({"status": "Task completed successfully", "token": token.token}, status=status.HTTP_200_OK)
 
     except Exception as e:
         # logger.error(f"Unexpected error: {str(e)}")
         print(f"Unexpected error: {str(e)}")
         return Response({"error": "Unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def refresh_access_token(user):
+    from oauth2_provider.models import AccessToken
+    from datetime import timedelta
+    from django.utils import timezone
+    from oauthlib.common import generate_token
+
+    application = Application.objects.get(name="clean")
+    token = AccessToken.objects.create(
+        user=user,
+        scope='read write',
+        expires=timezone.now() + timedelta(seconds=settings.OAUTH2_PROVIDER['ACCESS_TOKEN_EXPIRE_SECONDS']),
+        token=generate_token(),
+        application=application
+    )
+    return token
 
 
 def check_and_notify_weight(dispenser):
@@ -201,6 +224,8 @@ def send_notification(notification_data):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def report_transaction(request):
     try:
         # Extract the transaction data from the request
@@ -256,6 +281,8 @@ class VendingMachineViewSet(viewsets.ModelViewSet):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_vending_machine_appearance(request):
     try:
         vending_machine = VendingMachine.objects.first()
@@ -269,6 +296,8 @@ def get_vending_machine_appearance(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_machine_status(request):
     try:
         machine = VendingMachine.objects.first()  # Assuming there's only one machine record
@@ -284,6 +313,8 @@ def get_machine_status(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def update_machine_status(request):
     try:
         machine = VendingMachine.objects.first()  # Assuming there's only one machine record
@@ -324,6 +355,8 @@ def update_machine_status(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_lock_state(request):
     try:
         machine = VendingMachine.objects.first()
@@ -336,6 +369,8 @@ def get_lock_state(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_lock_state(request):
     try:
         machine = VendingMachine.objects.first()
@@ -354,6 +389,8 @@ def set_lock_state(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_pin_code(request):
     try:
         machine = VendingMachine.objects.first()
@@ -372,6 +409,8 @@ def set_pin_code(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def verify_pin_code(request):
     try:
         machine = VendingMachine.objects.first()
@@ -393,6 +432,8 @@ def verify_pin_code(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def vending_machine_list(request):
     # Only authenticated users can access this viewset
     # permission_classes = [IsAuthenticated]
@@ -425,6 +466,7 @@ def vending_machine_list(request):
 class DispenserViewSet(viewsets.ModelViewSet):
     queryset = Dispenser.objects.all()
     serializer_class = DispenserSerializer
+    permission_classes = [IsAuthenticated]
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -483,194 +525,202 @@ def handle_cleaner_mode(dispenser, mode):
 #     return False, {"error": error}
 
 
-class CleanDispenserView(views.APIView):
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def clean_dispenser(request):
+    dispenser_name = request.data.get("dispenser_name")
+    mode = request.data.get("mode")
 
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        mode = request.data.get("mode")
+    if not dispenser_name or mode is None:
+        return Response({"error": "dispenser_name and mode are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not dispenser_name or mode is None:
-            return Response({"error": "dispenser_name and mode are required"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        dispenser = Dispenser.objects.get(name=dispenser_name)
+    except Dispenser.DoesNotExist:
+        return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        try:
-            dispenser = Dispenser.objects.get(name=dispenser_name)
-        except Dispenser.DoesNotExist:
-            return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
+    success, response_data = handle_cleaner_mode(dispenser, mode)
+    if success:
+        return Response(response_data, status=status.HTTP_200_OK)
+    else:
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
-        success, response_data = handle_cleaner_mode(dispenser, mode)
-        if success:
-            return Response(response_data, status=status.HTTP_200_OK)
-        else:
-            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def set_heater(request):
+    dispenser_name = request.data.get("dispenser_name")
+    heater_status = request.data.get("heater_status")
 
+    print(f"dispenser_name: {dispenser_name}, heater_status: {heater_status}")
 
-class SetHeaterDispenserView(views.APIView):
-
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        heater_status = request.data.get("heater_status")
-
-        print(f"dispenser_name: {dispenser_name}, heater_status: {heater_status}")
-
-        if not dispenser_name or heater_status is None:
-            return Response(
-                {"error": "dispenser_name and heater_status are required"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            dispenser = Dispenser.objects.get(name=dispenser_name)
-        except Dispenser.DoesNotExist:
-            return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        heater_strength = 0
-        if heater_status:
-            heater_strength = 3
-            dispenser.heater_strength = heater_strength
-            dispenser.heater_status = heater_status
-            dispenser.save()
-
-        else:
-            dispenser.heater_strength = 0
-            dispenser.heater_status = heater_status
-            dispenser.save()
-
-        response_data, response_status, error = send_set_command(
-            dispenser_name,
-            "heater",
-            heater_strength,
+    if not dispenser_name or heater_status is None:
+        return Response(
+            {"error": "dispenser_name and heater_status are required"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-        print(f"response_data: {response_data}, response_status: {response_status}, error: {error}")
+    try:
+        dispenser = Dispenser.objects.get(name=dispenser_name)
+    except Dispenser.DoesNotExist:
+        return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if response_data is not None:
-            return Response(response_data, status=response_status)
-        else:
-            return Response({"error": error}, status=response_status)
-
-
-class SetTempRegulationDispenserView(views.APIView):
-
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        temperature_regulation = request.data.get("temperature_regulation")
-
-        if not dispenser_name or temperature_regulation is None:
-            return Response(
-                {"error": "dispenser_name, temperature_regulation are required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            dispenser = Dispenser.objects.get(name=dispenser_name)
-        except Dispenser.DoesNotExist:
-            return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        dispenser.temperature_regulation = temperature_regulation
+    heater_strength = 0
+    if heater_status:
+        heater_strength = 3
+        dispenser.heater_strength = heater_strength
+        dispenser.heater_status = heater_status
         dispenser.save()
 
+    else:
+        dispenser.heater_strength = 0
+        dispenser.heater_status = heater_status
+        dispenser.save()
+
+    response_data, response_status, error = send_set_command(
+        dispenser_name,
+        "heater",
+        heater_strength,
+    )
+
+    print(f"response_data: {response_data}, response_status: {response_status}, error: {error}")
+
+    if response_data is not None:
+        return Response(response_data, status=response_status)
+    else:
+        return Response({"error": error}, status=response_status)
+
+
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def set_temp_regulation(request):
+    dispenser_name = request.data.get("dispenser_name")
+    temperature_regulation = request.data.get("temperature_regulation")
+
+    if not dispenser_name or temperature_regulation is None:
         return Response(
-            {
-                "dispenser": dispenser_name,
-                "temperature_regulation": temperature_regulation,
-            },
-            status=status.HTTP_200_OK,
+            {"error": "dispenser_name, temperature_regulation are required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
+    try:
+        dispenser = Dispenser.objects.get(name=dispenser_name)
+    except Dispenser.DoesNotExist:
+        return Response({"error": "Dispenser not found"}, status=status.HTTP_404_NOT_FOUND)
 
-class TurnOnTapDispenserView(views.APIView):
+    dispenser.temperature_regulation = temperature_regulation
+    dispenser.save()
 
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
+    return Response(
+        {
+            "dispenser": dispenser_name,
+            "temperature_regulation": temperature_regulation,
+        },
+        status=status.HTTP_200_OK,
+    )
 
-        # Validate dispenser_name presence
-        if dispenser_name is None:
-            return Response(
-                {"error": "dispenser_name is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
-        # Turn on the tap
-        _, _, error = send_set_command(
-            dispenser_name,
-            "pump",
-            20,  # max time
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def turn_on_tap(request):
+    dispenser_name = request.data.get("dispenser_name")
+
+    # Validate dispenser_nme presence
+    if dispenser_name is None:
+        return Response(
+            {"error": "dispenser_name is required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-        # Handle potential error from send_set_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Turn on the tap
+    _, _, error = send_set_command(
+        dispenser_name,
+        "pump",
+        20,  # max time
+    )
 
-        # Read Thermos weight
-        response_data = {}
-        resp_data, _, error = send_get_command(
-            dispenser_name,
-            "thermos_weight",
+    # Handle potential error from send_set_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Read Thermos weight
+    response_data = {}
+    resp_data, _, error = send_get_command(
+        dispenser_name,
+        "thermos_weight",
+    )
+
+    # Handle potential error from send_get_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Prepare successful response
+
+    response_data["dispenser"] = resp_data["dispenser"]
+    response_data["initialWeight"] = resp_data["thermos_weight"] * 10
+
+    print(f"Tap turned on for dispenser: {dispenser_name}, Initial weight: {response_data['initialWeight']}")
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
+def turn_off_tap(request):
+    dispenser_name = request.data.get("dispenser_name")
+    response_data = {}
+
+    # Validate dispenser_name presence
+    if dispenser_name is None:
+        return Response(
+            {"error": "dispenser_name is required"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-        # Handle potential error from send_get_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Turn off the tap
+    _, _, error = send_set_command(
+        dispenser_name,
+        "pump",
+        0,  # 0 time to turn off
+    )
 
-        # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
-        response_data["initialWeight"] = resp_data["thermos_weight"] * 10
+    # Handle potential error from send_set_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        print(f"Tap turned on for dispenser: {dispenser_name}, Initial weight: {response_data['initialWeight']}")
+    # Read Thermos weight
+    resp_data, _, error = send_get_command(
+        dispenser_name,
+        "thermos_weight",
+    )
+    # print(f"resp_data: {resp_data}")
+    # - Response data: {'dispenser': 'Tap-B', 'thermos_weight': 541}
 
-        return Response(response_data, status=status.HTTP_200_OK)
+    # Handle potential error from send_get_command
+    if error:
+        response_data["error"] = error
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # Prepare successful response
+    response_data["dispenser"] = resp_data["dispenser"]
+    response_data["finalWeight"] = resp_data["thermos_weight"] * 10
 
-class TurnOffTapDispenserView(views.APIView):
-    def post(self, request, *args, **kwargs):
-        dispenser_name = request.data.get("dispenser_name")
-        response_data = {}
+    print(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
 
-        # Validate dispenser_name presence
-        if dispenser_name is None:
-            return Response(
-                {"error": "dispenser_name is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Turn off the tap
-        _, _, error = send_set_command(
-            dispenser_name,
-            "pump",
-            0,  # 0 time to turn off
-        )
-
-        # Handle potential error from send_set_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        # Read Thermos weight
-        resp_data, _, error = send_get_command(
-            dispenser_name,
-            "thermos_weight",
-        )
-        # print(f"resp_data: {resp_data}")
-        # - Response data: {'dispenser': 'Tap-B', 'thermos_weight': 541}
-
-        # Handle potential error from send_get_command
-        if error:
-            response_data["error"] = error
-            return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
-        response_data["finalWeight"] = resp_data["thermos_weight"] * 10
-
-        print(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
-
-        return Response(response_data, status=status.HTTP_200_OK)
-        # Optional: Add logging for debugging
-        # logger.info(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
+    return Response(response_data, status=status.HTTP_200_OK)
+    # Optional: Add logging for debugging
+    # logger.info(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_menu_items(request):
     dispensers = Dispenser.objects.all()
     serializer = MenuItemSerializer(dispensers, many=True, context={"request": request})
@@ -683,6 +733,8 @@ Emulated = settings.DISPENSER_EMULATED
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def dispenser_test(request):
     # Create a DispenserController object with the correct serial port
     # dispenser_controller = DispenserController("COM5")
@@ -728,6 +780,8 @@ def dispenser_test(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def check_cup_presence(request):
     # Get the dispenser name from the request
     dispenser = request.GET.get("dispenser", default="Tap-A")
@@ -765,6 +819,8 @@ def check_cup_presence(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_temperature(request):
     # Get the dispenser name from the request
     dispenser_name = request.GET.get("dispenser", default="Tap-A")
@@ -808,6 +864,8 @@ def get_temperature(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_thermos_weight(request):
     # Get the dispenser name from the request
     dispenser = request.GET.get("dispenser", default="Tap-A")
@@ -833,6 +891,8 @@ def get_thermos_weight(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_heater(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     strength = request.GET.get("strength", default="1")
@@ -852,6 +912,8 @@ def set_heater(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_heater(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     duration = request.GET.get("duration", default="5")
@@ -871,6 +933,8 @@ def set_heater(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_cleaner(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     mode = request.GET.get("mode", default="10")
@@ -900,6 +964,8 @@ def set_cleaner(request):
 
 
 @api_view(["PUT"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def set_pump(request):
     dispenser = request.GET.get("dispenser", default="Tap-A")
     duration = request.GET.get("duration", default="10")
@@ -919,6 +985,8 @@ def set_pump(request):
 
 
 @api_view(["GET"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def get_version(request):
     response_data = {}
 
@@ -1070,6 +1138,8 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def start_drink_dispensing(request):
     dispenser_name = request.GET.get("dispenser", default="Tap-A")
     drink_size = request.GET.get("size", default="Small").capitalize()
@@ -1130,6 +1200,8 @@ def start_drink_dispensing(request):
 
 
 @api_view(["POST"])
+@authentication_classes([OAuth2Authentication])
+@permission_classes([IsAuthenticated])
 def stop_drink_dispensing(request):
     dispenser_name = request.GET.get("dispenser", default="Tap-A")
 
