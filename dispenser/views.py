@@ -1204,6 +1204,43 @@ def sales(request):
             def generate_nonce(length=32):
                 characters = string.ascii_letters + string.digits
                 return ''.join(secrets.choice(characters) for _ in range(length))
+                        
+          # Generate 8 digit random order IDs. Needs to be queried against existing IDs.
+            def generate_order_id(length=8):
+                # Define allowed characters: uppercase letters excluding 'O' + digits
+                allowed_characters = string.ascii_uppercase.replace("0", "") + string.digits
+
+                # Generate a random ID of the specified length
+                random_id = ''.join(random.choices(allowed_characters, k=length))
+                return random_id
+
+
+            def generate_unique_order_id():
+                while True:
+                    # Generate a new order ID
+                    order_id = generate_order_id()
+
+                    # Send a GET request to check if the order ID exists
+                    response = requests.get(
+                        "http://54.312.insert_endpoint_here",
+                        params={"transactionId": order_id},
+                        timeout=10 # add a timeout to prevent hanging
+                    )
+
+                    # Check the response to see if the order ID exists
+                    if response.status_code == 200:
+                        data = response.json()  # Assuming the response is JSON
+                        if not data.get("exists", False):  # Replace 'exists' with the correct key
+                            print(f"Unique Order ID found: {order_id}")
+                            return order_id
+                    else:
+                        print(f"Error checking order ID: {response.status_code}")
+                        # Optionally handle errors or retry logic
+
+            # Example usage
+            unique_order_id = generate_unique_order_id()
+            print("Generated Unique Order ID:", unique_order_id)
+            
 
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
