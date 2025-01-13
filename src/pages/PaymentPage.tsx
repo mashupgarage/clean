@@ -18,10 +18,13 @@ const PAYMENT_HEADER = {
 
 const OPTION_A = {
   imageUrl: "/media/paywave.png",
+  selection: "paywave",
+  title: "Pay with Card",
 };
 
 const OPTION_B = {
   imageUrl: "/media/qr.png",
+  title: "Pay with QR Code",
 };
 
 const OPTION_C = {
@@ -156,7 +159,6 @@ export const PaymentPage = () => {
           {...OPTION_A}
           stateSelection={option}
           setStateSelection={setOption}
-          selection="a"
           // containerStyles="bg-[#22AC38]"
         />
         <PaymentItem
@@ -170,13 +172,14 @@ export const PaymentPage = () => {
           stateSelection={option}
           setStateSelection={setOption}
           selection="c"
+          disabled
         />
         <PaymentItem
           {...OPTION_D}
           stateSelection={option}
           setStateSelection={setOption}
           selection="d"
-          // containerStyles="p-4"
+          disabled
         />
       </div>
       <Footer
