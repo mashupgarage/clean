@@ -3,11 +3,10 @@ import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
-import { Item } from "../components/Item";
+import { PaymentItem } from "../components/PaymentItem";
 
 const PAYMENT_HEADER = {
-  line1: "Please choose payment method",
-  line2: "請選擇付款方式",
+  title: "Please choose payment method",
 };
 
 const OPTION_A = {
@@ -20,9 +19,16 @@ const OPTION_B = {
     "https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1",
 };
 
+const OPTION_C = {
+  imageUrl: "/media/octopus.png",
+};
+
+const OPTION_D = {
+  imageUrl: "/media/paywave.png",
+};
+
 export const PaymentPage: React.FC = () => {
   const { item, size } = useParams();
-  console.dir({ item, size });
   const [visible, setVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
   const [option, setOption] = useState<string>("");
@@ -37,12 +43,12 @@ export const PaymentPage: React.FC = () => {
 
     setTimeout(() => {
       setVisible(false);
-      navigate(`/${item}/size/${size}/detect-cup`);
+      navigate(`/${item}/${size}/detect-cup`);
     }, 4000);
   };
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
       <Portal>
         <Modal
           visible={loadingVisible}
@@ -58,39 +64,50 @@ export const PaymentPage: React.FC = () => {
           dismissable={false}
           contentContainerStyle={{ height: "100%" }}
         >
-          <div className="m-auto rounded-xl bg-white px-20 py-10 text-3xl font-semibold text-blue-500">
-            Payment Successful!
+          <div className="m-auto flex flex-col gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl">
+            <div className="text-3xl font-extrabold text-emerald-600">
+              Payment Successful
+            </div>
+            <div className="text-2xl font-semibold text-slate-600">
+              We will be dispensing your drink shortly
+            </div>
           </div>
         </Modal>
       </Portal>
-
       <Header {...PAYMENT_HEADER} />
-
-      <div className="flex h-full flex-row items-center justify-center">
-        {/* <ImgButton
-          onClick={showPaymentModal}
-          imageSrc="https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png"
-        />
-        <ImgButton
-          onClick={showPaymentModal}
-          imageSrc="https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1"
-        /> */}
-
-        <Item
+      <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
+        <PaymentItem
           {...OPTION_A}
           stateSelection={option}
           setStateSelection={setOption}
           selection="a"
+          containerStyles="bg-[#22AC38]"
         />
-        <Item
+        <PaymentItem
           {...OPTION_B}
           stateSelection={option}
           setStateSelection={setOption}
           selection="b"
         />
+        <PaymentItem
+          {...OPTION_C}
+          stateSelection={option}
+          setStateSelection={setOption}
+          selection="c"
+        />
+        <PaymentItem
+          {...OPTION_D}
+          stateSelection={option}
+          setStateSelection={setOption}
+          selection="d"
+          containerStyles="p-4"
+        />
       </div>
-
-      <Footer nextProps={{ disabled: !option }} onClick={showPaymentModal} />
+      <Footer
+        cancelButton={true}
+        nextProps={{ disabled: !option }}
+        onClick={showPaymentModal}
+      />
     </div>
   );
 };

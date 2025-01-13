@@ -1,42 +1,218 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  checkCupPresence,
+  setPump,
+  startDrinkDispensing,
+  stopDrinkDispensing,
+} from "../api/dispenser";
 import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
-import { useParams } from "react-router-dom";
+import { CountdownTimer } from "../components/CountdownTimer";
+import { ProgressBar } from "../components/ProgressBar";
+import { Portal } from "react-native-paper";
+import { WarningModal } from "../components/WarningModal";
+import { ErrorModal } from "../components/ErrorModal";
 
 const DISPENSING_HEADER = {
-  line1: "Please hold your cup under the tap",
-  line2: "請將杯放在感應掣上",
+  title: "Please do not remove the cup until pouring is complete",
 };
 
-// const TIME = 10; Variable timer depending on the cup size
-
-export const DispensingPage: React.FC = () => {
+export const DispensingPage = () => {
+  const navigate = useNavigate();
   const { item, size } = useParams();
-  console.log(
-    `SELECTED ITEM: ${item?.toUpperCase()} SELECTED SIZE: ${size?.toUpperCase()}`,
-  );
+  const [dispenseTime, setDispenseTime] = useState<number>();
+  const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
+  const [visibleError, setVisibleError] = useState<boolean>(false);
+  const [isDispensing, setIsDispensing] = useState<boolean>();
 
-  const DISPENSING_TEXT = {
-    label1: "Do not remove the cup until pouring is completed",
-    label2: "在倒飲品完之前，不要取出杯子",
+  useEffect(() => {
+    if (!item || !size) return; // Todo: add error catching
+
+    // On page load, set initial dispense time based on drink size
+    startDrinkDispensing(item, size).then((data) => {
+      console.log(size, "drink dispensing for", data?.dispense_time, "seconds");
+      setDispenseTime(data?.dispense_time);
+
+      // Update state to start detecting cup
+      setIsDispensing(true);
+    });
+  }, []);
+
+  // When isDispensing state is updated, start checking for cup presence
+  useEffect(() => {
+    if (!item || !size || !dispenseTime || !isDispensing) return;
+
+    // Start timer to navigate to thank you page when dispense done
+    const timer = setTimeout(() => {
+      // Stop dispensing when dispense time has been consumed
+      console.log("Dispensing completed");
+      clearInterval(interval);
+      navigate(`/${item}/${size}/thank-you`);
+
+      return () => clearTimeout(timer);
+    }, dispenseTime * 1000);
+
+    // Get start time
+    const startTime = new Date().getTime();
+
+    // Start detecting for cup presence in 1 second intervals
+    const interval = setInterval(() => {
+      if (!item || !dispenseTime) console.log("no item or dispense time");
+
+      console.log("checking for cup presence started");
+      checkCupPresence(item).then((data) => {
+        // If cup is missing: stop dispensing, record remaining time, trigger countdown
+        if (data?.cup_status === 0) {
+          clearInterval(interval);
+          clearTimeout(timer);
+
+          // Stop tap from dispensing
+          stopDrinkDispensing(item);
+          setVisibleWarning(true);
+
+          // Get time elapsed in seconds rounded down
+          const timeElapsed = Math.ceil(
+            (new Date().getTime() - startTime) / 1000,
+          );
+
+          // Stop dispensing when cup removed and less than 1 second remaining
+          if (dispenseTime - timeElapsed < 1) {
+            console.log("Dispensing completed early");
+            return navigate(`/${item}/${size}/thank-you`);
+          }
+
+          console.log("dispensing stopped after", timeElapsed, "seconds");
+          console.log(dispenseTime - timeElapsed, "seconds remaining");
+
+          // Reduce duration of subsequent dispenses
+          setDispenseTime(dispenseTime - timeElapsed);
+          setIsDispensing(false);
+
+          // Start 15 second countdown to detect cup
+          return startRetryCountdown(item);
+        }
+      });
+
+      return () => clearInterval(interval);
+    }, 1000);
+  }, [isDispensing]);
+
+  const startRetryCountdown = (item: string) => {
+    if (!item || !dispenseTime) return; // Todo: add error catching
+    const timer = setTimeout(() => {
+      // Show error modal after 15 seconds of not detecting cup
+      // TODO: Check later if needed to have a timeout to return to home page
+      setVisibleWarning(false);
+      setVisibleError(true);
+
+      return () => clearTimeout(timer);
+    }, 15000);
+
+    // Try to detect cup every second for 15 seconds
+    const interval = setInterval(() => {
+      checkCupPresence(item).then((data) => {
+        if (data?.cup_status === 2) {
+          console.log("Cup detected again, attempting to dispense...");
+          clearTimeout(timer);
+          clearInterval(interval);
+          setVisibleWarning(false);
+
+          setPump(item, dispenseTime).then((data) => {
+            // If first attempt fails, retry dispensing once
+            if (data.status !== "success") {
+              console.log("First attempt failed, retrying...");
+
+              setPump(item, dispenseTime).then((data) => {
+                if (data.status !== "success") {
+                  console.log("Retry attempt failed.");
+
+                  setVisibleError(true);
+                }
+                if (data.status === "success") {
+                  console.log("Dispensing re-started");
+                  clearTimeout(timer);
+                  setIsDispensing(true);
+                }
+              });
+            }
+
+            if (data.status === "success") {
+              console.log("Dispensing re-started");
+              clearTimeout(timer);
+              // Update state to start detecting cup
+              setIsDispensing(true);
+            }
+          });
+        }
+      });
+
+      return () => clearInterval(interval);
+    }, 1000);
   };
 
   return (
     <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+      <Portal>
+        <WarningModal
+          visible={visibleWarning}
+          header="Warning: Cup has been removed"
+          subheader="Your order has not been completed. To continue, please place your cup under the tap within 15 seconds."
+          duration={15}
+        />
+        <ErrorModal
+          visible={visibleError}
+          onClick={() => navigate("/")}
+          header="Error: Cup has been removed"
+          subheader="Your order could not be completed. Please contact a staff member for assistance."
+          transactionId="987654321"
+        />
+      </Portal>
+
       <Header {...DISPENSING_HEADER} />
 
-      <div className="m-auto flex h-2/3 w-1/3 flex-col items-center justify-center gap-5">
-        <div className="flex w-full flex-col gap-2 rounded-3xl bg-[rgb(130,166,125)] p-9 text-center text-5xl font-bold uppercase leading-[1.1] text-slate-100">
-          <div>{DISPENSING_TEXT.label1}</div>
-          <div>{DISPENSING_TEXT.label2}</div>
-        </div>
+      <div className="flex h-full flex-col items-center">
+        {item === "Tap-A" ? (
+          <div
+            className="relative m-10 mb-20 flex w-[650px]"
+            onClick={() => navigate(`/${item}/${size}/thank-you`)}
+          >
+            <img src="/media/pour.png" className="size-full object-contain" />
+          </div>
+        ) : (
+          <div
+            className="relative m-10 mb-20 flex w-[650px]"
+            onClick={() => navigate(`/${item}/${size}/thank-you`)}
+          >
+            <img
+              src="/media/pour.png"
+              className="size-full -scale-x-100 object-contain"
+            />
+          </div>
+        )}
 
-        {/* TODO: Replace placeholder progress bar */}
-        <div className="w-full rounded-3xl bg-black px-4 py-2 text-center text-5xl font-bold uppercase leading-tight text-slate-100">
-          0%
+        <div className="flex flex-col gap-6">
+          {!dispenseTime && !isDispensing && (
+            <>
+              <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200 shadow-inner" />
+              <div className="text-center text-4xl font-bold text-slate-600">
+                Please Standby
+              </div>
+            </>
+          )}
+
+          {dispenseTime && isDispensing && (
+            <>
+              <ProgressBar duration={dispenseTime} />
+              <CountdownTimer isDispensingPage duration={dispenseTime} />
+            </>
+          )}
+          {dispenseTime && !isDispensing && (
+            <div className="text-center text-4xl font-bold text-slate-600">
+              Please place your cup under the tap
+            </div>
+          )}
         </div>
       </div>
-
-      <Footer disabled />
     </div>
   );
 };

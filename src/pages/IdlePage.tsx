@@ -5,23 +5,15 @@ const IDLE_PAGE_HEADER = {
   line2: "Tap to Begin",
 };
 
-export const IdlePage: React.FC = () => {
+export const IdlePage = () => {
   const navigate = useNavigate();
+
   return (
     <div className="h-screen w-screen">
-      <video
+      <img
         className="absolute left-0 top-0 size-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source
-          src="http://localhost:5173/media/coffee-placeholder.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
+        src="/media/coffee-placeholder.gif"
+      />
 
       <div
         className="absolute inset-0 flex flex-col items-center justify-center text-center text-white"
@@ -33,8 +25,9 @@ export const IdlePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-10 flex w-full justify-center">
-        <button className="rounded-full border-2 border-white bg-transparent px-20 py-4 text-2xl font-bold text-white">
+      <div className="absolute bottom-24 flex w-full justify-center">
+        <button className="flex flex-row items-center justify-center rounded-full border-2 border-white bg-slate-600/15 px-20 py-4 text-2xl font-bold text-white">
+          <img className="mr-3 h-6" src="/media/globe-icon.png" />
           Language options
         </button>
       </div>

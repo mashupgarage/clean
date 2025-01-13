@@ -1,29 +1,34 @@
+import { useState } from "react";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { useState } from "react";
 import { Item } from "../components/Item";
 
 // TAP_A and TAP_B values can be later configured
 const ITEM_SELECTION_HEADER = {
-  line1: "Please choose your drink",
-  line2: "請選擇飲品",
+  title: "Please choose your drink",
 };
 
 const TAP_A = {
-  label1: "Coffee A",
-  imageUrl: "https://placehold.co/600x600",
+  name: "Coffee A",
+  price: "HK$ 2.20",
+  description:
+    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
+  imageUrl: "/media/coffee-a.png",
 };
 
 const TAP_B = {
-  label1: "Coffee B",
-  imageUrl: "https://placehold.co/600x600",
+  name: "Coffee B",
+  price: "HK$ 2.20",
+  description:
+    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
+  imageUrl: "/media/coffee-b.png",
 };
 
 export const ItemSelectionPage: React.FC = () => {
   const [item, setItem] = useState<string>("");
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
       <Header {...ITEM_SELECTION_HEADER} />
 
       <div className="flex h-full flex-row items-center justify-center">
@@ -31,17 +36,17 @@ export const ItemSelectionPage: React.FC = () => {
           {...TAP_A}
           stateSelection={item}
           setStateSelection={setItem}
-          selection="a"
+          selection="Tap-A"
         />
         <Item
           {...TAP_B}
           stateSelection={item}
           setStateSelection={setItem}
-          selection="b"
+          selection="Tap-B"
         />
       </div>
 
-      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}/size`} />
+      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}`} />
     </div>
   );
 };

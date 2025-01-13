@@ -53,7 +53,7 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #222222;
     background-color: #ffffff;
   }
   a:hover {
@@ -61,5 +61,14 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@keyframes progressBarAnimation {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
   }
 }

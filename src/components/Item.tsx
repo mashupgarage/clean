@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 
 type ItemProps = {
-  label1?: string;
-  label2?: string;
+  name?: string;
+  price?: string;
+  description?: string;
   imageUrl: string;
   selection: string;
   stateSelection: string;
@@ -10,8 +11,9 @@ type ItemProps = {
 };
 
 export const Item = ({
-  label1,
-  label2,
+  name,
+  price,
+  description,
   imageUrl,
   selection,
   stateSelection,
@@ -19,15 +21,20 @@ export const Item = ({
 }: ItemProps) => {
   return (
     <div
-      className={`relative m-10 flex h-4/5 rounded-3xl ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-amber-800" : "opacity-60") : ""} `}
+      // eslint-disable-next-line tailwindcss/classnames-order
+      className={`shadow-item mx-8 flex h-[600px] w-[650px] flex-col rounded-3xl bg-white ${stateSelection ? (stateSelection === selection ? "outline outline-4 outline-green-600" : "opacity-60") : ""} `}
       onClick={() => setStateSelection(selection)}
     >
-      <img src={imageUrl} className={`size-full rounded-3xl object-contain`} />
-      <div className="absolute inset-x-0 top-10 flex justify-center text-3xl font-bold uppercase">
-        {label1}
-      </div>
-      <div className="absolute inset-x-0 top-24 flex justify-center text-3xl font-bold uppercase">
-        {label2}
+      <img
+        src={imageUrl}
+        className={`h-[400px] w-[650px] rounded-t-3xl object-cover`}
+      />
+      <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-row justify-between text-3xl font-extrabold">
+          <div>{name}</div>
+          <div>{price}</div>
+        </div>
+        <div>{description}</div>
       </div>
     </div>
   );

@@ -1,16 +1,11 @@
-export const Header = ({ line1, line2 }: { line1: string; line2?: string }) => {
+export const Header = ({ title }: { title: string }) => {
   const Title = ({ label }: { label: string }) => {
-    return (
-      <div className="m-auto rounded-3xl bg-black px-4 py-2 text-5xl font-bold">
-        <div className="m-auto uppercase text-white">{label}</div>
-      </div>
-    );
+    return <div className="rounded-3xl text-6xl font-extrabold">{label}</div>;
   };
 
   return (
-    <div className="mt-6 flex flex-col">
-      <Title label={line1} />
-      {line2 && <Title label={line2} />}
+    <div className="mx-auto mt-16 flex flex-col">
+      <Title label={title} />
     </div>
   );
 };
