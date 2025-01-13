@@ -21,7 +21,7 @@ export const Footer = ({
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-4 flex w-[full] flex-row gap-20 py-3">
+      <div className="mb-4 flex w-[full] flex-row gap-16 py-3">
         <NavButton {...props} label={"Go back"} onClick={() => navigate(-1)} />
 
         {!nextLink || !onClick ? null : (
@@ -57,7 +57,10 @@ export const Footer = ({
 
       {cancelButton && (
         // <NavButton {...props} label={"Cancel"} onClick={() => navigate("/")} />
-        <Link className="text-3xl font-extrabold text-black" to="/">
+        <Link
+          className="rounded-full border-4 border-gray-400 px-24 py-3 text-3xl font-extrabold text-gray-400"
+          to="/"
+        >
           Cancel
         </Link>
       )}

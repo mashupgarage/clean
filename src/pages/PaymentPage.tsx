@@ -48,7 +48,7 @@ export const PaymentPage: React.FC = () => {
   };
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[15%,65%,20%]">
+    <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
       <Portal>
         <Modal
           visible={loadingVisible}
@@ -74,9 +74,7 @@ export const PaymentPage: React.FC = () => {
           </div>
         </Modal>
       </Portal>
-
       <Header {...PAYMENT_HEADER} />
-
       <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
         <PaymentItem
           {...OPTION_A}
@@ -105,7 +103,6 @@ export const PaymentPage: React.FC = () => {
           containerStyles="p-4"
         />
       </div>
-
       <Footer
         cancelButton={true}
         nextProps={{ disabled: !option }}

@@ -15,7 +15,7 @@ export const ThankYouPage: React.FC = () => {
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
 
   useEffect(() => {
-    // start 15 second timer, then check for cup presence
+    // Start 30 second timer, then check for cup presence
     const timer = setTimeout(() => {
       const interval = setInterval(() => {
         if (!item) return;
@@ -27,7 +27,7 @@ export const ThankYouPage: React.FC = () => {
             setVisibleWarning(true);
           }
 
-          // Redirect after 15 seconds of not detecting
+          // Redirect after 30 seconds of not detecting
           if (data?.cup_status === 0) {
             clearInterval(interval);
             navigate("/");
@@ -37,7 +37,7 @@ export const ThankYouPage: React.FC = () => {
       }, 1000);
 
       return () => clearTimeout(timer);
-    }, 3000);
+    }, 30000);
   }, []);
 
   return (

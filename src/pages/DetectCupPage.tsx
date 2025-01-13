@@ -87,7 +87,7 @@ export const DetectCupPage: React.FC = () => {
             <img src="/media/tap.png" className="size-full -scale-x-100" />
           </div>
         )}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <ProgressBar duration={30} />
           <CountdownTimer duration={30} />
         </div>
