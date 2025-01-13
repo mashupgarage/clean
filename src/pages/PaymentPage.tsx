@@ -3,11 +3,10 @@ import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
-import { Item } from "../components/Item";
+import { PaymentItem } from "../components/PaymentItem";
 
 const PAYMENT_HEADER = {
-  line1: "Please choose payment method",
-  line2: "請選擇付款方式",
+  title: "Please choose payment method",
 };
 
 const OPTION_A = {
@@ -18,6 +17,14 @@ const OPTION_A = {
 const OPTION_B = {
   imageUrl:
     "https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1",
+};
+
+const OPTION_C = {
+  imageUrl: "/media/octopus.png",
+};
+
+const OPTION_D = {
+  imageUrl: "/media/paywave.png",
 };
 
 export const PaymentPage: React.FC = () => {
@@ -42,7 +49,7 @@ export const PaymentPage: React.FC = () => {
   };
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[15%,65%,20%]">
       <Portal>
         <Modal
           visible={loadingVisible}
@@ -66,7 +73,7 @@ export const PaymentPage: React.FC = () => {
 
       <Header {...PAYMENT_HEADER} />
 
-      <div className="flex h-full flex-row items-center justify-center">
+      <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
         {/* <ImgButton
           onClick={showPaymentModal}
           imageSrc="https://images.squarespace-cdn.com/content/v1/52ccee75e4b00bc0dba03f46/1549025413897-WU6OP5YI319QMHUP5UI8/image-asset.png"
@@ -76,21 +83,37 @@ export const PaymentPage: React.FC = () => {
           imageSrc="https://i0.wp.com/technode.com/wp-content/uploads/2018/09/alipay-logo-cover.jpg?fit=1600%2C920&ssl=1"
         /> */}
 
-        <Item
+        <PaymentItem
           {...OPTION_A}
           stateSelection={option}
           setStateSelection={setOption}
           selection="a"
         />
-        <Item
+        <PaymentItem
           {...OPTION_B}
           stateSelection={option}
           setStateSelection={setOption}
           selection="b"
         />
+        <PaymentItem
+          {...OPTION_C}
+          stateSelection={option}
+          setStateSelection={setOption}
+          selection="c"
+        />
+        <PaymentItem
+          {...OPTION_D}
+          stateSelection={option}
+          setStateSelection={setOption}
+          selection="d"
+        />
       </div>
 
-      <Footer nextProps={{ disabled: !option }} onClick={showPaymentModal} />
+      <Footer
+        cancelButton={true}
+        nextProps={{ disabled: !option }}
+        onClick={showPaymentModal}
+      />
     </div>
   );
 };

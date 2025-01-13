@@ -1,11 +1,9 @@
 import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import CountdownTimer from "../components/CountdownTimer";
 
 const DETECT_CUP_HEADER = {
-  line1: "Please hold your cup under the tap",
-  line2: "請將杯放在感應掣上",
+  title: "Please place your cup under the tap",
 };
 
 export const DetectCupPage: React.FC = () => {
@@ -20,32 +18,24 @@ export const DetectCupPage: React.FC = () => {
     <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
       <Header {...DETECT_CUP_HEADER} />
 
-      <div className="flex h-full flex-col items-center justify-center">
+      <div className="flex h-full flex-col items-center">
         {item === "a" ? (
           <div
-            className="relative m-10 flex h-4/5 rounded-3xl"
+            className="relative m-10 flex w-[650px]"
             onClick={() => navigate(`/${item}/size/${size}/dispense`)}
           >
-            <img
-              src="http://localhost:5173/media/dispenser/image/Tap-A-place-cup.png"
-              className="size-full rounded-3xl object-contain"
-            />
+            <img src="/media/tap.png" className="size-full rounded-3xl" />
           </div>
         ) : (
           <div
-            className="relative m-10 flex h-4/5 rounded-3xl"
+            className="relative m-10 flex w-[650px]"
             onClick={() => navigate(`/${item}/size/${size}/dispense`)}
           >
-            <img
-              src="http://localhost:5173/media/dispenser/image/Tap-B-place-cup.png"
-              className="size-full rounded-3xl object-contain"
-            />
+            <img src="/media/tap.png" className="size-full -scale-x-100" />
           </div>
         )}
         <CountdownTimer />
       </div>
-
-      <Footer disabled />
     </div>
   );
 };
