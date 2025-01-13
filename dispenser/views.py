@@ -462,6 +462,8 @@ def handle_cleaner_mode(dispenser, mode):
     if response_data2 is not None:
         # Update status of vending machine to "cleaning" if mode is not 0
         if mode != 0:
+            response_data2["clean_pump_time"] = get_clean_pump_time(mode)
+            response_data2["coffee_pump_time"] = get_coffee_pump_time(mode)
             vending_machine = dispenser.vending_machine
             vending_machine.status = "cleaning"
             vending_machine.save()
@@ -887,6 +889,8 @@ def set_cleaner(request):
             "cleaner",
             mode,
         )
+        response_data2["clean_pump_time"] = get_clean_pump_time(mode)
+        response_data2["coffee_pump_time"] = get_coffee_pump_time(mode)
         if response_data2 is not None:
             return Response(response_data2, status=status2)
         else:
@@ -1054,6 +1058,11 @@ def send_set_command(dispenser, device, parameter):
 
     return response_data, status.HTTP_200_OK, None
 
+def get_clean_pump_time(mode):
+    return int(mode) * 5
+    
+def get_coffee_pump_time(mode):
+    return int(mode) * 15
 
 import logging
 
