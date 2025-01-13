@@ -13,7 +13,7 @@ const TAP_A = {
   price: "HK$ 2.20",
   description:
     "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
-  imageUrl: "https://placehold.co/600x350",
+  imageUrl: "/media/coffee-a.png",
 };
 
 const TAP_B = {
@@ -21,7 +21,7 @@ const TAP_B = {
   price: "HK$ 2.20",
   description:
     "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
-  imageUrl: "https://placehold.co/600x350",
+  imageUrl: "/media/coffee-b.png",
 };
 
 export const ItemSelectionPage: React.FC = () => {
@@ -46,7 +46,7 @@ export const ItemSelectionPage: React.FC = () => {
         />
       </div>
 
-      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}/size`} />
+      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}`} />
     </div>
   );
 };

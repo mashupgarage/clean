@@ -25,11 +25,11 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <IdlePage /> },
       { path: "item/", element: <ItemSelectionPage /> },
-      { path: ":item/size/", element: <ItemSizePage /> },
-      { path: ":item/size/:size/payment", element: <PaymentPage /> },
-      { path: ":item/size/:size/detect-cup", element: <DetectCupPage /> },
-      { path: ":item/size/:size/dispense", element: <DispensingPage /> },
-      { path: "/thank-you", element: <ThankYouPage /> },
+      { path: ":item/", element: <ItemSizePage /> },
+      { path: ":item/:size/payment", element: <PaymentPage /> },
+      { path: ":item/:size/detect-cup", element: <DetectCupPage /> },
+      { path: ":item/:size/dispense", element: <DispensingPage /> },
+      { path: ":item/:size/thank-you", element: <ThankYouPage /> },
     ],
   },
 ]);
