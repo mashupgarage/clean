@@ -1,22 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { startDrinkDispensing } from "../api/dispenser";
 import { Header } from "../components/Header";
-import CountdownTimer from "../components/CountdownTimer";
+import { CountdownTimer } from "../components/CountdownTimer";
+import { ProgressBar } from "../components/ProgressBar";
 
 const DISPENSING_HEADER = {
   title: "Please do not remove the cup until pouring is complete",
 };
 
-export const DispensingPage: React.FC = () => {
+export const DispensingPage = () => {
   const navigate = useNavigate();
   const { item, size } = useParams();
+  const [dispenseTime, setDispenseTime] = useState<number>(10);
 
   useEffect(() => {
     if (!item || !size) return;
 
     startDrinkDispensing(item, size).then((data) => {
-      console.log(data);
+      setDispenseTime(data?.dispense_time);
     });
   }, [item]);
 
@@ -40,14 +42,12 @@ export const DispensingPage: React.FC = () => {
             <img src="/media/pour.png" className="size-full -scale-x-100" />
           </div>
         )}
-        <CountdownTimer />
-      </div>
 
-      {/* TODO: Replace placeholder progress bar */}
-      {/* <div className="w-full rounded-3xl bg-black px-4 py-2 text-center text-5xl font-bold uppercase leading-tight text-slate-100">
-          0%
-        </div> */}
-      {/* </div> */}
+        <div className="flex flex-col gap-4">
+          <ProgressBar duration={dispenseTime} />
+          <CountdownTimer duration={dispenseTime} />
+        </div>
+      </div>
     </div>
   );
 };
