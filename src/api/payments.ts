@@ -6,13 +6,12 @@ const kPayAppId = `${import.meta.env.VITE_KPAY_APP_ID}`;
 const serverUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
 
 type TransactionBody = {
-  outTradeNo: string; // max 32 chars
+  // outTradeNo: string; // max 32 chars note, this is being generated in the backend now
   payAmount: string; // 12 chars, i.e. 000000001250 === 12.50
   tipsAmount?: string; // 12 chars, NOTE: Optional when in Kiosk Mode
   payCurrency: string; // max 4 chars. NOTE: currently only supports HKD (344)
   memberCode?: string; // max 32 chars
   description?: string; // max 128 chars
-  // note: Only able to use 1,3,7 for API v1
   paymentType?: number; // 1: Card, 2: QR Code positive scan, 3: QR Code reverse scan, 4: Octopus, 5: Octopus QR Code, 6: Payme positive scan, 7: Payme reverse scan
   callbackUrl?: string; // max 256 chars
   qrCodeContent?: string; // max 256 chars

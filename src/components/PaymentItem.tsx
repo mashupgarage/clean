@@ -3,9 +3,9 @@ import { Dispatch, SetStateAction } from "react";
 type PaymentItemProps = {
   title?: string;
   imageUrl: string;
-  selection: string;
-  stateSelection: string;
-  setStateSelection: Dispatch<SetStateAction<string>>;
+  selection: number;
+  stateSelection: number;
+  setStateSelection: Dispatch<SetStateAction<number>>;
   containerStyles?: string;
   disabled?: boolean;
 };

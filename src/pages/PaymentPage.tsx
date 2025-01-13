@@ -12,27 +12,39 @@ import {
 } from "../api/payments";
 import { usePrivKeyStore } from "../hooks/usePrivKeyStore";
 
+// Payment Types
+// 1: Card
+// 2: QR Code
+// 3: QR Scan
+// 4: Octopus (unavailable)
+// 5: Octopus (unavailable)
+// 6: Payme QR
+// 7: Payme QR Scan
+
 const PAYMENT_HEADER = {
   title: "Please choose payment method",
 };
 
 const OPTION_A = {
   imageUrl: "/media/paywave.png",
-  selection: "paywave",
   title: "Pay with Card",
+  selection: 1,
 };
 
 const OPTION_B = {
   imageUrl: "/media/qr.png",
   title: "Pay with QR Code",
+  selection: 2,
 };
 
 const OPTION_C = {
   imageUrl: "/media/scan.png",
+  selection: 3,
 };
 
 const OPTION_D = {
   imageUrl: "/media/PayMe-Icon-Logo.wine.svg",
+  selection: 6,
 };
 
 const formatPrice = (price: string) => {
@@ -54,7 +66,7 @@ export const PaymentPage = () => {
   const { item, size } = useParams();
   const [visible, setVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
-  const [option, setOption] = useState<string>("");
+  const [option, setOption] = useState<number>(1); // will default to card if somehow no option selected
   const [price, setPrice] = useState<string>("");
   const navigate = useNavigate();
   const updatePrivKey = usePrivKeyStore((state) => state.updatePrivKey);
@@ -63,7 +75,6 @@ export const PaymentPage = () => {
   useEffect(() => {
     if (!item || !size) return; // Todo: add error catching
 
-    console.log(privKey);
     const fetchMenuItems = async () => {
       const dispensers = await getMenuItems();
       const dispenser = dispensers.find((dispenser) => dispenser.name === item);
@@ -82,7 +93,6 @@ export const PaymentPage = () => {
 
   const showPaymentModal = () => {
     // Start Transaction
-    console.log("showpaymentmodal and startTransaction");
 
     // Turn this into a hook that is called whenever a transaction fails
     signInToKPay().then((data) => {
@@ -94,8 +104,7 @@ export const PaymentPage = () => {
       {
         payAmount: price,
         payCurrency: "344",
-        outTradeNo: "9876543225",
-        paymentType: 2,
+        paymentType: option,
         callbackUrl:
           "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
       },
@@ -159,26 +168,22 @@ export const PaymentPage = () => {
           {...OPTION_A}
           stateSelection={option}
           setStateSelection={setOption}
-          // containerStyles="bg-[#22AC38]"
         />
         <PaymentItem
           {...OPTION_B}
           stateSelection={option}
           setStateSelection={setOption}
-          selection="b"
         />
         <PaymentItem
           {...OPTION_C}
           stateSelection={option}
           setStateSelection={setOption}
-          selection="c"
           disabled
         />
         <PaymentItem
           {...OPTION_D}
           stateSelection={option}
           setStateSelection={setOption}
-          selection="d"
           disabled
         />
       </div>
