@@ -1,26 +1,31 @@
-import CountdownTimer from "../components/CountdownTimer";
-import { Header } from "../components/Header";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { startDrinkDispensing } from "../api/dispenser";
+import { Header } from "../components/Header";
+import CountdownTimer from "../components/CountdownTimer";
 
 const DISPENSING_HEADER = {
   title: "Please do not remove the cup until pouring is complete",
 };
 
-// const TIME = 10; Variable timer depending on the cup size
-
 export const DispensingPage: React.FC = () => {
-  const { item, size } = useParams();
   const navigate = useNavigate();
-  console.log(
-    `SELECTED ITEM: ${item?.toUpperCase()} SELECTED SIZE: ${size?.toUpperCase()}`,
-  );
+  const { item, size } = useParams();
+
+  useEffect(() => {
+    if (!item || !size) return;
+
+    startDrinkDispensing(item, size).then((data) => {
+      console.log(data);
+    });
+  }, [item]);
 
   return (
     <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
       <Header {...DISPENSING_HEADER} />
 
       <div className="flex h-full flex-col items-center">
-        {item === "a" ? (
+        {item === "Tap-A" ? (
           <div
             className="relative m-10 mb-20 flex w-[650px]"
             onClick={() => navigate(`/thank-you`)}

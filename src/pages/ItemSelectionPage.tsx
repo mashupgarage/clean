@@ -36,13 +36,13 @@ export const ItemSelectionPage: React.FC = () => {
           {...TAP_A}
           stateSelection={item}
           setStateSelection={setItem}
-          selection="a"
+          selection="Tap-A"
         />
         <Item
           {...TAP_B}
           stateSelection={item}
           setStateSelection={setItem}
-          selection="b"
+          selection="Tap-B"
         />
       </div>
 

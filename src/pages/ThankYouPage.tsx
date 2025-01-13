@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const THANK_YOU_HEADER = {
@@ -9,9 +10,13 @@ export const ThankYouPage: React.FC = () => {
   const navigate = useNavigate();
 
   // Automatically redirect to idle page after 10 seconds
-  setTimeout(() => {
-    navigate("/");
-  }, 10000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/");
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
     <div className="h-screen w-screen">
