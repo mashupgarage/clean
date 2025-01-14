@@ -64,7 +64,8 @@ const formatPrice = (price: string) => {
 
 export const PaymentPage = () => {
   const { item, size } = useParams();
-  const [visible, setVisible] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const [errorVisible, setErrorVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
   const [option, setOption] = useState<number>(1); // will default to card if somehow no option selected
   const [price, setPrice] = useState<string>("");
@@ -110,17 +111,22 @@ export const PaymentPage = () => {
       },
       privKey,
     ).then((data) => {
+      // Loading animation, change to the "look at terminal" modal
       setLoadingVisible(true);
       console.log(data);
+
+      // Start polling for data
+
+      // if (data.)
 
       if (data) {
         setTimeout(() => {
           setLoadingVisible(false);
-          setVisible(true);
+          setSuccessVisible(true);
         }, 2000);
 
         setTimeout(() => {
-          setVisible(false);
+          setSuccessVisible(false);
           navigate(`/${item}/${size}/detect-cup`);
         }, 4000);
       }
@@ -145,8 +151,8 @@ export const PaymentPage = () => {
 
         {/* Success modal */}
         <Modal
-          visible={visible}
-          onDismiss={() => setVisible(false)}
+          visible={successVisible}
+          onDismiss={() => setSuccessVisible(false)}
           dismissable={false}
           contentContainerStyle={{ height: "100%" }}
         >
@@ -157,6 +163,28 @@ export const PaymentPage = () => {
             <div className="text-2xl font-semibold text-slate-600">
               We will be dispensing your drink shortly
             </div>
+          </div>
+        </Modal>
+
+        {/* Error modal */}
+        <Modal
+          visible={errorVisible}
+          onDismiss={() => setErrorVisible(false)}
+          dismissable={false}
+          contentContainerStyle={{ height: "100%" }}
+        >
+          <div className="m-auto flex flex-col items-center gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl">
+            <img className="max-w-8" src="/media/error.png" />
+            <div className="text-3xl font-extrabold text-red-600">
+              Error: Payment Failure
+            </div>
+            <div className="text-2xl font-semibold text-slate-600">
+              Your transaction was not successful
+            </div>
+            <div className="py-5 text-xl font-semibold">
+              Transaction ID: 1234567890
+            </div>
+            <div>Tap to return to the payment options page</div>
           </div>
         </Modal>
       </Portal>
