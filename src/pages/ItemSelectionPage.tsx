@@ -1,7 +1,11 @@
-import { useState } from "react";
+import {
+  // useEffect
+  useState,
+} from "react";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { Item } from "../components/Item";
+// import { DispenserItem, getMenuItems } from "../api/dispenser";
 
 // TAP_A and TAP_B values can be later configured
 const ITEM_SELECTION_HEADER = {
@@ -25,6 +29,19 @@ const TAP_B = {
 };
 
 export const ItemSelectionPage: React.FC = () => {
+  // NOTE: Hardcode first since loading indicators are needed when pulling from BE
+  // useEffect(() => {
+  //   const fetchMenuItems = async () => {
+  //     const dispensers = await getMenuItems();
+  //     setDispensers(dispensers);
+  //   };
+
+  //   fetchMenuItems();
+  // }, []);
+
+  // const [dispensers, setDispensers] = useState<DispenserItem[]>([]);
+  // const Tap_A = dispensers.find((dispenser) => dispenser.name === "Tap-A");
+  // const Tap_B = dispensers.find((dispenser) => dispenser.name === "Tap-B");
   const [item, setItem] = useState<string>("");
 
   return (
@@ -34,12 +51,15 @@ export const ItemSelectionPage: React.FC = () => {
       <div className="flex h-full flex-row items-center justify-center">
         <Item
           {...TAP_A}
+          // price={`HK$ ${Tap_A?.price_small}`}
+          // imageUrl={Tap_A?.drink_image}
           stateSelection={item}
           setStateSelection={setItem}
           selection="Tap-A"
         />
         <Item
           {...TAP_B}
+          // price={`HK$ ${Tap_B?.price_small}`}
           stateSelection={item}
           setStateSelection={setItem}
           selection="Tap-B"
