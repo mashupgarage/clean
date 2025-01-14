@@ -212,7 +212,7 @@ def send_notification(notification_data):
         print(f"Error sending notification: {str(e)}")
 
 
-@api_view(["POST"])
+@csrf_exempt
 def report_transaction(request):
     try:
         # Extract the transaction data from the request
@@ -225,6 +225,15 @@ def report_transaction(request):
         # Add store_name and vending_machine_name to the transaction data
         transaction_data["store_name"] = store.name if store else "Unknown Store"
         transaction_data["vending_machine_name"] = vending_machine.name if vending_machine else "Unknown Machine"
+
+        # Add require field for the transaction data
+        transaction_data["order_number"] = transaction_data["transactionNo"]
+        transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
+        transaction_data["amount"] = transaction_data["payAmount"] # Sample amount: 000000000100
+        transaction_data["payment_method"] = transaction_data["payMethod"]
+        transaction_data["product_name"] = "Sample Product" # Input Product Name here
+        transaction_data["price"] = "1" # Input Product Price here
+        transaction_data["quantity"] = "1" # Input Product Quantity here
 
         # print(f"Transaction data: {transaction_data}")
 
