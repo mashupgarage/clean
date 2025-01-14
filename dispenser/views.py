@@ -214,6 +214,9 @@ def send_notification(notification_data):
 
 @csrf_exempt
 def report_transaction(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
     try:
         # Extract the transaction data from the request
         transaction_data = request.data
