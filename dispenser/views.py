@@ -233,6 +233,7 @@ def report_transaction(request):
         transaction_data["order_number"] = transaction_data["transactionNo"]
         transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
         transaction_data["amount"] = transaction_data["payAmount"] # Sample amount: 000000000100
+        transaction_data["status"] = "Completed" # ORDER STATUSES: Completed, Pending, Refunded
         transaction_data["payment_method"] = transaction_data["payMethod"]
         transaction_data["product_name"] = "Sample Product" # Input Product Name here
         transaction_data["price"] = "1" # Input Product Price here
