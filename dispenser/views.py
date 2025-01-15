@@ -614,7 +614,7 @@ class TurnOnTapDispenserView(views.APIView):
             return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
+        response_data["dispenser"] = dispenser_name
         response_data["initialWeight"] = resp_data["thermos_weight"] * 10
 
         print(f"Tap turned on for dispenser: {dispenser_name}, Initial weight: {response_data['initialWeight']}")
@@ -660,7 +660,7 @@ class TurnOffTapDispenserView(views.APIView):
             return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
+        response_data["dispenser"] = dispenser_name
         response_data["finalWeight"] = resp_data["thermos_weight"] * 10
 
         print(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
@@ -1004,6 +1004,7 @@ def send_get_command(dispenser, data):
         if result is not None:
             response_data["dispenser"] = dispenser
             response_data[data] = result
+
         else:
             return (None, status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to send command")
 
@@ -1071,7 +1072,7 @@ logger = logging.getLogger(__name__)
 
 @api_view(["POST"])
 def start_drink_dispensing(request):
-    dispenser_name = request.GET.get("dispenser", default="Tap-A")
+    dispenser_name = request.data("dispenser", default="Tap-A")
     drink_size = request.GET.get("size", default="Small").capitalize()
     # print(f"dispenser: {dispenser_name}, size: {drink_size}")
 
