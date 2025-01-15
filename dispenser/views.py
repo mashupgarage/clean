@@ -846,6 +846,7 @@ def get_thermos_weight(request):
 
 @api_view(["PUT"])
 def set_heater(request):
+    # TODO(MIKEE)
     dispenser = request.GET.get("dispenser", default="Tap-A")
     strength = request.GET.get("strength", default="1")
 
@@ -865,6 +866,7 @@ def set_heater(request):
 
 @api_view(["PUT"])
 def set_heater(request):
+    # TODO(MIKEE)
     dispenser = request.GET.get("dispenser", default="Tap-A")
     duration = request.GET.get("duration", default="5")
 
@@ -884,6 +886,7 @@ def set_heater(request):
 
 @api_view(["PUT"])
 def set_cleaner(request):
+    # TODO(MIKEE)
     dispenser = request.GET.get("dispenser", default="Tap-A")
     mode = request.GET.get("mode", default="10")
 
@@ -913,6 +916,7 @@ def set_cleaner(request):
 
 @api_view(["PUT"])
 def set_pump(request):
+    # TODO(MIKEE)
     dispenser = request.GET.get("dispenser", default="Tap-A")
     duration = request.GET.get("duration", default="10")
 
@@ -1143,7 +1147,7 @@ def start_drink_dispensing(request):
 
 @api_view(["POST"])
 def stop_drink_dispensing(request):
-    dispenser_name = request.GET.get("dispenser", default="Tap-A")
+    dispenser_name = request.POST.get("dispenser", default="Tap-A")
 
     response_data = {}
 
