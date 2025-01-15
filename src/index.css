@@ -18,6 +18,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html, body {
+  touch-action: manipulation; /* Disables zooming gestures */
+  overscroll-behavior: none; /* Prevents scroll chaining */
+  user-select: none; /* Disables text selection */
+  -webkit-user-drag: none; /* Disables dragging on WebKit browsers */
+  -webkit-touch-callout: none; /* Disables callout menus on iOS */
+}
+
 a {
   font-weight: 500;
   color: #646cff;
