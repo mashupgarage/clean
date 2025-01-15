@@ -25,12 +25,12 @@ export const IdlePage = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-24 flex w-full justify-center">
+      {/* <div className="absolute bottom-24 flex w-full justify-center">
         <button className="flex flex-row items-center justify-center rounded-full border-2 border-white bg-slate-600/15 px-20 py-4 text-2xl font-bold text-white">
           <img className="mr-3 h-6" src="/media/globe-icon.png" />
           Language options
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
