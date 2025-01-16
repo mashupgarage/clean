@@ -174,7 +174,7 @@ export const DispensingPage = () => {
         {item === "Tap-A" ? (
           <div
             className="relative m-10 mb-20 flex w-[650px]"
-            onClick={() => navigate(`/${item}/${size}/thank-you`)}
+            // onClick={() => navigate(`/${item}/${size}/thank-you`)}
           >
             <img src="/media/pour.png" className="size-full object-contain" />
           </div>

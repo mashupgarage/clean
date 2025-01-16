@@ -75,7 +75,7 @@ export const DetectCupPage: React.FC = () => {
         {item === "Tap-A" ? (
           <div
             className="relative m-10 flex w-[650px]"
-            onClick={() => navigate(`/${item}/${size}/dispense`)}
+            // onClick={() => navigate(`/${item}/${size}/dispense`)}
           >
             <img src="/media/tap.png" className="size-full" />
           </div>
