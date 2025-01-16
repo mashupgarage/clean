@@ -29,7 +29,7 @@ const PAYMENT_HEADER = {
 };
 
 const OPTION_A = {
-  imageUrl: "/media/paywave.png",
+  imageUrl: "/media/card.png",
   title: "Pay with Card",
   selection: 1,
 };
@@ -41,12 +41,8 @@ const OPTION_B = {
 };
 
 const OPTION_C = {
-  imageUrl: "/media/scan.png",
-  selection: 3,
-};
-
-const OPTION_D = {
-  imageUrl: "/media/PayMe-Icon-Logo.wine.svg",
+  imageUrl: "/media/PayMeLogo.png",
+  title: "QR",
   selection: 6,
 };
 
@@ -198,6 +194,7 @@ export const PaymentPage = () => {
           {...OPTION_A}
           stateSelection={option}
           setStateSelection={setOption}
+          fullWidth
         />
         <PaymentItem
           {...OPTION_B}
@@ -208,13 +205,8 @@ export const PaymentPage = () => {
           {...OPTION_C}
           stateSelection={option}
           setStateSelection={setOption}
-          disabled
-        />
-        <PaymentItem
-          {...OPTION_D}
-          stateSelection={option}
-          setStateSelection={setOption}
-          disabled
+          containerStyles="bg-[#DB0011] !flex-row"
+          titleStyles="mt-0 text-white text-5xl"
         />
       </div>
       <Footer
