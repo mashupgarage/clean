@@ -104,8 +104,8 @@ export const ThankYouPage: React.FC = () => {
 
           <div>Date: {formattedDate}</div>
           <div>Time: {formattedTime}</div>
-          <div>Store Name: The Corner Store</div>
-          <div>Location: 123 Main St, Anytown, USA</div>
+          <div>Store Name: Clean Taps</div>
+          <div>Location: Hong Kong</div>
 
           <div className="mt-4 text-lg">Items Purchased:</div>
           <div className="mb-4 mt-1 flex flex-row justify-between">
@@ -133,7 +133,7 @@ export const ThankYouPage: React.FC = () => {
           <div>Payment Method: None</div>
           <div>Transaction ID: 987654321</div>
           <div>Thank you for shopping with us!</div>
-          <div>Visit us again at www.thecornerstore.com</div>
+          <div>Follow us on IG @cleantaps_ | www.youareclean.com</div>
         </div>
       </div>
     </div>
