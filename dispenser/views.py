@@ -1004,7 +1004,6 @@ def send_get_command(dispenser, data):
         if result is not None:
             response_data["dispenser"] = dispenser
             response_data[data] = result
-
         else:
             return (None, status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to send command")
 
