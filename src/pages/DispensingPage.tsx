@@ -151,7 +151,7 @@ export const DispensingPage = () => {
   };
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[20%,60%,20%]">
       <Portal>
         <WarningModal
           visible={visibleWarning}
@@ -189,29 +189,29 @@ export const DispensingPage = () => {
             />
           </div>
         )}
+      </div>
 
-        <div className="flex flex-col gap-6">
-          {!dispenseTime && !isDispensing && (
-            <>
-              <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200 shadow-inner" />
-              <div className="text-center text-4xl font-bold text-slate-600">
-                Please Standby
-              </div>
-            </>
-          )}
-
-          {dispenseTime && isDispensing && (
-            <>
-              <ProgressBar duration={dispenseTime} />
-              <CountdownTimer isDispensingPage duration={dispenseTime} />
-            </>
-          )}
-          {dispenseTime && !isDispensing && (
+      <div className="flex flex-col items-center gap-6">
+        {!dispenseTime && !isDispensing && (
+          <>
+            <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200 shadow-inner" />
             <div className="text-center text-4xl font-bold text-slate-600">
-              Please place your cup under the tap
+              Please Standby
             </div>
-          )}
-        </div>
+          </>
+        )}
+
+        {dispenseTime && isDispensing && (
+          <>
+            <ProgressBar duration={dispenseTime} />
+            <CountdownTimer isDispensingPage duration={dispenseTime} />
+          </>
+        )}
+        {dispenseTime && !isDispensing && (
+          <div className="text-center text-4xl font-bold text-slate-600">
+            Please place your cup under the tap
+          </div>
+        )}
       </div>
     </div>
   );
