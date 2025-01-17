@@ -13,19 +13,17 @@ const ITEM_SELECTION_HEADER = {
 };
 
 const TAP_A = {
-  name: "Coffee A",
+  name: "Sesame Oat Latte (Cold)",
   price: "HK$ 2.20",
-  description:
-    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
-  imageUrl: "/media/coffee-a.png",
+  description: "Sweet and addictive nougat-like oat drink",
+  imageUrl: "/media/drink-a.png",
 };
 
 const TAP_B = {
-  name: "Coffee B",
+  name: "Red Date & Ginger Tea (Hot)",
   price: "HK$ 2.20",
-  description:
-    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
-  imageUrl: "/media/coffee-b.png",
+  description: "Warming and spicy tea, low sugar",
+  imageUrl: "/media/drink-b.png",
 };
 
 export const ItemSelectionPage: React.FC = () => {
@@ -66,7 +64,11 @@ export const ItemSelectionPage: React.FC = () => {
         />
       </div>
 
-      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}`} />
+      <Footer
+        nextProps={{ disabled: !item }}
+        nextLink={`/${item}`}
+        containerStyles="mt-12"
+      />
     </div>
   );
 };
