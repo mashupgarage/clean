@@ -87,7 +87,7 @@ export const ThankYouPage: React.FC = () => {
       </Portal>
 
       <img
-        src="http://localhost:5173/media/coffee-placeholder.png"
+        src="/media/coffee-placeholder.png"
         className="absolute left-0 top-0 size-full object-cover"
       />
       <div
