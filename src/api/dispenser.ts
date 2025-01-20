@@ -54,10 +54,10 @@ export const startDrinkDispensing = async (
   size: string,
 ) => {
   const endpoint = `${baseUrl}/api/dispenser/start-drink-dispensing/`;
-  const body = JSON.stringify({ dispenser: dispenserName, size: size });
+  const body = JSON.stringify({ dispenser: dispenserName, size });
 
   return axios
-    .post(endpoint, body)
+    .post(endpoint, body, { headers: { "Content-Type": "application/json" } })
     .then((res) => res.data)
     .catch((err) => err.response.data.error);
 };
