@@ -86,20 +86,22 @@ export const ThankYouPage: React.FC = () => {
         />
       </Portal>
 
-      <img
+      {/* <img
         src="/media/coffee-placeholder.png"
         className="absolute left-0 top-0 size-full object-cover"
-      />
+      /> */}
       <div
-        className="absolute inset-0 flex flex-row items-center justify-center text-center text-white"
+        className="absolute inset-0 flex flex-row items-center justify-center text-center"
         onClick={() => navigate("/")}
       >
         <div className="w-1/2 rounded-lg bg-transparent p-12 opacity-95">
-          <h1 className="text-8xl font-extrabold">{THANK_YOU_HEADER.line1}</h1>
+          <h1 className="p-10 text-8xl font-extrabold">
+            {THANK_YOU_HEADER.line1}
+          </h1>
           <p className="mt-8 text-3xl font-bold">{THANK_YOU_HEADER.line2}</p>
         </div>
 
-        <div className="w-[480px] bg-white p-12 text-left text-sm leading-normal text-black">
+        <div className="w-[480px] border border-black bg-white p-12 text-left text-sm leading-normal text-black">
           <div className="mb-4 text-2xl font-bold">Digital Receipt</div>
 
           <div>Date: {formattedDate}</div>
