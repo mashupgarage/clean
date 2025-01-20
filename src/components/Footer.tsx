@@ -59,7 +59,7 @@ export const Footer = ({
 
       {cancelButton && (
         <Link
-          className="rounded-full border-4 border-gray-400 px-24 py-3 text-3xl font-extrabold text-gray-400"
+          className="mt-5 rounded-full border-4 border-gray-400 px-24 py-3 text-3xl font-extrabold text-gray-400"
           to="/"
         >
           Cancel
