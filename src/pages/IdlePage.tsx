@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 const IDLE_PAGE_HEADER = {
-  line1: "Order Coffee",
+  line1: "Order Here",
   line2: "Tap to Begin",
 };
 
@@ -10,10 +10,24 @@ export const IdlePage = () => {
 
   return (
     <div className="h-screen w-screen">
-      <img
+      {/* <img
         className="absolute left-0 top-0 size-full object-cover"
         src="/media/coffee-placeholder.gif"
-      />
+      /> */}
+
+      <video
+        className="absolute left-0 top-0 size-full object-cover"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source
+          src="/media/Clean Cyberport Video Display.mov"
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
 
       <div
         className="absolute inset-0 flex flex-col items-center justify-center text-center text-white"
