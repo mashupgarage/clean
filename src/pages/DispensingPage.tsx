@@ -47,7 +47,9 @@ export const DispensingPage = () => {
       // Stop dispensing when dispense time has been consumed
       console.log("Dispensing completed");
       clearInterval(interval);
-      navigate(`/${item}/${size}/thank-you`);
+      setTimeout(() => {
+        navigate(`/${item}/${size}/thank-you`);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }, dispenseTime * 1000);

@@ -26,7 +26,7 @@ export const CountdownTimer = ({
     <div
       className={`text-center text-4xl font-bold text-slate-600 ${className}`}
     >
-      {timeLeft === 0 && isDispensingPage ? (
+      {timeLeft <= 1 && isDispensingPage ? (
         "Almost there!"
       ) : (
         <>{timeLeft} seconds left</>
