@@ -1,4 +1,7 @@
-import { Fragment, StrictMode } from "react";
+import {
+  Fragment,
+  // StrictMode
+} from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
@@ -35,20 +38,20 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <PaperProvider>
-      <Fragment>
-        {Platform.OS === "web" ? (
-          <style type="text/css">{`
+  // <StrictMode>
+  <PaperProvider>
+    <Fragment>
+      {Platform.OS === "web" ? (
+        <style type="text/css">{`
         @font-face {
           font-family: 'MaterialCommunityIcons';
           src: url(${MaterialCommunityIconsFont}) format('truetype');
         }
       `}</style>
-        ) : null}
+      ) : null}
 
-        <RouterProvider router={router} />
-      </Fragment>
-    </PaperProvider>
-  </StrictMode>,
+      <RouterProvider router={router} />
+    </Fragment>
+  </PaperProvider>,
+  // </StrictMode>,
 );
