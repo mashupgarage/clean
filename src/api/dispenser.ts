@@ -19,7 +19,7 @@ export type DispenserItem = {
 };
 
 // Menu
-export const getMenuItems = async (): Promise<DispenserItem[]> => {
+export const fetchMenuItems = async (): Promise<DispenserItem[]> => {
   const endpoint = `${baseUrl}/api/dispenser/menu-items`;
 
   return axios

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkCupPresence, getMenuItems } from "../api/dispenser";
+import { checkCupPresence, fetchMenuItems } from "../api/dispenser";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
+import { useQuery } from "@tanstack/react-query";
 
 const THANK_YOU_HEADER = {
   line1: "Your order is complete. Thank you!",
@@ -13,42 +14,10 @@ export const ThankYouPage: React.FC = () => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
-  const [price, setPrice] = useState<string>("");
-  const [drink, setDrink] = useState<string>("");
-  const date = new Date();
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-
-  const formattedTime = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  }).format(date);
-
-  useEffect(() => {
-    if (!item || !size) return; // Todo: add error catching
-
-    const fetchMenuItems = async () => {
-      const dispensers = await getMenuItems();
-      const dispenser = dispensers.find((dispenser) => dispenser.name === item);
-      if (!dispenser) {
-        return;
-      }
-      const price =
-        size === "Small" ? dispenser.price_small : dispenser.price_large;
-
-      setDrink(dispenser.drink_name);
-      setPrice(price);
-
-      // NOTE: SET PRICE TO ZERO FOR MVP
-      setPrice("0.00");
-    };
-
-    fetchMenuItems();
-  }, []);
+  const { data, error } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: fetchMenuItems,
+  });
 
   useEffect(() => {
     // Start 30 second timer, then check for cup presence
@@ -76,6 +45,29 @@ export const ThankYouPage: React.FC = () => {
     }, 30000);
   }, []);
 
+  const dispenser = data?.find((dispenser) => dispenser.name === item);
+  if (!dispenser) {
+    return;
+  }
+  const drink = dispenser.drink_name;
+  const price =
+    size === "Small" ? dispenser.price_small : dispenser.price_large;
+
+  const date = new Date();
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+
+  const formattedTime = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  }).format(date);
+
+  if (error) return <p>Error: {error.message}</p>;
+
   return (
     <div className="h-screen w-screen">
       <Portal>
@@ -90,6 +82,7 @@ export const ThankYouPage: React.FC = () => {
         src="/media/coffee-placeholder.png"
         className="absolute left-0 top-0 size-full object-cover"
       /> */}
+
       <div
         className="absolute inset-0 flex flex-row items-center justify-center text-center"
         onClick={() => navigate("/")}
