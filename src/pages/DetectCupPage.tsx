@@ -73,21 +73,15 @@ export const DetectCupPage: React.FC = () => {
       <Header {...DETECT_CUP_HEADER} />
 
       <div className="flex h-full flex-col items-center">
-        {item === "Tap-A" ? (
-          <div
-            className="relative m-10 flex w-[650px]"
-            // onClick={() => navigate(`/${item}/${size}/dispense`)}
-          >
-            <img src="/media/tap.png" className="size-full" />
-          </div>
-        ) : (
-          <div
-            className="relative m-10 flex w-[650px]"
-            // onClick={() => navigate(`/${item}/${size}/dispense`)}
-          >
-            <img src="/media/tap.png" className="size-full -scale-x-100" />
-          </div>
-        )}
+        <div
+          className="relative m-10 flex w-[650px]"
+          // onClick={() => navigate(`/${item}/${size}/dispense`)}
+        >
+          <img
+            src="/media/tap.png"
+            className={`size-full ${item === "Tap-B" && "-scale-x-100"}`} // Rotate image if on Tap B
+          />
+        </div>
       </div>
 
       <div className="flex flex-col items-center gap-6">
