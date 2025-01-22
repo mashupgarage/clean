@@ -173,24 +173,15 @@ export const DispensingPage = () => {
       <Header {...DISPENSING_HEADER} />
 
       <div className="flex h-full flex-col items-center">
-        {item === "Tap-A" ? (
-          <div
-            className="relative m-10 mb-20 flex w-[650px]"
-            // onClick={() => navigate(`/${item}/${size}/thank-you`)}
-          >
-            <img src="/media/pour.png" className="size-full object-contain" />
-          </div>
-        ) : (
-          <div
-            className="relative m-10 mb-20 flex w-[650px]"
-            // onClick={() => navigate(`/${item}/${size}/thank-you`)}
-          >
-            <img
-              src="/media/pour.png"
-              className="size-full -scale-x-100 object-contain"
-            />
-          </div>
-        )}
+        <div
+          className="relative m-10 mb-20 flex w-[650px]"
+          // onClick={() => navigate(`/${item}/${size}/thank-you`)}
+        >
+          <img
+            src="/media/pour.png"
+            className={`size-full object-contain ${item === "Tap-B" && "-scale-x-100"}`} // Rotate image if on Tap B
+          />
+        </div>
       </div>
 
       <div className="flex flex-col items-center gap-6">
