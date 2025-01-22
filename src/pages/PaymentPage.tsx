@@ -206,7 +206,7 @@ export const PaymentPage = () => {
           stateSelection={option}
           setStateSelection={setOption}
           containerStyles="bg-[#DB0011] !flex-row"
-          titleStyles="mt-0 text-white text-5xl"
+          titleStyles="!mt-0 text-white text-5xl"
         />
       </div>
       <Footer
