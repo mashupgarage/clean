@@ -43,7 +43,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false, // Avoid refetching on focus
-      staleTime: 60 * 60 * 1000, // 60 minutes stale time
+      // staleTime: 1 * 60 * 1000, // 60 minutes stale time
+      staleTime: Infinity, // NOTE: To be tried. Cache will not be refreshed until the page is refreshed
+      gcTime: Infinity,
     },
   },
 });
