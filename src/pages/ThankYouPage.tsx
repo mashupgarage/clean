@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { checkCupPresence, fetchMenuItems } from "../api/dispenser";
 import { Portal } from "react-native-paper";
@@ -14,14 +14,15 @@ export const ThankYouPage: React.FC = () => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
-  const { data, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ["menuItems"],
     queryFn: fetchMenuItems,
   });
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null); // Use ref to store the timeout ID
 
   useEffect(() => {
     // Start 30 second timer, then check for cup presence
-    const timer = setTimeout(() => {
+    timer.current = setTimeout(() => {
       const interval = setInterval(() => {
         if (!item) return;
 
@@ -41,9 +42,20 @@ export const ThankYouPage: React.FC = () => {
         return () => clearInterval(interval);
       }, 1000);
 
-      return () => clearTimeout(timer);
+      return () => {
+        if (timer.current) {
+          clearTimeout(timer.current);
+        }
+      };
     }, 30000);
   }, []);
+
+  const handleClearTimeout = () => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null; // Reset the ref
+    }
+  };
 
   const dispenser = data?.find((dispenser) => dispenser.name === item);
   if (!dispenser) {
@@ -66,8 +78,6 @@ export const ThankYouPage: React.FC = () => {
     hour12: true,
   }).format(date);
 
-  if (error) return <p>Error: {error.message}</p>;
-
   return (
     <div className="h-screen w-screen">
       <Portal>
@@ -85,7 +95,10 @@ export const ThankYouPage: React.FC = () => {
 
       <div
         className="absolute inset-0 flex flex-row items-center justify-center text-center"
-        onClick={() => navigate("/")}
+        onClick={() => {
+          handleClearTimeout();
+          navigate("/");
+        }}
       >
         <div className="w-1/2 rounded-lg bg-transparent p-12 opacity-95">
           <h1 className="p-10 text-8xl font-extrabold">
