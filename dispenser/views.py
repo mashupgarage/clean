@@ -232,12 +232,12 @@ def report_transaction(request):
         # Add require field for the transaction data
         transaction_data["order_number"] = transaction_data["transactionNo"]
         transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
-        transaction_data["amount"] = transaction_data["payAmount"] # Sample amount: 000000000100
+        transaction_data["amount"] = format_transaction_amount(transaction_data["payAmount"])
         transaction_data["status"] = "Completed" # ORDER STATUSES: Completed, Pending, Refunded
         transaction_data["payment_method"] = transaction_data["payMethod"]
-        transaction_data["product_name"] = "Sample Product" # Input Product Name here
-        transaction_data["price"] = "1" # Input Product Price here
-        transaction_data["quantity"] = "1" # Input Product Quantity here
+        transaction_data["product_name"] = transaction_data["description"]
+        transaction_data["price"] = format_transaction_amount(transaction_data["payAmount"])
+        transaction_data["quantity"] = "1"
 
         # print(f"Transaction data: {transaction_data}")
 
@@ -266,6 +266,9 @@ def report_transaction(request):
 
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def format_transaction_amount(amount):
+    return "{:.2f}".format(int(amount) / 100)
 
 
 # Viewset for the Store model - allows for CRUD operations
