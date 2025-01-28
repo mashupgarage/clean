@@ -66,9 +66,9 @@ export const startTransaction = async (
   privKey: string,
   // Docs are not so clear what the return type for data is
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<{ code: string; data: any; message: string }> => {
+): Promise<{ code: number; data: any; message: string }> => {
   const body = JSON.stringify(transactionBody);
-  const endpoint = `/v1/pos/sales`;
+  const endpoint = `/v2/pos/sales`;
 
   const response = await axios.post(`${serverUrl}/api/sales/`, {
     kPayDeviceUrl,
