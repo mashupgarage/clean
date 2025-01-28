@@ -104,9 +104,13 @@ export const PaymentPage = () => {
       // Loading animation, change to the "look at terminal" modal
       setLoadingVisible(true);
 
+      // if (data.code === 10000) {  }
+      if (data.code != 10000) {
+        setErrorVisible(true);
+      }
       // Start polling for data
 
-      if (data) {
+      if (data.code === 10000) {
         setTimeout(() => {
           setLoadingVisible(false);
           setSuccessVisible(true);
