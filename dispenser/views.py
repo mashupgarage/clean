@@ -1269,8 +1269,13 @@ def sales(request):
             
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
+            
+            # Convert the body to a dict to be able to add the outTradeNo 
+            body = eval(data["body"])
+            body["outTradeNo"] = unique_order_id
 
-            signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{data['body']}\n"
+            # Convert the body back to json format without spaces
+            signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{json.dumps(body, separators=(',', ':'))}\n"
 
             priv_key_pem = data.get("privKey")
             if not priv_key_pem:
@@ -1308,7 +1313,7 @@ def sales(request):
             endpointUrl = data['kPayDeviceUrl'] + data["endpoint"]
             
             # NOTE: This will only return a generic success message. The response will be sent to the callbackUrl
-            response = requests.post(endpointUrl, json=eval(data["body"]), headers=headers)
+            response = requests.post(endpointUrl, json=body, headers=headers)
             # response.data
               # description
               # memberCode
