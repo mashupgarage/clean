@@ -1248,7 +1248,7 @@ def sales(request):
 
                     # Send a GET request to check if the order ID exists
                     response = requests.get(
-                        "http://54.312.insert_endpoint_here",
+                        "http://54.184.91.120/api/transactions/check-transaction-id/",
                         params={"transactionId": order_id},
                         timeout=10 # add a timeout to prevent hanging
                     )
@@ -1267,7 +1267,6 @@ def sales(request):
             unique_order_id = generate_unique_order_id()
             print("Generated Unique Order ID:", unique_order_id)
             
-
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
 
@@ -1308,8 +1307,24 @@ def sales(request):
             
             endpointUrl = data['kPayDeviceUrl'] + data["endpoint"]
             
+            # NOTE: This will only return a generic success message. The response will be sent to the callbackUrl
             response = requests.post(endpointUrl, json=eval(data["body"]), headers=headers)
-            
+            # response.data
+              # description
+              # memberCode
+              # needSignature
+              # OutTradeNO
+              # payAmount
+              # payCurrency
+              # payMethod
+              # payResult
+              # reason
+              # refNo
+              # remark
+              # typsAmount
+              # transactionNo
+              # transactionType
+                        
             return JsonResponse(response.json(), status=response.status_code)
 
         except Exception as e:
