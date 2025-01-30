@@ -237,7 +237,31 @@ def report_transaction(request):
         #  "transactionNo":"",
         #  "transactionType":1
         #  }
-        
+
+        STATUS_MAPPING = {
+            -1: "Timeout",
+            1: "Pending",
+            2: "Completed",
+            3: "Failed",
+            4: "Returned",
+            5: "Revoked",
+            6: "Canceled"
+        }
+        PAYMENT_METHOD_MAPPING = {
+            0: "Unknown",
+            1: "Visa",
+            2: "Mastercard",
+            3: "China UnionPay",
+            4: "WeChat",
+            5: "Alipay",
+            6: "American Express",
+            7: "Diners Club",
+            8: "JCB",
+            9: "UnionPay QuickPass",
+            11: "Octopus",
+            12: "Payme"    
+        }
+
         request_data = json.loads(request.body.decode("utf-8")) 
 
         # Get the first store and vending machine records
@@ -254,8 +278,8 @@ def report_transaction(request):
         transaction_data["order_number"] = request_data["outTradeNO"]
         transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
         transaction_data["amount"] = format_transaction_amount(request_data["payAmount"])
-        transaction_data["status"] = "Completed" # ORDER STATUSES: Completed, Pending, Refunded
-        transaction_data["payment_method"] = request_data["payMethod"]
+        transaction_data["status"] = STATUS_MAPPING[int(request_data["payResult"])] # ORDER STATUSES: Completed, Pending, Refunded
+        transaction_data["payment_method"] = PAYMENT_METHOD_MAPPING[int(request_data["payMethod"])]
         transaction_data["product_name"] = request_data["description"]
         transaction_data["price"] = format_transaction_amount(request_data["payAmount"])
         transaction_data["quantity"] = "1"
