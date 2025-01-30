@@ -213,30 +213,51 @@ def send_notification(notification_data):
 
 
 @csrf_exempt
+@api_view(["POST"])
 def report_transaction(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
     try:
         # Extract the transaction data from the request
-        transaction_data = request.data
+        # request.body
+        # {
+        #  "description":"",
+        #  "memberCode":"",
+        #  "needSignature":true,
+        #  "outTradeNO":"PIFAARUX",
+        #  "payAmount":"000000000100",
+        #  "payCurrency":"344",
+        #  "payMethod":1,
+        #  "payResult":2,
+        #  "reason":"",
+        #  "refNo":"503003126367",
+        #  "remark":"",
+        #  "tipsAmount":"",
+        #  "transactionNo":"",
+        #  "transactionType":1
+        #  }
+        
+        request_data = json.loads(request.body.decode("utf-8")) 
 
         # Get the first store and vending machine records
         store = Store.objects.first()
         vending_machine = VendingMachine.objects.first()
+
+        transaction_data = {}
 
         # Add store_name and vending_machine_name to the transaction data
         transaction_data["store_name"] = store.name if store else "Unknown Store"
         transaction_data["vending_machine_name"] = vending_machine.name if vending_machine else "Unknown Machine"
 
         # Add require field for the transaction data
-        transaction_data["order_number"] = transaction_data["transactionNo"]
+        transaction_data["order_number"] = request_data["outTradeNO"]
         transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
-        transaction_data["amount"] = format_transaction_amount(transaction_data["payAmount"])
+        transaction_data["amount"] = format_transaction_amount(request_data["payAmount"])
         transaction_data["status"] = "Completed" # ORDER STATUSES: Completed, Pending, Refunded
-        transaction_data["payment_method"] = transaction_data["payMethod"]
-        transaction_data["product_name"] = transaction_data["description"]
-        transaction_data["price"] = format_transaction_amount(transaction_data["payAmount"])
+        transaction_data["payment_method"] = request_data["payMethod"]
+        transaction_data["product_name"] = request_data["description"]
+        transaction_data["price"] = format_transaction_amount(request_data["payAmount"])
         transaction_data["quantity"] = "1"
 
         # print(f"Transaction data: {transaction_data}")
@@ -247,7 +268,7 @@ def report_transaction(request):
         # Send the transaction data to the cloud server
         cloud_response = requests.post(
             url,
-            json=transaction_data,
+            data=request_data,
             headers={"Content-Type": "application/json"},
         )
 
