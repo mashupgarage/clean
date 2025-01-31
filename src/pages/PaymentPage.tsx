@@ -5,12 +5,7 @@ import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
 import { PaymentItem } from "../components/PaymentItem";
 import { fetchMenuItems } from "../api/dispenser";
-import {
-  // queryTransaction,
-  // signInToKPay,
-  startTransaction,
-} from "../api/payments";
-import { usePrivKeyStore } from "../hooks/usePrivKeyStore";
+import { signInToKPay, startTransaction } from "../api/payments";
 import { useQuery } from "@tanstack/react-query";
 
 // Payment Types
@@ -65,9 +60,7 @@ export const PaymentPage = () => {
   const [successVisible, setSuccessVisible] = useState(false);
   const [errorVisible, setErrorVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
-  const [option, setOption] = useState<number>(1); // will default to card if somehow no option selected
-  // const updatePrivKey = usePrivKeyStore((state) => state.updatePrivKey);
-  const privKey = usePrivKeyStore((state) => state.privKey);
+  const [option, setOption] = useState<number>(1); // will default to card
 
   const { data } = useQuery({
     queryKey: ["menuItems"],
@@ -84,34 +77,30 @@ export const PaymentPage = () => {
 
   const showPaymentModal = () => {
     // Start Transaction
-
-    // Turn this into a hook that is called whenever a transaction fails
-    // signInToKPay().then((data) => {
-    //   const privKey = data.data.appPrivateKey;
-    //   updatePrivKey(privKey);
-    // });
-
-    startTransaction(
-      {
-        payAmount: price,
-        payCurrency: "344",
-        paymentType: option,
-        description: dispenser.drink_name,
-        callbackUrl:
-          "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
-      },
-      privKey,
-    ).then((data) => {
-      // Loading animation, change to the "look at terminal" modal
+    startTransaction({
+      payAmount: price,
+      payCurrency: "344",
+      paymentType: option,
+      description: dispenser.drink_name,
+      callbackUrl:
+        "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
+    }).then((data) => {
+      // TODO: Loading animation, change to the "look at terminal" modal
       setLoadingVisible(true);
 
-      // if (data.code === 10000) {  }
+      // If authentication fails, reauthenticate to KPay and throw error to user
+      if (data.code === 40001) {
+        signInToKPay();
+        setErrorVisible(true);
+      }
+
       if (data.code != 10000) {
         setErrorVisible(true);
       }
-      // Start polling for data
 
       if (data.code === 10000) {
+        // TODO: Poll admin portal for order ID
+
         setTimeout(() => {
           setLoadingVisible(false);
           setSuccessVisible(true);
@@ -123,8 +112,6 @@ export const PaymentPage = () => {
         }, 4000);
       }
     });
-
-    // queryTransaction("98765443217", privKey);
   };
 
   return (
@@ -165,7 +152,10 @@ export const PaymentPage = () => {
           dismissable={false}
           contentContainerStyle={{ height: "100%" }}
         >
-          <div className="m-auto flex flex-col items-center gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl">
+          <div
+            onClick={() => navigate(`/`)}
+            className="m-auto flex flex-col items-center gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl"
+          >
             <img className="max-w-8" src="/media/error.png" />
             <div className="text-3xl font-extrabold text-red-600">
               Error: Payment Failure

@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const kPayAppSecret = import.meta.env.VITE_KPAY_APP_SECRET;
+// const kPayAppSecret = import.meta.env.VITE_KPAY_APP_SECRET;
 const kPayDeviceUrl = import.meta.env.VITE_KPAY_DEVICE_URL;
-const kPayAppId = `${import.meta.env.VITE_KPAY_APP_ID}`;
+const kPayAppId = `${import.meta.env.VITE_KPAY_APP_ID}`; // NOTE: Possibly move to backend
 const serverUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
 
 type TransactionBody = {
@@ -21,41 +21,14 @@ type TransactionBody = {
 
 // Sign in to the payment provider (Note: Make a page to run this API, also  )
 // https://docs-posserver.kpay-group.com/#/api/index?id=%e6%87%89%e7%94%a8%e7%b0%bd%e5%88%b0
+
 export const signInToKPay = async (): Promise<{
   code: number;
   data: { platformPublicKey: string; appPrivateKey: string };
   message: string;
 }> => {
-  const endpoint = `${kPayDeviceUrl}/v1/pos/sign`;
-
-  const generateNonce = (length = 32) => {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let nonce = "";
-    for (let i = 0; i < length; i++) {
-      nonce += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return nonce;
-  };
-
-  const headers = {
-    timestamp: Math.floor(Date.now()),
-    nonceStr: generateNonce(),
-    "Content-Type": "application/json",
-  };
-
-  const body = JSON.stringify({
-    appId: kPayAppId,
-    appSecret: kPayAppSecret,
-    actionCallbackUrl: `${kPayDeviceUrl}`,
-  });
-  console.log(headers);
-  console.log(body);
-
-  return axios
-    .post(endpoint, body, { headers })
-    .then((res) => res.data)
-    .catch((err) => err.response.data.error);
+  const response = await axios.post(`${serverUrl}/api/kpay_auth/`);
+  return response.data;
 };
 
 // Transaction API
@@ -63,8 +36,6 @@ export const signInToKPay = async (): Promise<{
 // Note: Using v2 API
 export const startTransaction = async (
   transactionBody: TransactionBody,
-  privKey: string,
-  // Docs are not so clear what the return type for data is
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ code: number; data: any; message: string }> => {
   const body = JSON.stringify(transactionBody);
@@ -75,7 +46,6 @@ export const startTransaction = async (
     endpoint,
     appId: kPayAppId,
     body,
-    privKey, // Transfer to backend later
   });
 
   return response.data;

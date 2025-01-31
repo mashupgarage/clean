@@ -20,6 +20,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 from rest_framework import status, views, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ValidationError
@@ -1262,17 +1263,50 @@ from django.http import JsonResponse
 def get_react_config(request):
     return JsonResponse(settings.REACT_CONFIG)
 
+def generate_nonce(length=32):
+    characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
+@csrf_exempt
+def kpay_auth(request):
+    if request.method == "POST":
+        try:
+            nonceStr = generate_nonce()
+            timestamp = str(int(time.time() * 1000)) 
+            url = f"{settings.KPAY_TERMINAL_URL}/v1/pos/sign"
+
+            headers = {
+              "timestamp": timestamp,
+              "nonceStr": nonceStr,
+              "Content-Type": "application/json",
+            }
+
+            body = {
+                "appId": settings.KPAY_APP_ID,
+                "appSecret": settings.KPAY_APP_SECRET,
+                "actionCallbackUrl": settings.KPAY_TERMINAL_URL
+            }
+
+            response = requests.post(url, json=body, headers=headers)
+            json_data = response.json()
+            private_key = json_data.get("data", {}).get("appPrivateKey")
+
+            # Save to cache
+            cache.set("private_key", private_key, timeout=600)
+
+            return JsonResponse({"message": "Private key saved to cache"}, status=response.status_code)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
 @csrf_exempt
 def sales(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
 
-            # Generate a random nonce
-            def generate_nonce(length=32):
-                characters = string.ascii_letters + string.digits
-                return ''.join(secrets.choice(characters) for _ in range(length))
-                        
           # Generate 8 digit random order IDs. Needs to be queried against existing IDs.
             def generate_order_id(length=8):
                 # Define allowed characters: uppercase letters excluding 'O' + digits
@@ -1319,17 +1353,17 @@ def sales(request):
             # Convert the body back to json format without spaces
             signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{json.dumps(body, separators=(',', ':'))}\n"
 
-            priv_key_pem = data.get("privKey")
-            if not priv_key_pem:
+            priv_key = cache.get("private_key")
+            if not priv_key:
                 return JsonResponse({"error": "Private key not provided"}, status=400)
 
-            priv_key_pem = priv_key_pem.strip()
-            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
-                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+            priv_key = priv_key.strip()
+            if not priv_key.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key = f"-----BEGIN PRIVATE KEY-----\n{priv_key}\n-----END PRIVATE KEY-----"
 
             # Load the private key
             private_key = serialization.load_pem_private_key(
-                priv_key_pem.encode(),
+                priv_key.encode(),
                 password=None,
                 backend=default_backend(),
             )
@@ -1384,13 +1418,7 @@ def sales(request):
 def query_transaction(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-
-            # Generate a random nonce
-            def generate_nonce(length=32):
-                characters = string.ascii_letters + string.digits
-                return ''.join(secrets.choice(characters) for _ in range(length))
-            
+            data = json.loads(request.body)            
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
             outTradeNo = data.get("outTradeNo")
@@ -1409,17 +1437,17 @@ def query_transaction(request):
             
             signatureString = f"GET\n{endpoint_with_params}\n{timestamp}\n{nonceStr}\n"
 
-            priv_key_pem = data.get("privKey")
-            if not priv_key_pem:
+            priv_key = cache.get("private_key")
+            if not priv_key:
                 return JsonResponse({"error": "Private key not provided"}, status=400)
 
-            priv_key_pem = priv_key_pem.strip()
-            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
-                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+            priv_key = priv_key.strip()
+            if not priv_key.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key = f"-----BEGIN PRIVATE KEY-----\n{priv_key}\n-----END PRIVATE KEY-----"
 
             # Load the private key
             private_key = serialization.load_pem_private_key(
-                priv_key_pem.encode(),
+                priv_key.encode(),
                 password=None,
                 backend=default_backend(),
             )
