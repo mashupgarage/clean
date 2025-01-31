@@ -284,15 +284,13 @@ def report_transaction(request):
         transaction_data["price"] = format_transaction_amount(request_data["payAmount"])
         transaction_data["quantity"] = "1"
 
-        # print(f"Transaction data: {transaction_data}")
-
         # url = "http://127.0.0.1:8080/api/transactions/",
         url = settings.TRANSACTION_ENDPOINT
 
         # Send the transaction data to the cloud server
         cloud_response = requests.post(
             url,
-            data=request_data,
+            json=transaction_data,
             headers={"Content-Type": "application/json"},
         )
 
@@ -314,7 +312,6 @@ def report_transaction(request):
 
 def format_transaction_amount(amount):
     return "{:.2f}".format(int(amount) / 100)
-
 
 # Viewset for the Store model - allows for CRUD operations
 class StoreViewSet(viewsets.ModelViewSet):

@@ -96,6 +96,7 @@ export const PaymentPage = () => {
         payAmount: price,
         payCurrency: "344",
         paymentType: option,
+        description: dispenser.drink_name,
         callbackUrl:
           "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
       },
