@@ -62,7 +62,10 @@ const Main = () => {
           path: ":item/:size/dispense",
           element: <DispensingPage {...{ appearanceData }} />,
         },
-        { path: ":item/:size/thank-you", element: <ThankYouPage /> },
+        {
+          path: ":item/:size/thank-you",
+          element: <ThankYouPage {...{ appearanceData }} />,
+        },
       ],
     },
   ]);

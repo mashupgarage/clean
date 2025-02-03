@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { IdleBackground } from "../components/IdleBackground";
 import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
+import { Background } from "../components/Background";
 
 export const IdlePage = ({
   appearanceData,
@@ -20,15 +20,13 @@ export const IdlePage = ({
     idle_font_color,
   } = appearanceData;
 
+  const backgroundMedia =
+    idle_video && idle_video_toggle ? idle_video : idle_background_image;
+
   return (
     <div className="h-screen w-screen">
-      <IdleBackground
-        {...{
-          idle_background_color,
-          idle_background_image,
-          idle_video,
-          idle_video_toggle,
-        }}
+      <Background
+        {...{ backgroundMedia, backgroundColor: idle_background_color }}
       />
 
       <div
