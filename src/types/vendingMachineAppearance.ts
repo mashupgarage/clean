@@ -11,4 +11,6 @@ export type VendingMachineAppearance = {
   item_selection_title: string;
   item_size_title: string;
   payment_title: string;
+  detection_timeout: number;
+  dispensing_timeout: number;
 }

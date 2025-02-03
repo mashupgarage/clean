@@ -54,7 +54,10 @@ const Main = () => {
           path: ":item/:size/payment",
           element: <PaymentPage {...{ appearanceData }} />,
         },
-        { path: ":item/:size/detect-cup", element: <DetectCupPage /> },
+        {
+          path: ":item/:size/detect-cup",
+          element: <DetectCupPage {...{ appearanceData }} />,
+        },
         { path: ":item/:size/dispense", element: <DispensingPage /> },
         { path: ":item/:size/thank-you", element: <ThankYouPage /> },
       ],

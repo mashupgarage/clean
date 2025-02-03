@@ -7,16 +7,20 @@ import { ProgressBar } from "../components/ProgressBar";
 import { ErrorModal } from "../components/ErrorModal";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 
 const DETECT_CUP_HEADER = {
   title: "Please place your cup under the tap",
 };
 
-export const DetectCupPage: React.FC = () => {
+export const DetectCupPage = ({ appearanceData }: { appearanceData: VendingMachineAppearance }) => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
   const [visibleError, setVisibleError] = useState<boolean>(false);
+
+  const { detection_timeout } = appearanceData;
+  const detectionTimeout = detection_timeout * 1000;
 
   useEffect(() => {
     // Detect for cup presence in 1 second intervals
@@ -58,7 +62,7 @@ export const DetectCupPage: React.FC = () => {
           visible={visibleWarning}
           header="Warning: No cup detected"
           subheader="No cup has been detected. To continue, please place your cup under the tap within 10 seconds or the order will be cancelled."
-          duration={10}
+          duration={detectionTimeout}
         />
         <ErrorModal
           visible={visibleError}
