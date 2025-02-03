@@ -1292,7 +1292,7 @@ def kpay_auth(request):
             private_key = json_data.get("data", {}).get("appPrivateKey")
 
             # Save to cache
-            cache.set("private_key", private_key, timeout=600)
+            cache.set("private_key", private_key, timeout=None)
 
             return JsonResponse({"message": "Private key saved to cache"}, status=response.status_code)
 
@@ -1355,7 +1355,7 @@ def sales(request):
 
             priv_key = cache.get("private_key")
             if not priv_key:
-                return JsonResponse({"error": "Private key not provided"}, status=400)
+                return JsonResponse({"error": "Private key not provided", "code": 40001}, status=200)
 
             priv_key = priv_key.strip()
             if not priv_key.startswith("-----BEGIN PRIVATE KEY-----"):
@@ -1405,8 +1405,10 @@ def sales(request):
               # typsAmount
               # transactionNo
               # transactionType
-                        
-            return JsonResponse(response.json(), status=response.status_code)
+
+            formatted_response = response.json()
+            formatted_response["order_id"] = unique_order_id
+            return JsonResponse(formatted_response, status=response.status_code)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
