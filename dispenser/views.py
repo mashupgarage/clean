@@ -1203,7 +1203,9 @@ def start_drink_dispensing(request):
 
 @api_view(["POST"])
 def stop_drink_dispensing(request):
-    dispenser_name = request.GET.get("dispenser", default="Tap-A")
+    body = json.loads(request.body.decode('utf-8'))
+
+    dispenser_name = body.get("dispenser")
 
     response_data = {}
 

@@ -67,7 +67,7 @@ export const stopDrinkDispensing = async (dispenserName: string) => {
   const body = JSON.stringify({ dispenser: dispenserName });
 
   return axios
-    .post(endpoint, body)
+    .post(endpoint, body, { headers: { "Content-Type": "application/json" } })
     .then((res) => res.data)
     .catch((err) => err.response.data.error);
 };
