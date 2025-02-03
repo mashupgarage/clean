@@ -5,7 +5,11 @@ import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
 import { PaymentItem } from "../components/PaymentItem";
 import { fetchMenuItems } from "../api/dispenser";
-import { signInToKPay, startTransaction } from "../api/payments";
+import {
+  checkTransaction,
+  signInToKPay,
+  startTransaction,
+} from "../api/payments";
 import { useQuery } from "@tanstack/react-query";
 
 // Payment Types
@@ -90,7 +94,9 @@ export const PaymentPage = () => {
 
       // If authentication fails, reauthenticate to KPay and throw error to user
       if (data.code === 40001) {
+        console.log("Re-authenticating to KPay...");
         signInToKPay();
+        // Note: Add a way to try again once
         setErrorVisible(true);
       }
 
@@ -99,17 +105,47 @@ export const PaymentPage = () => {
       }
 
       if (data.code === 10000) {
-        // TODO: Poll admin portal for order ID
+        // Poll admin portal every 3 seconds to see if the transaction is complete
+        const interval = setInterval(() => {
+          checkTransaction(data.order_id).then((data) => {
+            if (!data.data) {
+              console.log(data.data?.message);
+              return; // prevent other code from running
+            }
 
-        setTimeout(() => {
-          setLoadingVisible(false);
-          setSuccessVisible(true);
-        }, 2000);
+            if (data.data?.status === "Completed") {
+              console.log(data.data?.message);
+              clearInterval(interval);
+              clearTimeout(timer);
 
-        setTimeout(() => {
-          setSuccessVisible(false);
-          navigate(`/${item}/${size}/detect-cup`);
-        }, 4000);
+              setLoadingVisible(false);
+              setSuccessVisible(true);
+
+              setTimeout(() => {
+                setSuccessVisible(false);
+                navigate(`/${item}/${size}/detect-cup`);
+              }, 2000);
+            }
+
+            if (data.data?.status != "Completed") {
+              console.log(data.data?.message);
+              clearInterval(interval);
+              clearTimeout(timer);
+
+              setLoadingVisible(false);
+              setErrorVisible(true);
+            }
+          });
+        }, 3000);
+
+        // Timeout after 66 seconds (65s + 1s allowance)
+        // Note: KPay has a 65 second timeout for payments
+        const timer = setTimeout(() => {
+          clearInterval(interval);
+
+          // Error Timeout Modal
+          setErrorVisible(true);
+        }, 66000);
       }
     });
   };
