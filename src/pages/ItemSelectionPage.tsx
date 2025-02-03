@@ -5,27 +5,36 @@ import {
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { Item } from "../components/Item";
-import { useQuery } from "@tanstack/react-query";
-import { fetchMenuItems } from "../api/dispenser";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 
-const ITEM_SELECTION_HEADER = {
-  title: "Please choose your drink",
+const TAP_A = {
+  name: "Coffee A",
+  price: "HK$ 2.20",
+  description:
+    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
+  imageUrl: "/media/coffee-a.png",
 };
 
-export const ItemSelectionPage: React.FC = () => {
-  const [item, setItem] = useState<string>("");
-  const { data } = useQuery({
-    queryKey: ["menuItems"],
-    queryFn: fetchMenuItems,
-  });
+const TAP_B = {
+  name: "Coffee B",
+  price: "HK$ 2.20",
+  description:
+    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
+  imageUrl: "/media/coffee-b.png",
+};
 
-  // TODO: Add Skeleton loaders whenever the cache is reset, OR increase stale time and only change on refresh
-  const Tap_A = data?.find((dispenser) => dispenser.name === "Tap-A");
-  const Tap_B = data?.find((dispenser) => dispenser.name === "Tap-B");
+export const ItemSelectionPage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
+  const [item, setItem] = useState<string>("");
+
+  const { item_selection_title } = appearanceData;
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header {...ITEM_SELECTION_HEADER} />
+      <Header title={item_selection_title} />
 
       <div className="flex h-full flex-row items-center justify-center">
         <Item

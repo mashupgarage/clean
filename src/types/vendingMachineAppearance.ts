@@ -8,4 +8,5 @@ export type VendingMachineAppearance = {
   idle_title: string;
   idle_font_color: string;
   idle_font_style: string;
+  item_selection_title: string;
 }

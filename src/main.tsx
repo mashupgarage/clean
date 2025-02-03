@@ -59,13 +59,18 @@ const Main = () => {
         {
           path: "/",
           element: (
+            <RouterWrapper component={IdlePage} {...{ appearanceData }} />
+          ),
+        },
+        {
+          path: "item/",
+          element: (
             <RouterWrapper
-              component={IdlePage}
-              appearanceData={appearanceData}
+              component={ItemSelectionPage}
+              {...{ appearanceData }}
             />
           ),
         },
-        { path: "item/", element: <ItemSelectionPage /> },
         { path: ":item/", element: <ItemSizePage /> },
         { path: ":item/:size/payment", element: <PaymentPage /> },
         { path: ":item/:size/detect-cup", element: <DetectCupPage /> },
