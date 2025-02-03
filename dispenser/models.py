@@ -229,13 +229,13 @@ class VendingMachine(models.Model):
         help_text="The subtitle of the idle page.",
     )
 
-    idle_title_font_style = models.CharField(
+    idle_font_style = models.CharField(
         max_length=100,
         default="Roboto Mono",
         help_text="The font name for the idle title.",
     )
 
-    idle_title_font_color = models.CharField(
+    idle_font_color = models.CharField(
         max_length=7,
         default="#000000",
         help_text="The font color for the idle title.",

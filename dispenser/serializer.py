@@ -142,8 +142,8 @@ class VendingMachineAppearanceSerializer(serializers.ModelSerializer):
             "idle_video_toggle",
             "idle_title",
             "idle_subtitle",
-            "idle_title_font_style",
-            "idle_title_font_color",
+            "idle_font_style",
+            "idle_font_color",
             # Item Selection Page
             "item_selection_title",
             # Item Size Page
