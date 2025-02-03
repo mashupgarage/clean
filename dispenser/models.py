@@ -7,6 +7,8 @@ from .validators import (
     validate_drink_image_size,
     validate_image_file_extension,
     validate_machine_image_size,
+    validate_gif_size,
+    validate_gif_file_extension
 )
 
 
@@ -14,6 +16,9 @@ from .validators import (
 def machine_image_upload_path(instance, filename):
     return f"machine/image/{filename}"
 
+# Path for saving background videos of vending machines
+def machine_video_upload_path(instance, filename):
+    return f"machine/video/{filename}"
 
 # Path for saving images of dispensers
 def dispenser_image_upload_path(instance, filename):
@@ -130,26 +135,6 @@ class VendingMachine(models.Model):
         help_text="The IP port number of the machine.",
     )  # Port of the machine
 
-    font_name = models.CharField(
-        max_length=100,
-        default="Roboto Mono",
-        help_text="The font name for the display.",
-    )
-
-    background_color = models.CharField(
-        max_length=7,
-        default="#FFFFFF",
-        help_text="The background color of the display.",
-    )  # Hex color, e.g., #FFFFFF
-
-    background_image = models.ImageField(
-        upload_to=machine_image_upload_path,
-        null=True,
-        blank=True,
-        validators=[validate_machine_image_size, validate_image_file_extension],
-        help_text="The background image of the display.",
-    )
-
     is_locked = models.BooleanField(
         default=False,
         help_text="Whether the machine is locked.",
@@ -177,6 +162,166 @@ class VendingMachine(models.Model):
         choices=MACHINE_STATUS_CHOICES,
         default=IDLE,
         help_text="The status of the vending machine.",
+    )
+
+    # General Settings
+    general_button_font_style = models.CharField(
+        max_length=100,
+        default="Roboto Mono",
+        help_text="The font name for the general buttons.",
+    )
+
+    general_button_text_color = models.CharField(
+        max_length=7,
+        default="#000000",
+        help_text="The text color for the general buttons.",
+    )
+
+    general_button_text_content = models.CharField(
+        max_length=100,
+        default="General Button",
+        help_text="The text content for the general buttons.",
+    )
+
+    general_title_style = models.CharField(
+        max_length=100,
+        default="Roboto Mono",
+        help_text="The font name for the general title.",
+    )
+
+    # Idle Page
+    idle_background_color = models.CharField(
+        max_length=7,
+        default="#FFFFFF",
+        help_text="The background color of the display.",
+    )  # Hex color, e.g., #FFFFFF
+
+    idle_background_image = models.ImageField(
+        upload_to=machine_image_upload_path,
+        null=True,
+        blank=True,
+        validators=[validate_machine_image_size, validate_image_file_extension],
+        help_text="The background image of the display.",
+    )
+
+    idle_video = models.FileField(
+        upload_to=machine_video_upload_path,
+        null=True,
+        blank=True,
+        validators=[validate_gif_size, validate_gif_file_extension],
+        help_text="The video of the idle page.",
+    )
+
+    idle_video_toggle = models.BooleanField(
+        default=False,
+        help_text="Whether to show the video on the idle page.",
+    )
+
+    idle_title = models.CharField(
+        max_length=100,
+        default="Idle Title",
+        help_text="The title of the idle page.",
+    )
+
+    idle_subtitle = models.CharField(
+        max_length=100,
+        default="Idle Subtitle",
+        help_text="The subtitle of the idle page.",
+    )
+
+    idle_title_font_style = models.CharField(
+        max_length=100,
+        default="Roboto Mono",
+        help_text="The font name for the idle title.",
+    )
+
+    idle_title_font_color = models.CharField(
+        max_length=7,
+        default="#000000",
+        help_text="The font color for the idle title.",
+    )
+
+    # Item Selection Page
+    item_selection_title = models.CharField(
+        max_length=100,
+        default="Item Selection Title",
+        help_text="The title of the item selection page.",
+    )
+
+    # Item Size Page
+    item_size_title = models.CharField(
+        max_length=100,
+        default="Item Size Title",
+        help_text="The title of the item size page.",
+    )
+
+    # Payment Page
+    payment_title = models.CharField(
+        max_length=100,
+        default="Payment Title",
+        help_text="The title of the payment page.",
+    )
+
+    # Detect Cup and Dispensing Page
+    detection_timeout = models.IntegerField(
+        default=30,
+        help_text="The timeout for detecting the cup in seconds.",
+    )
+
+    dispensing_timeout = models.IntegerField(
+        default=60,
+        help_text="The timeout for dispensing the drink in seconds.",
+    )
+
+    # Thank You Page
+    thank_you_background_image = models.ImageField(
+        upload_to=machine_image_upload_path,
+        null=True,
+        blank=True,
+        validators=[validate_machine_image_size, validate_image_file_extension],
+        help_text="The background image of the thank you page.",
+    )
+
+    # TODO: Add video validators
+    # thank_you_video = models.FileField(
+    #     upload_to=machine_image_upload_path,
+    #     null=True,
+    #     blank=True,
+    #     help_text="The video of the thank you page.",
+    # )
+
+    # thank_you_video_toggle = models.BooleanField(
+    #     default=False,
+    #     help_text="Whether to show the video on the thank you page.",
+    # )
+
+    thank_you_title = models.CharField(
+        max_length=100,
+        default="Thank You Title",
+        help_text="The title of the thank you page.",
+    )
+
+    thank_you_subtitle = models.CharField(
+        max_length=100,
+        default="Thank You Subtitle",
+        help_text="The subtitle of the thank you page.",
+    )
+
+    thank_you_font_style = models.CharField(
+        max_length=100,
+        default="Roboto Mono",
+        help_text="The font name for the thank you page.",
+    )
+
+    thank_you_font_color = models.CharField(
+        max_length=7,
+        default="#000000",
+        help_text="The font color for the thank you page.",
+    )
+
+    thank_you_exit_timeout = models.IntegerField(
+        default=30,
+        help_text="The timeout for exiting the thank you page in seconds.",
     )
 
     def __str__(self):
@@ -323,13 +468,15 @@ class Dispenser(models.Model):
         help_text="The duration of dispensing the large drink in seconds (0 to 20).",
     )
 
-    weight_small = models.FloatField(
-        default=0.0,
-        help_text="The weight of the small drink in grams.",
+    weight_small = models.CharField(
+        default="12oz",
+        max_length=20,
+        help_text="The weight of the small drink.",
     )
-    weight_large = models.FloatField(
-        default=0.0,
-        help_text="The weight of the large drink in grams.",
+    weight_large = models.CharField(
+        default="16oz",
+        max_length=20,
+        help_text="The weight of the large drink.",
     )
 
     min_distance = models.FloatField(
