@@ -4,6 +4,7 @@ import axios from "axios";
 const kPayDeviceUrl = import.meta.env.VITE_KPAY_DEVICE_URL;
 const kPayAppId = `${import.meta.env.VITE_KPAY_APP_ID}`; // NOTE: Possibly move to backend
 const serverUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
+const adminPortalUrl = import.meta.env.VITE_ADMIN_PORTAL_URL;
 
 type TransactionBody = {
   // outTradeNo: string; // max 32 chars note, this is being generated in the backend now
@@ -37,7 +38,7 @@ export const signInToKPay = async (): Promise<{
 export const startTransaction = async (
   transactionBody: TransactionBody,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<{ code: number; data: any; message: string }> => {
+): Promise<{ code: number; data: any; message: string; order_id: string }> => {
   const body = JSON.stringify(transactionBody);
   const endpoint = `/v2/pos/sales`;
 
@@ -49,6 +50,14 @@ export const startTransaction = async (
   });
 
   return response.data;
+};
+
+export const checkTransaction = async (transactionId: string) => {
+  const endpoint = `${adminPortalUrl}/api/transactions/check-transaction-id/?transactionId=${transactionId}`;
+  return axios
+    .get(endpoint, { timeout: 10000 })
+    .then((res) => res.data)
+    .catch((err) => err.response.data.error);
 };
 
 // Print Receipt
