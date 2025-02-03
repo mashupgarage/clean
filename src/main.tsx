@@ -21,18 +21,6 @@ import { ThankYouPage } from "./pages/ThankYouPage.tsx";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 
-interface RouterWrapperProps {
-  component: React.ComponentType<{ appearanceData: VendingMachineAppearance }>;
-  appearanceData: VendingMachineAppearance;
-}
-
-const RouterWrapper: React.FC<RouterWrapperProps> = ({
-  component: Component,
-  appearanceData,
-}) => {
-  return <Component {...{ appearanceData }} />;
-};
-
 const Main = () => {
   const [appearanceData, setAppearanceData] =
     useState<VendingMachineAppearance | null>(null);
@@ -56,28 +44,16 @@ const Main = () => {
       element: <App />,
       errorElement: <ErrorPage />,
       children: [
-        {
-          path: "/",
-          element: (
-            <RouterWrapper component={IdlePage} {...{ appearanceData }} />
-          ),
-        },
+        { path: "/", element: <IdlePage {...{ appearanceData }} /> },
         {
           path: "item/",
-          element: (
-            <RouterWrapper
-              component={ItemSelectionPage}
-              {...{ appearanceData }}
-            />
-          ),
+          element: <ItemSelectionPage {...{ appearanceData }} />,
         },
+        { path: ":item/", element: <ItemSizePage {...{ appearanceData }} /> },
         {
-          path: ":item/:size/",
-          element: (
-            <RouterWrapper component={ItemSizePage} {...{ appearanceData }} />
-          ),
+          path: ":item/:size/payment",
+          element: <PaymentPage {...{ appearanceData }} />,
         },
-        { path: ":item/:size/payment", element: <PaymentPage /> },
         { path: ":item/:size/detect-cup", element: <DetectCupPage /> },
         { path: ":item/:size/dispense", element: <DispensingPage /> },
         { path: ":item/:size/thank-you", element: <ThankYouPage /> },
