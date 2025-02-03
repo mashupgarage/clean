@@ -71,7 +71,12 @@ const Main = () => {
             />
           ),
         },
-        { path: ":item/", element: <ItemSizePage /> },
+        {
+          path: ":item/:size/",
+          element: (
+            <RouterWrapper component={ItemSizePage} {...{ appearanceData }} />
+          ),
+        },
         { path: ":item/:size/payment", element: <PaymentPage /> },
         { path: ":item/:size/detect-cup", element: <DetectCupPage /> },
         { path: ":item/:size/dispense", element: <DispensingPage /> },

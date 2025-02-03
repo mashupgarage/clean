@@ -3,27 +3,35 @@ import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { SizeItem } from "../components/SizeItem";
-import { useQuery } from "@tanstack/react-query";
-import { fetchMenuItems } from "../api/dispenser";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 
-const ITEM_SIZE_HEADER = {
-  title: "Please select the size of your drink",
+const SIZE_A = {
+  name: "Small",
+  price: "HK$ 2.20",
+  size: "354 ml (12oz)",
+  imageUrl: "/media/small.png",
 };
 
-export const ItemSizePage: React.FC = () => {
+const SIZE_B = {
+  name: "Large",
+  price: "HK$ 3.00",
+  size: "473 ml (16oz)",
+  imageUrl: "/media/large.png",
+};
+
+export const ItemSizePage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
   const { item } = useParams();
   const [size, setSize] = useState<string>("");
-  const { data } = useQuery({
-    queryKey: ["menuItems"],
-    queryFn: fetchMenuItems,
-  });
 
-  // const [dispensers, setDispensers] = useState<DispenserItem[]>([]);
-  const Tap = data?.find((dispenser) => dispenser.name === item);
+  const { item_size_title } = appearanceData;
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header {...ITEM_SIZE_HEADER} />
+      <Header title={item_size_title} />
 
       <div className="flex h-full flex-row items-center justify-center">
         <SizeItem
