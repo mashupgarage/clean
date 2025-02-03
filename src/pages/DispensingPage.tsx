@@ -12,18 +12,22 @@ import { ProgressBar } from "../components/ProgressBar";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
 import { ErrorModal } from "../components/ErrorModal";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 
 const DISPENSING_HEADER = {
   title: "Please do not remove the cup until pouring is complete",
 };
 
-export const DispensingPage = () => {
+export const DispensingPage = ({ appearanceData }: { appearanceData: VendingMachineAppearance }) => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [dispenseTime, setDispenseTime] = useState<number>();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
   const [visibleError, setVisibleError] = useState<boolean>(false);
   const [isDispensing, setIsDispensing] = useState<boolean>();
+
+  const { dispensing_timeout } = appearanceData;
+  const dispensingTimeout = dispensing_timeout * 1000;
 
   useEffect(() => {
     if (!item || !size) return; // Todo: add error catching
@@ -108,7 +112,7 @@ export const DispensingPage = () => {
       setVisibleError(true);
 
       return () => clearTimeout(timer);
-    }, 15000);
+    }, dispensingTimeout);
 
     // Try to detect cup every second for 15 seconds
     const interval = setInterval(() => {

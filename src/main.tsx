@@ -58,7 +58,10 @@ const Main = () => {
           path: ":item/:size/detect-cup",
           element: <DetectCupPage {...{ appearanceData }} />,
         },
-        { path: ":item/:size/dispense", element: <DispensingPage /> },
+        {
+          path: ":item/:size/dispense",
+          element: <DispensingPage {...{ appearanceData }} />,
+        },
         { path: ":item/:size/thank-you", element: <ThankYouPage /> },
       ],
     },
