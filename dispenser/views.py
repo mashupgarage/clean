@@ -20,6 +20,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
 from rest_framework import status, views, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ValidationError
@@ -213,33 +214,76 @@ def send_notification(notification_data):
 
 
 @csrf_exempt
+@api_view(["POST"])
 def report_transaction(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
     try:
         # Extract the transaction data from the request
-        transaction_data = request.data
+        # request.body
+        # {
+        #  "description":"",
+        #  "memberCode":"",
+        #  "needSignature":true,
+        #  "outTradeNO":"PIFAARUX",
+        #  "payAmount":"000000000100",
+        #  "payCurrency":"344",
+        #  "payMethod":1,
+        #  "payResult":2,
+        #  "reason":"",
+        #  "refNo":"503003126367",
+        #  "remark":"",
+        #  "tipsAmount":"",
+        #  "transactionNo":"",
+        #  "transactionType":1
+        #  }
+
+        STATUS_MAPPING = {
+            -1: "Timeout",
+            1: "Pending",
+            2: "Completed",
+            3: "Failed",
+            4: "Returned",
+            5: "Revoked",
+            6: "Canceled"
+        }
+        PAYMENT_METHOD_MAPPING = {
+            0: "Unknown",
+            1: "Visa",
+            2: "Mastercard",
+            3: "China UnionPay",
+            4: "WeChat",
+            5: "Alipay",
+            6: "American Express",
+            7: "Diners Club",
+            8: "JCB",
+            9: "UnionPay QuickPass",
+            11: "Octopus",
+            12: "Payme"    
+        }
+
+        request_data = json.loads(request.body.decode("utf-8")) 
 
         # Get the first store and vending machine records
         store = Store.objects.first()
         vending_machine = VendingMachine.objects.first()
+
+        transaction_data = {}
 
         # Add store_name and vending_machine_name to the transaction data
         transaction_data["store_name"] = store.name if store else "Unknown Store"
         transaction_data["vending_machine_name"] = vending_machine.name if vending_machine else "Unknown Machine"
 
         # Add require field for the transaction data
-        transaction_data["order_number"] = transaction_data["transactionNo"]
+        transaction_data["order_number"] = request_data["outTradeNO"]
         transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
-        transaction_data["amount"] = format_transaction_amount(transaction_data["payAmount"])
-        transaction_data["status"] = "Completed" # ORDER STATUSES: Completed, Pending, Refunded
-        transaction_data["payment_method"] = transaction_data["payMethod"]
-        transaction_data["product_name"] = transaction_data["description"]
-        transaction_data["price"] = format_transaction_amount(transaction_data["payAmount"])
+        transaction_data["amount"] = format_transaction_amount(request_data["payAmount"])
+        transaction_data["status"] = STATUS_MAPPING[int(request_data["payResult"])] # ORDER STATUSES: Completed, Pending, Refunded
+        transaction_data["payment_method"] = PAYMENT_METHOD_MAPPING[int(request_data["payMethod"])]
+        transaction_data["product_name"] = request_data["description"]
+        transaction_data["price"] = format_transaction_amount(request_data["payAmount"])
         transaction_data["quantity"] = "1"
-
-        # print(f"Transaction data: {transaction_data}")
 
         # url = "http://127.0.0.1:8080/api/transactions/",
         url = settings.TRANSACTION_ENDPOINT
@@ -269,7 +313,6 @@ def report_transaction(request):
 
 def format_transaction_amount(amount):
     return "{:.2f}".format(int(amount) / 100)
-
 
 # Viewset for the Store model - allows for CRUD operations
 class StoreViewSet(viewsets.ModelViewSet):
@@ -1160,7 +1203,9 @@ def start_drink_dispensing(request):
 
 @api_view(["POST"])
 def stop_drink_dispensing(request):
-    dispenser_name = request.GET.get("dispenser", default="Tap-A")
+    body = json.loads(request.body.decode('utf-8'))
+
+    dispenser_name = body.get("dispenser")
 
     response_data = {}
 
@@ -1220,17 +1265,50 @@ from django.http import JsonResponse
 def get_react_config(request):
     return JsonResponse(settings.REACT_CONFIG)
 
+def generate_nonce(length=32):
+    characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
+@csrf_exempt
+def kpay_auth(request):
+    if request.method == "POST":
+        try:
+            nonceStr = generate_nonce()
+            timestamp = str(int(time.time() * 1000)) 
+            url = f"{settings.KPAY_TERMINAL_URL}/v1/pos/sign"
+
+            headers = {
+              "timestamp": timestamp,
+              "nonceStr": nonceStr,
+              "Content-Type": "application/json",
+            }
+
+            body = {
+                "appId": settings.KPAY_APP_ID,
+                "appSecret": settings.KPAY_APP_SECRET,
+                "actionCallbackUrl": settings.KPAY_TERMINAL_URL
+            }
+
+            response = requests.post(url, json=body, headers=headers)
+            json_data = response.json()
+            private_key = json_data.get("data", {}).get("appPrivateKey")
+
+            # Save to cache
+            cache.set("private_key", private_key, timeout=None)
+
+            return JsonResponse({"message": "Private key saved to cache"}, status=response.status_code)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
 @csrf_exempt
 def sales(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
 
-            # Generate a random nonce
-            def generate_nonce(length=32):
-                characters = string.ascii_letters + string.digits
-                return ''.join(secrets.choice(characters) for _ in range(length))
-                        
           # Generate 8 digit random order IDs. Needs to be queried against existing IDs.
             def generate_order_id(length=8):
                 # Define allowed characters: uppercase letters excluding 'O' + digits
@@ -1248,7 +1326,7 @@ def sales(request):
 
                     # Send a GET request to check if the order ID exists
                     response = requests.get(
-                        "http://54.312.insert_endpoint_here",
+                        f"{settings.ADMIN_PORTAL_ENDPOINT}/api/transactions/check-transaction-id/",
                         params={"transactionId": order_id},
                         timeout=10 # add a timeout to prevent hanging
                     )
@@ -1267,23 +1345,27 @@ def sales(request):
             unique_order_id = generate_unique_order_id()
             print("Generated Unique Order ID:", unique_order_id)
             
-
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
+            
+            # Convert the body to a dict to be able to add the outTradeNo 
+            body = eval(data["body"])
+            body["outTradeNo"] = unique_order_id
 
-            signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{data['body']}\n"
+            # Convert the body back to json format without spaces
+            signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{json.dumps(body, separators=(',', ':'))}\n"
 
-            priv_key_pem = data.get("privKey")
-            if not priv_key_pem:
-                return JsonResponse({"error": "Private key not provided"}, status=400)
+            priv_key = cache.get("private_key")
+            if not priv_key:
+                return JsonResponse({"error": "Private key not provided", "code": 40001}, status=200)
 
-            priv_key_pem = priv_key_pem.strip()
-            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
-                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+            priv_key = priv_key.strip()
+            if not priv_key.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key = f"-----BEGIN PRIVATE KEY-----\n{priv_key}\n-----END PRIVATE KEY-----"
 
             # Load the private key
             private_key = serialization.load_pem_private_key(
-                priv_key_pem.encode(),
+                priv_key.encode(),
                 password=None,
                 backend=default_backend(),
             )
@@ -1308,9 +1390,27 @@ def sales(request):
             
             endpointUrl = data['kPayDeviceUrl'] + data["endpoint"]
             
-            response = requests.post(endpointUrl, json=eval(data["body"]), headers=headers)
-            
-            return JsonResponse(response.json(), status=response.status_code)
+            # NOTE: This will only return a generic success message. The response will be sent to the callbackUrl
+            response = requests.post(endpointUrl, json=body, headers=headers)
+            # response.data
+              # description
+              # memberCode
+              # needSignature
+              # OutTradeNO
+              # payAmount
+              # payCurrency
+              # payMethod
+              # payResult
+              # reason
+              # refNo
+              # remark
+              # typsAmount
+              # transactionNo
+              # transactionType
+
+            formatted_response = response.json()
+            formatted_response["order_id"] = unique_order_id
+            return JsonResponse(formatted_response, status=response.status_code)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
@@ -1322,13 +1422,7 @@ def sales(request):
 def query_transaction(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-
-            # Generate a random nonce
-            def generate_nonce(length=32):
-                characters = string.ascii_letters + string.digits
-                return ''.join(secrets.choice(characters) for _ in range(length))
-            
+            data = json.loads(request.body)            
             nonceStr = generate_nonce()
             timestamp = str(int(time.time() * 1000))
             outTradeNo = data.get("outTradeNo")
@@ -1347,17 +1441,17 @@ def query_transaction(request):
             
             signatureString = f"GET\n{endpoint_with_params}\n{timestamp}\n{nonceStr}\n"
 
-            priv_key_pem = data.get("privKey")
-            if not priv_key_pem:
+            priv_key = cache.get("private_key")
+            if not priv_key:
                 return JsonResponse({"error": "Private key not provided"}, status=400)
 
-            priv_key_pem = priv_key_pem.strip()
-            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
-                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+            priv_key = priv_key.strip()
+            if not priv_key.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key = f"-----BEGIN PRIVATE KEY-----\n{priv_key}\n-----END PRIVATE KEY-----"
 
             # Load the private key
             private_key = serialization.load_pem_private_key(
-                priv_key_pem.encode(),
+                priv_key.encode(),
                 password=None,
                 backend=default_backend(),
             )

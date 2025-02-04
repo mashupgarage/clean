@@ -151,7 +151,6 @@ REST_FRAMEWORK = {
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_HEADERS = ["ngrok-skip-browser-warning", "User-Agent", "content-type"]
 CORS_ALLOW_CREDENTIALS = True
 
 # CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
@@ -206,6 +205,10 @@ CLOUD_SERVER_URL = os.environ.get("CLOUD_SERVER_URL", "http://127.0.0.1:8080")
 POST_NOTIFICATIONS = os.getenv("POST_NOTIFICATIONS", "True").lower() == "true"
 NOTIFICATION_ENDPOINT = f"{CLOUD_SERVER_URL}/api/notifications/"
 TRANSACTION_ENDPOINT = f"{CLOUD_SERVER_URL}/api/transactions/"
+ADMIN_PORTAL_ENDPOINT = os.environ.get("VITE_ADMIN_PORTAL_URL")
+KPAY_TERMINAL_URL = os.environ.get("VITE_KPAY_DEVICE_URL", "http://192.168.8.39:18080")
+KPAY_APP_ID = os.environ.get("VITE_KPAY_APP_ID")
+KPAY_APP_SECRET = os.environ.get("VITE_KPAY_APP_SECRET")
 
 print(f"DISPENSER_EMULATED: {DISPENSER_EMULATED}")
 print(f"POST_NOTIFICATIONS: {POST_NOTIFICATIONS}")

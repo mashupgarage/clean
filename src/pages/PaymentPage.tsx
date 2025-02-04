@@ -2,18 +2,15 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
-import {
-  // useEffect,
-  useState,
-} from "react";
+import { useState } from "react";
 import { PaymentItem } from "../components/PaymentItem";
-// import { getMenuItems } from "../api/dispenser";
-// import {
-//   queryTransaction,
-//   // // signInToKPay,
-//   // startTransaction,
-// } from "../api/payments";
-// import { usePrivKeyStore } from "../hooks/usePrivKeyStore";
+import { fetchMenuItems } from "../api/dispenser";
+import {
+  checkTransaction,
+  signInToKPay,
+  startTransaction,
+} from "../api/payments";
+import { useQuery } from "@tanstack/react-query";
 
 // Payment Types
 // 1: Card
@@ -46,91 +43,111 @@ const OPTION_C = {
   selection: 6,
 };
 
-// const formatPrice = (price: string) => {
-//   // Note: Kpay requires price to be a 12 digit string padded with zeroes
-//   const priceInCents = Math.round(Number(price) * 100);
+const formatPrice = (price: string) => {
+  // Note: Kpay requires price to be a 12 digit string padded with zeroes
+  const priceInCents = Math.round(Number(price) * 100);
 
-//   if (
-//     typeof priceInCents !== "number" ||
-//     priceInCents < 0 ||
-//     isNaN(priceInCents)
-//   ) {
-//     throw new Error("Invalid price. Must be a positive number.");
-//   }
+  if (
+    typeof priceInCents !== "number" ||
+    priceInCents < 0 ||
+    isNaN(priceInCents)
+  ) {
+    throw new Error("Invalid price. Must be a positive number.");
+  }
 
-//   return priceInCents.toString().padStart(12, "0");
-// };
+  return priceInCents.toString().padStart(12, "0");
+};
 
 export const PaymentPage = () => {
+  const navigate = useNavigate();
   const { item, size } = useParams();
   const [successVisible, setSuccessVisible] = useState(false);
   const [errorVisible, setErrorVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
-  const [option, setOption] = useState<number>(1); // will default to card if somehow no option selected
-  // const [price, setPrice] = useState<string>("");
-  const navigate = useNavigate();
-  // const updatePrivKey = usePrivKeyStore((state) => state.updatePrivKey);
-  // const privKey = usePrivKeyStore((state) => state.privKey);
+  const [option, setOption] = useState<number>(1); // will default to card
 
-  // useEffect(() => {
-  //   if (!item || !size) return; // Todo: add error catching
+  const { data } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: fetchMenuItems,
+  });
 
-  //   const fetchMenuItems = async () => {
-  //     const dispensers = await getMenuItems();
-  //     const dispenser = dispensers.find((dispenser) => dispenser.name === item);
-
-  //     if (!dispenser) {
-  //       return;
-  //     }
-  //     const price =
-  //       size === "Small" ? dispenser.price_small : dispenser.price_large;
-
-  //     setPrice(formatPrice(price));
-  //   };
-
-  //   fetchMenuItems();
-  // }, []);
+  const dispenser = data?.find((dispenser) => dispenser.name === item);
+  if (!dispenser) {
+    return;
+  }
+  const price = formatPrice(
+    size === "Small" ? dispenser.price_small : dispenser.price_large,
+  );
 
   const showPaymentModal = () => {
     // Start Transaction
+    startTransaction({
+      payAmount: price,
+      payCurrency: "344",
+      paymentType: option,
+      description: dispenser.drink_name,
+      callbackUrl:
+        "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
+    }).then((data) => {
+      // TODO: Loading animation, change to the "look at terminal" modal
+      setLoadingVisible(true);
 
-    // Turn this into a hook that is called whenever a transaction fails
-    // signInToKPay().then((data) => {
-    //   const privKey = data.data.appPrivateKey;
-    //   updatePrivKey(privKey);
-    // });
+      // If authentication fails, reauthenticate to KPay and throw error to user
+      if (data.code === 40001) {
+        console.log("Re-authenticating to KPay...");
+        signInToKPay();
+        // Note: Add a way to try again once
+        setErrorVisible(true);
+      }
 
-    // startTransaction(
-    //   {
-    //     payAmount: price,
-    //     payCurrency: "344",
-    //     paymentType: option,
-    //     callbackUrl:
-    //       "https://clean-api.mashup.lol/api/dispenser/report-transaction/",
-    //   },
-    //   privKey,
-    // ).then((data) => {
-    // Loading animation, change to the "look at terminal" modal
-    setLoadingVisible(true);
+      if (data.code != 10000) {
+        setErrorVisible(true);
+      }
 
-    // Start polling for data
+      if (data.code === 10000) {
+        // Poll admin portal every 3 seconds to see if the transaction is complete
+        const interval = setInterval(() => {
+          checkTransaction(data.order_id).then((data) => {
+            if (!data.data) {
+              console.log(data.data?.message);
+              return; // prevent other code from running
+            }
 
-    // if (data.)
+            if (data.data?.status === "Completed") {
+              console.log(data.data?.message);
+              clearInterval(interval);
+              clearTimeout(timer);
 
-    // if (data) {
-    setTimeout(() => {
-      setLoadingVisible(false);
-      setSuccessVisible(true);
-    }, 2000);
+              setLoadingVisible(false);
+              setSuccessVisible(true);
 
-    setTimeout(() => {
-      setSuccessVisible(false);
-      navigate(`/${item}/${size}/detect-cup`);
-    }, 4000);
-    // }
-    // });
+              setTimeout(() => {
+                setSuccessVisible(false);
+                navigate(`/${item}/${size}/detect-cup`);
+              }, 2000);
+            }
 
-    // queryTransaction("98765443217", privKey);
+            if (data.data?.status != "Completed") {
+              console.log(data.data?.message);
+              clearInterval(interval);
+              clearTimeout(timer);
+
+              setLoadingVisible(false);
+              setErrorVisible(true);
+            }
+          });
+        }, 3000);
+
+        // Timeout after 66 seconds (65s + 1s allowance)
+        // Note: KPay has a 65 second timeout for payments
+        const timer = setTimeout(() => {
+          clearInterval(interval);
+
+          // Error Timeout Modal
+          setErrorVisible(true);
+        }, 66000);
+      }
+    });
   };
 
   return (
@@ -171,7 +188,10 @@ export const PaymentPage = () => {
           dismissable={false}
           contentContainerStyle={{ height: "100%" }}
         >
-          <div className="m-auto flex flex-col items-center gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl">
+          <div
+            onClick={() => navigate(`/`)}
+            className="m-auto flex flex-col items-center gap-4 rounded-lg bg-white px-36 py-10 text-center shadow-2xl"
+          >
             <img className="max-w-8" src="/media/error.png" />
             <div className="text-3xl font-extrabold text-red-600">
               Error: Payment Failure
