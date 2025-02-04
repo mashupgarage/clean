@@ -1083,9 +1083,10 @@ logger = logging.getLogger(__name__)
 
 @api_view(["POST"])
 def start_drink_dispensing(request):
-    dispenser_name = request.GET.get("dispenser", default="Tap-A")
-    drink_size = request.GET.get("size", default="Small").capitalize()
-    # print(f"dispenser: {dispenser_name}, size: {drink_size}")
+    body = json.loads(request.body.decode('utf-8'))
+
+    dispenser_name = body.get("dispenser")
+    drink_size = body.get("size")
 
     response_data = {}
 

@@ -47,7 +47,9 @@ export const DispensingPage = () => {
       // Stop dispensing when dispense time has been consumed
       console.log("Dispensing completed");
       clearInterval(interval);
-      navigate(`/${item}/${size}/thank-you`);
+      setTimeout(() => {
+        navigate(`/${item}/${size}/thank-you`);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }, dispenseTime * 1000);
@@ -151,7 +153,7 @@ export const DispensingPage = () => {
   };
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[20%,60%,20%]">
       <Portal>
         <WarningModal
           visible={visibleWarning}
@@ -174,14 +176,14 @@ export const DispensingPage = () => {
         {item === "Tap-A" ? (
           <div
             className="relative m-10 mb-20 flex w-[650px]"
-            onClick={() => navigate(`/${item}/${size}/thank-you`)}
+            // onClick={() => navigate(`/${item}/${size}/thank-you`)}
           >
             <img src="/media/pour.png" className="size-full object-contain" />
           </div>
         ) : (
           <div
             className="relative m-10 mb-20 flex w-[650px]"
-            onClick={() => navigate(`/${item}/${size}/thank-you`)}
+            // onClick={() => navigate(`/${item}/${size}/thank-you`)}
           >
             <img
               src="/media/pour.png"
@@ -189,29 +191,29 @@ export const DispensingPage = () => {
             />
           </div>
         )}
+      </div>
 
-        <div className="flex flex-col gap-6">
-          {!dispenseTime && !isDispensing && (
-            <>
-              <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200 shadow-inner" />
-              <div className="text-center text-4xl font-bold text-slate-600">
-                Please Standby
-              </div>
-            </>
-          )}
-
-          {dispenseTime && isDispensing && (
-            <>
-              <ProgressBar duration={dispenseTime} />
-              <CountdownTimer isDispensingPage duration={dispenseTime} />
-            </>
-          )}
-          {dispenseTime && !isDispensing && (
+      <div className="flex flex-col items-center gap-6">
+        {!dispenseTime && !isDispensing && (
+          <>
+            <div className="mx-5 h-6 w-[650px] overflow-hidden rounded-xl bg-slate-200 shadow-inner" />
             <div className="text-center text-4xl font-bold text-slate-600">
-              Please place your cup under the tap
+              Please Standby
             </div>
-          )}
-        </div>
+          </>
+        )}
+
+        {dispenseTime && isDispensing && (
+          <>
+            <ProgressBar duration={dispenseTime} />
+            <CountdownTimer isDispensingPage duration={dispenseTime} />
+          </>
+        )}
+        {dispenseTime && !isDispensing && (
+          <div className="text-center text-4xl font-bold text-slate-600">
+            Please place your cup under the tap
+          </div>
+        )}
       </div>
     </div>
   );

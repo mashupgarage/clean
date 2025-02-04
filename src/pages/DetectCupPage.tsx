@@ -52,7 +52,7 @@ export const DetectCupPage: React.FC = () => {
   }, [item]);
 
   return (
-    <div className="grid h-screen w-screen grid-rows-[20%,66%,14%]">
+    <div className="grid h-screen w-screen grid-rows-[20%,60%,20%]">
       <Portal>
         <WarningModal
           visible={visibleWarning}
@@ -69,28 +69,30 @@ export const DetectCupPage: React.FC = () => {
           transactionId="987654321"
         />
       </Portal>
+
       <Header {...DETECT_CUP_HEADER} />
 
       <div className="flex h-full flex-col items-center">
         {item === "Tap-A" ? (
           <div
             className="relative m-10 flex w-[650px]"
-            onClick={() => navigate(`/${item}/${size}/dispense`)}
+            // onClick={() => navigate(`/${item}/${size}/dispense`)}
           >
             <img src="/media/tap.png" className="size-full" />
           </div>
         ) : (
           <div
             className="relative m-10 flex w-[650px]"
-            onClick={() => navigate(`/${item}/${size}/dispense`)}
+            // onClick={() => navigate(`/${item}/${size}/dispense`)}
           >
             <img src="/media/tap.png" className="size-full -scale-x-100" />
           </div>
         )}
-        <div className="flex flex-col gap-6">
-          <ProgressBar duration={30} />
-          <CountdownTimer duration={30} />
-        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-6">
+        <ProgressBar duration={30} />
+        <CountdownTimer duration={30} />
       </div>
     </div>
   );
