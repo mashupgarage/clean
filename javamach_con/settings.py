@@ -27,6 +27,9 @@ print(f"DEBUG: {DEBUG}")
 
 ALLOWED_HOSTS = ["*"]
 
+ALLOWED_ORIGINS = ["https://clean-api.mashup.lol", "http://54.184.91.120"]
+CSRF_TRUSTED_ORIGINS = ALLOWED_ORIGINS.copy()
+
 
 # Application definition
 
