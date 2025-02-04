@@ -685,7 +685,7 @@ class TurnOnTapDispenserView(views.APIView):
             return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
+        response_data["dispenser"] = dispenser_name
         response_data["initialWeight"] = resp_data["thermos_weight"] * 10
 
         print(f"Tap turned on for dispenser: {dispenser_name}, Initial weight: {response_data['initialWeight']}")
@@ -731,7 +731,7 @@ class TurnOffTapDispenserView(views.APIView):
             return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Prepare successful response
-        response_data["dispenser"] = resp_data["dispenser"]
+        response_data["dispenser"] = dispenser_name
         response_data["finalWeight"] = resp_data["thermos_weight"] * 10
 
         print(f"Tap turned off for dispenser: {dispenser_name}, Final weight: {response_data['finalWeight']}")
