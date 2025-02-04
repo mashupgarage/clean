@@ -1,13 +1,25 @@
 # dispenser\views.py
 import datetime
+import json
 import logging
 import random
+import secrets
+import string
+import time
+import base64
 from decimal import Decimal
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.backends import default_backend
+from urllib.parse import urlencode, urljoin
+
 
 import requests
 from django.apps import apps
 from django.conf import settings
+from django.http import JsonResponse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, views, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ValidationError
@@ -1190,3 +1202,173 @@ from django.http import JsonResponse
 
 def get_react_config(request):
     return JsonResponse(settings.REACT_CONFIG)
+
+@csrf_exempt
+def sales(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            # Generate a random nonce
+            def generate_nonce(length=32):
+                characters = string.ascii_letters + string.digits
+                return ''.join(secrets.choice(characters) for _ in range(length))
+                        
+          # Generate 8 digit random order IDs. Needs to be queried against existing IDs.
+            def generate_order_id(length=8):
+                # Define allowed characters: uppercase letters excluding 'O' + digits
+                allowed_characters = string.ascii_uppercase.replace("0", "") + string.digits
+
+                # Generate a random ID of the specified length
+                random_id = ''.join(random.choices(allowed_characters, k=length))
+                return random_id
+
+
+            def generate_unique_order_id():
+                while True:
+                    # Generate a new order ID
+                    order_id = generate_order_id()
+
+                    # Send a GET request to check if the order ID exists
+                    response = requests.get(
+                        "http://54.312.insert_endpoint_here",
+                        params={"transactionId": order_id},
+                        timeout=10 # add a timeout to prevent hanging
+                    )
+
+                    # Check the response to see if the order ID exists
+                    if response.status_code == 200:
+                        data = response.json()  # Assuming the response is JSON
+                        if not data.get("exists", False):  # Replace 'exists' with the correct key
+                            print(f"Unique Order ID found: {order_id}")
+                            return order_id
+                    else:
+                        print(f"Error checking order ID: {response.status_code}")
+                        # Optionally handle errors or retry logic
+
+            # Example usage
+            unique_order_id = generate_unique_order_id()
+            print("Generated Unique Order ID:", unique_order_id)
+            
+
+            nonceStr = generate_nonce()
+            timestamp = str(int(time.time() * 1000))
+
+            signatureString = f"POST\n{data['endpoint']}\n{timestamp}\n{nonceStr}\n{data['body']}\n"
+
+            priv_key_pem = data.get("privKey")
+            if not priv_key_pem:
+                return JsonResponse({"error": "Private key not provided"}, status=400)
+
+            priv_key_pem = priv_key_pem.strip()
+            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+
+            # Load the private key
+            private_key = serialization.load_pem_private_key(
+                priv_key_pem.encode(),
+                password=None,
+                backend=default_backend(),
+            )
+            
+            # Sign the signature string with RSA SHA256 PKCS1v15 using the private key
+            signature = private_key.sign(
+                signatureString.encode(),
+                padding.PKCS1v15(),
+                hashes.SHA256()
+            )
+ 
+            # Base64 encode the signature
+            signature = base64.b64encode(signature).decode("utf-8")
+ 
+            headers = {
+              "appId": data["appId"],
+              "nonceStr": nonceStr,
+              "timestamp": timestamp,
+              "signature": signature,
+              "Content-Type": "application/json",
+            }
+            
+            endpointUrl = data['kPayDeviceUrl'] + data["endpoint"]
+            
+            response = requests.post(endpointUrl, json=eval(data["body"]), headers=headers)
+            
+            return JsonResponse(response.json(), status=response.status_code)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+## QUERY TRANSACTION
+@csrf_exempt
+def query_transaction(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            # Generate a random nonce
+            def generate_nonce(length=32):
+                characters = string.ascii_letters + string.digits
+                return ''.join(secrets.choice(characters) for _ in range(length))
+            
+            nonceStr = generate_nonce()
+            timestamp = str(int(time.time() * 1000))
+            outTradeNo = data.get("outTradeNo")
+            remote = data.get("remote")
+            includeReceipt = data.get("includeReceipt")
+ 
+            params = {
+                "outTradeNo": outTradeNo,
+                "remote": remote,
+                "includeReceipt": includeReceipt,
+            }
+            filtered_params = {key: value for key, value in params.items() if value is not None}
+            
+            params_string = urlencode(filtered_params)
+            endpoint_with_params = f"{data['endpoint']}?{params_string}"
+            
+            signatureString = f"GET\n{endpoint_with_params}\n{timestamp}\n{nonceStr}\n"
+
+            priv_key_pem = data.get("privKey")
+            if not priv_key_pem:
+                return JsonResponse({"error": "Private key not provided"}, status=400)
+
+            priv_key_pem = priv_key_pem.strip()
+            if not priv_key_pem.startswith("-----BEGIN PRIVATE KEY-----"):
+                priv_key_pem = f"-----BEGIN PRIVATE KEY-----\n{priv_key_pem}\n-----END PRIVATE KEY-----"
+
+            # Load the private key
+            private_key = serialization.load_pem_private_key(
+                priv_key_pem.encode(),
+                password=None,
+                backend=default_backend(),
+            )
+            
+            # Sign the signature string with RSA SHA256 PKCS1v15 using the private key
+            signature = private_key.sign(
+                signatureString.encode(),
+                padding.PKCS1v15(),
+                hashes.SHA256()
+            )
+ 
+            # Base64 encode the signature
+            signature = base64.b64encode(signature).decode("utf-8")
+ 
+            headers = {
+              "appId": data["appId"],
+              "nonceStr": nonceStr,
+              "timestamp": timestamp,
+              "signature": signature,
+            }
+            
+            endpointUrl = urljoin(data['kPayDeviceUrl'], endpoint_with_params)
+            
+            response = requests.get(endpointUrl, headers=headers)
+            
+            return JsonResponse(response.json(), status=response.status_code)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)

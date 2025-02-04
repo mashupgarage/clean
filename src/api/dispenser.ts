@@ -1,10 +1,25 @@
 import axios from "axios";
 import queryString from "query-string";
 
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
+// axios.defaults.headers.common["User-Agent"] = "PostmanRuntime/7.42.0";
+
 const baseUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
 
+export type DispenserItem = {
+  name: string;
+  SKU: string;
+  id: number;
+  drink_image: string;
+  drink_name: string;
+  drink_name2: string;
+  drink_size: string;
+  price_large: string;
+  price_small: string;
+};
+
 // Menu
-export const getMenuItems = async () => {
+export const getMenuItems = async (): Promise<DispenserItem[]> => {
   const endpoint = `${baseUrl}/api/dispenser/menu-items`;
 
   return axios

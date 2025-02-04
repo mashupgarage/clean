@@ -151,6 +151,7 @@ REST_FRAMEWORK = {
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_HEADERS = ["ngrok-skip-browser-warning", "User-Agent", "content-type"]
 CORS_ALLOW_CREDENTIALS = True
 
 # CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"

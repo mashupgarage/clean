@@ -54,7 +54,7 @@ python manage.py collectstatic
 ```bash
 yarn run-py
 ```
-> Access via http://127.0.0.1:8000/
+> Access via http://127.0.0.1:8000/admin
 
 ---
 
@@ -73,3 +73,6 @@ yarn
 yarn dev
 ``` 
 > Access via http://localhost:5173
+
+## Dispenser Item Customization
+- Add/edit dispenser items by accessing the python admin and editing there (also images)
