@@ -212,8 +212,11 @@ def send_notification(notification_data):
         print(f"Error sending notification: {str(e)}")
 
 
-@api_view(["POST"])
+@csrf_exempt
 def report_transaction(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
     try:
         # Extract the transaction data from the request
         transaction_data = request.data
@@ -225,6 +228,16 @@ def report_transaction(request):
         # Add store_name and vending_machine_name to the transaction data
         transaction_data["store_name"] = store.name if store else "Unknown Store"
         transaction_data["vending_machine_name"] = vending_machine.name if vending_machine else "Unknown Machine"
+
+        # Add require field for the transaction data
+        transaction_data["order_number"] = transaction_data["transactionNo"]
+        transaction_data["order_date_time"] = datetime.datetime.now().isoformat()
+        transaction_data["amount"] = format_transaction_amount(transaction_data["payAmount"])
+        transaction_data["status"] = "Completed" # ORDER STATUSES: Completed, Pending, Refunded
+        transaction_data["payment_method"] = transaction_data["payMethod"]
+        transaction_data["product_name"] = transaction_data["description"]
+        transaction_data["price"] = format_transaction_amount(transaction_data["payAmount"])
+        transaction_data["quantity"] = "1"
 
         # print(f"Transaction data: {transaction_data}")
 
@@ -253,6 +266,9 @@ def report_transaction(request):
 
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def format_transaction_amount(amount):
+    return "{:.2f}".format(int(amount) / 100)
 
 
 # Viewset for the Store model - allows for CRUD operations

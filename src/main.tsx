@@ -19,6 +19,8 @@ import { DetectCupPage } from "./pages/DetectCupPage.tsx";
 import { DispensingPage } from "./pages/DispensingPage.tsx";
 import { IdlePage } from "./pages/IdlePage.tsx";
 import { ThankYouPage } from "./pages/ThankYouPage.tsx";
+import { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter([
   {
@@ -37,21 +39,34 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // Avoid refetching on focus
+      // staleTime: 1 * 60 * 1000, // 60 minutes stale time
+      staleTime: Infinity, // NOTE: To be tried. Cache will not be refreshed until the page is refreshed
+      gcTime: Infinity,
+    },
+  },
+});
+
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-  <PaperProvider>
-    <Fragment>
-      {Platform.OS === "web" ? (
-        <style type="text/css">{`
+  <QueryClientProvider client={queryClient}>
+    <PaperProvider>
+      <Fragment>
+        {Platform.OS === "web" ? (
+          <style type="text/css">{`
         @font-face {
           font-family: 'MaterialCommunityIcons';
           src: url(${MaterialCommunityIconsFont}) format('truetype');
         }
       `}</style>
-      ) : null}
+        ) : null}
 
-      <RouterProvider router={router} />
-    </Fragment>
-  </PaperProvider>,
+        <RouterProvider router={router} />
+      </Fragment>
+    </PaperProvider>
+  </QueryClientProvider>,
   // </StrictMode>,
 );

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkCupPresence, getMenuItems } from "../api/dispenser";
+import { checkCupPresence, fetchMenuItems } from "../api/dispenser";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
+import { useQuery } from "@tanstack/react-query";
 
 const THANK_YOU_HEADER = {
   line1: "Your order is complete. Thank you!",
@@ -13,46 +14,15 @@ export const ThankYouPage: React.FC = () => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
-  const [price, setPrice] = useState<string>("");
-  const [drink, setDrink] = useState<string>("");
-  const date = new Date();
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-
-  const formattedTime = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  }).format(date);
-
-  useEffect(() => {
-    if (!item || !size) return; // Todo: add error catching
-
-    const fetchMenuItems = async () => {
-      const dispensers = await getMenuItems();
-      const dispenser = dispensers.find((dispenser) => dispenser.name === item);
-      if (!dispenser) {
-        return;
-      }
-      const price =
-        size === "Small" ? dispenser.price_small : dispenser.price_large;
-
-      setDrink(dispenser.drink_name);
-      setPrice(price);
-
-      // NOTE: SET PRICE TO ZERO FOR MVP
-      setPrice("0.00");
-    };
-
-    fetchMenuItems();
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: fetchMenuItems,
+  });
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null); // Use ref to store the timeout ID
 
   useEffect(() => {
     // Start 30 second timer, then check for cup presence
-    const timer = setTimeout(() => {
+    timer.current = setTimeout(() => {
       const interval = setInterval(() => {
         if (!item) return;
 
@@ -72,9 +42,41 @@ export const ThankYouPage: React.FC = () => {
         return () => clearInterval(interval);
       }, 1000);
 
-      return () => clearTimeout(timer);
+      return () => {
+        if (timer.current) {
+          clearTimeout(timer.current);
+        }
+      };
     }, 30000);
   }, []);
+
+  const handleClearTimeout = () => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = null; // Reset the ref
+    }
+  };
+
+  const dispenser = data?.find((dispenser) => dispenser.name === item);
+  if (!dispenser) {
+    return;
+  }
+  const drink = dispenser.drink_name;
+  const price =
+    size === "Small" ? dispenser.price_small : dispenser.price_large;
+
+  const date = new Date();
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+
+  const formattedTime = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  }).format(date);
 
   return (
     <div className="h-screen w-screen">
@@ -90,9 +92,13 @@ export const ThankYouPage: React.FC = () => {
         src="/media/coffee-placeholder.png"
         className="absolute left-0 top-0 size-full object-cover"
       /> */}
+
       <div
         className="absolute inset-0 flex flex-row items-center justify-center text-center"
-        onClick={() => navigate("/")}
+        onClick={() => {
+          handleClearTimeout();
+          navigate("/");
+        }}
       >
         <div className="w-1/2 rounded-lg bg-transparent p-12 opacity-95">
           <h1 className="p-10 text-8xl font-extrabold">
