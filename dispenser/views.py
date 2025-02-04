@@ -1326,7 +1326,7 @@ def sales(request):
 
                     # Send a GET request to check if the order ID exists
                     response = requests.get(
-                        "http://54.184.91.120/api/transactions/check-transaction-id/",
+                        f"{settings.ADMIN_PORTAL_ENDPOINT}/api/transactions/check-transaction-id/",
                         params={"transactionId": order_id},
                         timeout=10 # add a timeout to prevent hanging
                     )
