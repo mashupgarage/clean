@@ -17,7 +17,7 @@ export const IdlePage = ({
     idle_title,
     idle_subtitle,
     idle_font_style,
-    idle_font_color,
+    idle_text_color,
   } = appearanceData;
 
   const backgroundMedia =
@@ -36,13 +36,13 @@ export const IdlePage = ({
         <div className="rounded-lg bg-transparent p-12 opacity-95">
           <h1
             className="text-8xl font-extrabold"
-            style={{ fontFamily: idle_font_style, color: idle_font_color }}
+            style={{ fontFamily: idle_font_style, color: idle_text_color }}
           >
             {idle_title}
           </h1>
           <p
             className="mt-4 text-3xl font-bold"
-            style={{ fontFamily: idle_font_style, color: idle_font_color }}
+            style={{ fontFamily: idle_font_style, color: idle_text_color }}
           >
             {idle_subtitle}
           </p>

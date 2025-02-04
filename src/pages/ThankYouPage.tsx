@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkCupPresence, fetchMenuItems } from "../api/dispenser";
+import { checkCupPresence } from "../api/dispenser";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
 import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
@@ -19,7 +19,7 @@ export const ThankYouPage = ({
     thank_you_background_image,
     thank_you_title,
     thank_you_subtitle,
-    thank_you_font_color,
+    thank_you_text_color,
     thank_you_font_style,
     thank_you_exit_timeout,
   } = appearanceData;
@@ -113,7 +113,7 @@ export const ThankYouPage = ({
             className="text-8xl font-extrabold"
             style={{
               fontFamily: thank_you_font_style,
-              color: thank_you_font_color,
+              color: thank_you_text_color,
             }}
           >
             {thank_you_title}
@@ -122,7 +122,7 @@ export const ThankYouPage = ({
             className="mt-8 text-3xl font-bold"
             style={{
               fontFamily: thank_you_font_style,
-              color: thank_you_font_color,
+              color: thank_you_text_color,
             }}
           >
             {thank_you_subtitle}

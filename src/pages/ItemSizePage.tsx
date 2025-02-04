@@ -27,11 +27,11 @@ export const ItemSizePage = ({
   const { item } = useParams();
   const [size, setSize] = useState<string>("");
 
-  const { item_size_title } = appearanceData;
+  const { item_size_title, general_title_font_style } = appearanceData;
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header title={item_size_title} />
+      <Header title={item_size_title} fontStyle={general_title_font_style} />
 
       <div className="flex h-full flex-row items-center justify-center">
         <SizeItem
@@ -55,6 +55,7 @@ export const ItemSizePage = ({
       </div>
 
       <Footer
+        {...{appearanceData}}
         cancelButton={true}
         nextProps={{ disabled: !size }}
         nextLink={`/${item}/${size}/payment`}

@@ -177,13 +177,19 @@ class VendingMachine(models.Model):
         help_text="The text color for the general buttons.",
     )
 
-    general_button_text_content = models.CharField(
+    general_button_text_content_a = models.CharField(
         max_length=100,
-        default="General Button",
-        help_text="The text content for the general buttons.",
+        default="General Button A",
+        help_text="The text content for the general button A.",
     )
 
-    general_title_style = models.CharField(
+    general_button_text_content_b = models.CharField(
+        max_length=100,
+        default="General Button B",
+        help_text="The text content for the general button B.",
+    )
+
+    general_title_font_style = models.CharField(
         max_length=100,
         default="Roboto Mono",
         help_text="The font name for the general title.",
@@ -235,7 +241,7 @@ class VendingMachine(models.Model):
         help_text="The font name for the idle title.",
     )
 
-    idle_font_color = models.CharField(
+    idle_text_color = models.CharField(
         max_length=7,
         default="#000000",
         help_text="The font color for the idle title.",
@@ -313,7 +319,7 @@ class VendingMachine(models.Model):
         help_text="The font name for the thank you page.",
     )
 
-    thank_you_font_color = models.CharField(
+    thank_you_text_color = models.CharField(
         max_length=7,
         default="#000000",
         help_text="The font color for the thank you page.",

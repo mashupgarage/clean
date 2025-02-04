@@ -65,7 +65,7 @@ export const PaymentPage = ({
   const [errorVisible, setErrorVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
   const navigate = useNavigate();
-  const { payment_title } = appearanceData;
+  const { payment_title, general_title_font_style } = appearanceData;
   const [option, setOption] = useState<number>(1); // will default to card
 
   const { data } = useQuery({
@@ -208,7 +208,7 @@ export const PaymentPage = ({
           </div>
         </Modal>
       </Portal>
-      <Header title={payment_title} />
+      <Header title={payment_title} fontStyle={general_title_font_style} />
       <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
         <PaymentItem
           {...OPTION_A}
@@ -230,6 +230,7 @@ export const PaymentPage = ({
         />
       </div>
       <Footer
+        {...{ appearanceData }}
         cancelButton={true}
         nextProps={{ disabled: !option }}
         onClick={showPaymentModal}

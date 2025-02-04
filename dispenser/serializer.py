@@ -88,8 +88,9 @@ class VendingMachineSerializer(serializers.ModelSerializer):
             # General Settings
             "general_button_font_style",
             "general_button_text_color",
-            "general_button_text_content",
-            "general_title_style",
+            "general_button_text_content_a",
+            "general_button_text_content_b",
+            "general_title_font_style",
             # Idle Page
             "idle_background_color",
             "idle_background_image",
@@ -97,8 +98,8 @@ class VendingMachineSerializer(serializers.ModelSerializer):
             "idle_video_toggle",
             "idle_title",
             "idle_subtitle",
-            "idle_title_font_style",
-            "idle_title_font_color",
+            "idle_font_style",
+            "idle_text_color",
             # Item Selection Page
             "item_selection_title",
             # Item Size Page
@@ -113,7 +114,7 @@ class VendingMachineSerializer(serializers.ModelSerializer):
             "thank_you_title",
             "thank_you_subtitle",
             "thank_you_font_style",
-            "thank_you_font_color",
+            "thank_you_text_color",
             "thank_you_exit_timeout",
         )
 
@@ -133,8 +134,9 @@ class VendingMachineAppearanceSerializer(serializers.ModelSerializer):
             # General Settings
             "general_button_font_style",
             "general_button_text_color",
-            "general_button_text_content",
-            "general_title_style",
+            "general_button_text_content_a",
+            "general_button_text_content_b",
+            "general_title_font_style",
             # Idle Page
             "idle_background_color",
             "idle_background_image",
@@ -143,7 +145,7 @@ class VendingMachineAppearanceSerializer(serializers.ModelSerializer):
             "idle_title",
             "idle_subtitle",
             "idle_font_style",
-            "idle_font_color",
+            "idle_text_color",
             # Item Selection Page
             "item_selection_title",
             # Item Size Page
@@ -158,7 +160,7 @@ class VendingMachineAppearanceSerializer(serializers.ModelSerializer):
             "thank_you_title",
             "thank_you_subtitle",
             "thank_you_font_style",
-            "thank_you_font_color",
+            "thank_you_text_color",
             "thank_you_exit_timeout",
         ]
 

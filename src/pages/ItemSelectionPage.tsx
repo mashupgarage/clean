@@ -30,11 +30,11 @@ export const ItemSelectionPage = ({
 }) => {
   const [item, setItem] = useState<string>("");
 
-  const { item_selection_title } = appearanceData;
+  const { item_selection_title, general_title_font_style } = appearanceData;
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header title={item_selection_title} />
+      <Header title={item_selection_title} fontStyle={general_title_font_style} />
 
       <div className="flex h-full flex-row items-center justify-center">
         <Item
@@ -57,7 +57,7 @@ export const ItemSelectionPage = ({
         />
       </div>
 
-      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}`} />
+      <Footer {...{appearanceData}} nextProps={{ disabled: !item }} nextLink={`/${item}`} />
     </div>
   );
 };

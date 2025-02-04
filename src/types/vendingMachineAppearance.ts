@@ -1,5 +1,11 @@
 export type VendingMachineAppearance = {
   id: number;
+  // General Settings
+  general_button_font_style: string;
+  general_button_text_color: string;
+  general_button_text_content_a: string;
+  general_button_text_content_b: string;
+  general_title_font_style: string;
   // Idle page
   idle_background_color: string;
   idle_video: string;
@@ -7,7 +13,7 @@ export type VendingMachineAppearance = {
   idle_background_image: string;
   idle_subtitle: string;
   idle_title: string;
-  idle_font_color: string;
+  idle_text_color: string;
   idle_font_style: string;
   // Item selection page
   item_selection_title: string;
@@ -23,7 +29,7 @@ export type VendingMachineAppearance = {
   thank_you_background_image: string;
   thank_you_title: string;
   thank_you_subtitle: string;
-  thank_you_font_color: string;
+  thank_you_text_color: string;
   thank_you_font_style: string;
   thank_you_exit_timeout: number;
 }

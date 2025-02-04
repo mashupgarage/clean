@@ -26,7 +26,7 @@ export const DispensingPage = ({ appearanceData }: { appearanceData: VendingMach
   const [visibleError, setVisibleError] = useState<boolean>(false);
   const [isDispensing, setIsDispensing] = useState<boolean>();
 
-  const { dispensing_timeout } = appearanceData;
+  const { dispensing_timeout, general_title_font_style } = appearanceData;
   const dispensingTimeout = dispensing_timeout * 1000;
 
   useEffect(() => {
@@ -174,7 +174,7 @@ export const DispensingPage = ({ appearanceData }: { appearanceData: VendingMach
         />
       </Portal>
 
-      <Header {...DISPENSING_HEADER} />
+      <Header {...DISPENSING_HEADER} fontStyle={general_title_font_style} />
 
       <div className="flex h-full flex-col items-center">
         <div

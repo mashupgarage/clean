@@ -13,13 +13,17 @@ const DETECT_CUP_HEADER = {
   title: "Please place your cup under the tap",
 };
 
-export const DetectCupPage = ({ appearanceData }: { appearanceData: VendingMachineAppearance }) => {
+export const DetectCupPage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
   const [visibleError, setVisibleError] = useState<boolean>(false);
 
-  const { detection_timeout } = appearanceData;
+  const { detection_timeout, general_title_font_style } = appearanceData;
   const detectionTimeout = detection_timeout * 1000;
 
   useEffect(() => {
@@ -73,8 +77,7 @@ export const DetectCupPage = ({ appearanceData }: { appearanceData: VendingMachi
           transactionId="987654321"
         />
       </Portal>
-
-      <Header {...DETECT_CUP_HEADER} />
+      <Header {...DETECT_CUP_HEADER} fontStyle={general_title_font_style} />
 
       <div className="flex h-full flex-col items-center">
         <div
