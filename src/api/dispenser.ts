@@ -214,6 +214,15 @@ export const setHeaterStrength = async (
     .catch((err) => err.response.data.error);
 };
 
+export const fetchDispensers = async () => {
+  const endpoint = `${baseUrl}/api/dispenser/dispensers`;
+
+  return axios
+    .get(endpoint)
+    .then((res) => res.data)
+    .catch((err) => err.response.data.error);
+}
+
 // This API request is using the same action as setHeaterStrength
 // To-do: Figure out what's the `duration` should be use for from the backend.
 // This might be the heating cycle time?
