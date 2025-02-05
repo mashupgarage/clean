@@ -3,14 +3,16 @@ import { Footer } from "../components/Footer";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { SizeItem } from "../components/SizeItem";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMenuItems } from "../api/dispenser";
 
-const ITEM_SIZE_HEADER = {
-  title: "Please select the size of your drink",
-};
-
-export const ItemSizePage: React.FC = () => {
+export const ItemSizePage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
+  const { item_size_title, general_title_font_style } = appearanceData;
   const { item } = useParams();
   const [size, setSize] = useState<string>("");
   const { data } = useQuery({
@@ -18,12 +20,11 @@ export const ItemSizePage: React.FC = () => {
     queryFn: fetchMenuItems,
   });
 
-  // const [dispensers, setDispensers] = useState<DispenserItem[]>([]);
   const Tap = data?.find((dispenser) => dispenser.name === item);
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header {...ITEM_SIZE_HEADER} />
+      <Header title={item_size_title} fontStyle={general_title_font_style} />
 
       <div className="flex h-full flex-row items-center justify-center">
         <SizeItem
@@ -47,6 +48,7 @@ export const ItemSizePage: React.FC = () => {
       </div>
 
       <Footer
+        {...{ appearanceData }}
         cancelButton={true}
         nextProps={{ disabled: !size }}
         nextLink={`/${item}/${size}/payment`}

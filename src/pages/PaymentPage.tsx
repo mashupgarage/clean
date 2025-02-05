@@ -4,13 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ActivityIndicator, Modal, Portal } from "react-native-paper";
 import { useState } from "react";
 import { PaymentItem } from "../components/PaymentItem";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
+import { useQuery } from "@tanstack/react-query";
 import { fetchMenuItems } from "../api/dispenser";
 import {
   checkTransaction,
   signInToKPay,
   startTransaction,
 } from "../api/payments";
-import { useQuery } from "@tanstack/react-query";
 
 // Payment Types
 // 1: Card
@@ -20,10 +21,6 @@ import { useQuery } from "@tanstack/react-query";
 // 5: Octopus (unavailable)
 // 6: Payme QR
 // 7: Payme QR Scan
-
-const PAYMENT_HEADER = {
-  title: "Please choose payment method",
-};
 
 const OPTION_A = {
   imageUrl: "/media/card.png",
@@ -58,12 +55,17 @@ const formatPrice = (price: string) => {
   return priceInCents.toString().padStart(12, "0");
 };
 
-export const PaymentPage = () => {
-  const navigate = useNavigate();
+export const PaymentPage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
   const { item, size } = useParams();
   const [successVisible, setSuccessVisible] = useState(false);
   const [errorVisible, setErrorVisible] = useState(false);
   const [loadingVisible, setLoadingVisible] = useState(false);
+  const navigate = useNavigate();
+  const { payment_title, general_title_font_style } = appearanceData;
   const [option, setOption] = useState<number>(1); // will default to card
 
   const { data } = useQuery({
@@ -206,9 +208,7 @@ export const PaymentPage = () => {
           </div>
         </Modal>
       </Portal>
-
-      <Header {...PAYMENT_HEADER} />
-
+      <Header title={payment_title} fontStyle={general_title_font_style} />
       <div className="mx-10 my-auto flex flex-row flex-wrap items-center justify-center gap-x-20 gap-y-10">
         <PaymentItem
           {...OPTION_A}
@@ -230,6 +230,7 @@ export const PaymentPage = () => {
         />
       </div>
       <Footer
+        {...{ appearanceData }}
         cancelButton={true}
         nextProps={{ disabled: !option }}
         onClick={showPaymentModal}

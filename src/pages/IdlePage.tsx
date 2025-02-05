@@ -1,41 +1,51 @@
 import { useNavigate } from "react-router-dom";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
+import { Background } from "../components/Background";
 
-const IDLE_PAGE_HEADER = {
-  line1: "Order Here",
-  line2: "Tap to Begin",
-};
-
-export const IdlePage = () => {
+export const IdlePage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
   const navigate = useNavigate();
+
+  const {
+    idle_background_color,
+    idle_background_image,
+    idle_video,
+    idle_video_toggle,
+    idle_title,
+    idle_subtitle,
+    idle_font_style,
+    idle_text_color,
+  } = appearanceData;
+
+  const backgroundMedia =
+    idle_video && idle_video_toggle ? idle_video : idle_background_image;
 
   return (
     <div className="h-screen w-screen">
-      {/* <img
-        className="absolute left-0 top-0 size-full object-cover"
-        src="/media/coffee-placeholder.gif"
-      /> */}
-
-      <video
-        className="absolute left-0 top-0 size-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source
-          src="/media/Clean Cyberport Video Display.mov"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
+      <Background
+        {...{ backgroundMedia, backgroundColor: idle_background_color }}
+      />
 
       <div
         className="absolute inset-0 flex flex-col items-center justify-center text-center text-white"
         onClick={() => navigate("/item")}
       >
         <div className="rounded-lg bg-transparent p-12 opacity-95">
-          <h1 className="text-8xl font-extrabold">{IDLE_PAGE_HEADER.line1}</h1>
-          <p className="mt-4 text-3xl font-bold">{IDLE_PAGE_HEADER.line2}</p>
+          <h1
+            className="text-8xl font-extrabold"
+            style={{ fontFamily: idle_font_style, color: idle_text_color }}
+          >
+            {idle_title}
+          </h1>
+          <p
+            className="mt-4 text-3xl font-bold"
+            style={{ fontFamily: idle_font_style, color: idle_text_color }}
+          >
+            {idle_subtitle}
+          </p>
         </div>
       </div>
 

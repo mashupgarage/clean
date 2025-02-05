@@ -1,7 +1,4 @@
-import {
-  Fragment,
-  // StrictMode
-} from "react";
+import { Fragment, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
@@ -9,6 +6,10 @@ import MaterialCommunityIconsFont from "react-native-vector-icons/Fonts/Material
 import { PaperProvider } from "react-native-paper";
 import { Platform } from "react-native";
 import App from "./App.tsx";
+import { fetchVendingMachineAppearance } from "./api/dispenser";
+import { VendingMachineAppearance } from "./types/vendingMachineAppearance.ts";
+import { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 // Pages
 import { ErrorPage } from "./error-page.tsx";
@@ -19,54 +20,87 @@ import { DetectCupPage } from "./pages/DetectCupPage.tsx";
 import { DispensingPage } from "./pages/DispensingPage.tsx";
 import { IdlePage } from "./pages/IdlePage.tsx";
 import { ThankYouPage } from "./pages/ThankYouPage.tsx";
-import { QueryClient } from "@tanstack/react-query";
-import { QueryClientProvider } from "@tanstack/react-query";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorPage />,
-    children: [
-      { path: "/", element: <IdlePage /> },
-      { path: "item/", element: <ItemSelectionPage /> },
-      { path: ":item/", element: <ItemSizePage /> },
-      { path: ":item/:size/payment", element: <PaymentPage /> },
-      { path: ":item/:size/detect-cup", element: <DetectCupPage /> },
-      { path: ":item/:size/dispense", element: <DispensingPage /> },
-      { path: ":item/:size/thank-you", element: <ThankYouPage /> },
-    ],
-  },
-]);
+const Main = () => {
+  const [appearanceData, setAppearanceData] =
+    useState<VendingMachineAppearance | null>(null);
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false, // Avoid refetching on focus
-      // staleTime: 1 * 60 * 1000, // 60 minutes stale time
-      staleTime: Infinity, // NOTE: To be tried. Cache will not be refreshed until the page is refreshed
-      gcTime: Infinity,
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchVendingMachineAppearance();
+      setAppearanceData(data);
+    };
+
+    fetchData();
+  }, []);
+
+  if (!appearanceData) {
+    return <div>Loading...</div>;
+  }
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <App />,
+      errorElement: <ErrorPage />,
+      children: [
+        { path: "/", element: <IdlePage {...{ appearanceData }} /> },
+        {
+          path: "item/",
+          element: <ItemSelectionPage {...{ appearanceData }} />,
+        },
+        { path: ":item/", element: <ItemSizePage {...{ appearanceData }} /> },
+        {
+          path: ":item/:size/payment",
+          element: <PaymentPage {...{ appearanceData }} />,
+        },
+        {
+          path: ":item/:size/detect-cup",
+          element: <DetectCupPage {...{ appearanceData }} />,
+        },
+        {
+          path: ":item/:size/dispense",
+          element: <DispensingPage {...{ appearanceData }} />,
+        },
+        {
+          path: ":item/:size/thank-you",
+          element: <ThankYouPage {...{ appearanceData }} />,
+        },
+      ],
     },
-  },
-});
+  ]);
 
-createRoot(document.getElementById("root")!).render(
-  // <StrictMode>
-  <QueryClientProvider client={queryClient}>
-    <PaperProvider>
-      <Fragment>
-        {Platform.OS === "web" ? (
-          <style type="text/css">{`
-        @font-face {
-          font-family: 'MaterialCommunityIcons';
-          src: url(${MaterialCommunityIconsFont}) format('truetype');
-        }
-      `}</style>
-        ) : null}
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false, // Avoid refetching on focus
+        // staleTime: 1 * 60 * 1000, // 60 minutes stale time
+        staleTime: Infinity, // NOTE: To be tried. Cache will not be refreshed until the page is refreshed
+        gcTime: Infinity,
+      },
+    },
+  });
 
-        <RouterProvider router={router} />
-      </Fragment>
-    </PaperProvider>
-  </QueryClientProvider>,
-  // </StrictMode>,
-);
+  return (
+    // <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider>
+        <Fragment>
+          {Platform.OS === "web" ? (
+            <style type="text/css">{`
+          @font-face {
+            font-family: 'MaterialCommunityIcons';
+            src: url(${MaterialCommunityIconsFont}) format('truetype');
+          }
+        `}</style>
+          ) : null}
+
+          <RouterProvider router={router} />
+        </Fragment>
+      </PaperProvider>
+    </QueryClientProvider>
+    // </StrictMode>
+  );
+};
+
+createRoot(document.getElementById("root")!).render(<Main />);

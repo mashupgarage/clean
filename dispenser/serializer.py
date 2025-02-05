@@ -77,9 +77,6 @@ class VendingMachineSerializer(serializers.ModelSerializer):
             "name",
             "name2",
             "port",
-            "font_name",
-            "background_color",
-            "background_image",
             "versionS",
             "versionH",
             "dispensers",
@@ -88,6 +85,37 @@ class VendingMachineSerializer(serializers.ModelSerializer):
             "pin_code",
             "is_setting_up",
             "status",
+            # General Settings
+            "general_button_font_style",
+            "general_button_text_color",
+            "general_button_text_content_a",
+            "general_button_text_content_b",
+            "general_title_font_style",
+            # Idle Page
+            "idle_background_color",
+            "idle_background_image",
+            "idle_video",
+            "idle_video_toggle",
+            "idle_title",
+            "idle_subtitle",
+            "idle_font_style",
+            "idle_text_color",
+            # Item Selection Page
+            "item_selection_title",
+            # Item Size Page
+            "item_size_title",
+            # Payment Page
+            "payment_title",
+            # Detect Cup and Dispensing Page
+            "detection_timeout",
+            "dispensing_timeout",
+            # Thank You Page
+            "thank_you_background_image",
+            "thank_you_title",
+            "thank_you_subtitle",
+            "thank_you_font_style",
+            "thank_you_text_color",
+            "thank_you_exit_timeout",
         )
 
     def get_name2(self, obj):
@@ -95,16 +123,63 @@ class VendingMachineSerializer(serializers.ModelSerializer):
 
 
 class VendingMachineAppearanceSerializer(serializers.ModelSerializer):
-    background_image = serializers.SerializerMethodField()
+    idle_background_image = serializers.SerializerMethodField()
+    idle_video = serializers.SerializerMethodField()
+    thank_you_background_image = serializers.SerializerMethodField()
 
     class Meta:
         model = VendingMachine
-        fields = ["id", "font_name", "background_color", "background_image"]
+        fields = [
+            "id",
+            # General Settings
+            "general_button_font_style",
+            "general_button_text_color",
+            "general_button_text_content_a",
+            "general_button_text_content_b",
+            "general_title_font_style",
+            # Idle Page
+            "idle_background_color",
+            "idle_background_image",
+            "idle_video",
+            "idle_video_toggle",
+            "idle_title",
+            "idle_subtitle",
+            "idle_font_style",
+            "idle_text_color",
+            # Item Selection Page
+            "item_selection_title",
+            # Item Size Page
+            "item_size_title",
+            # Payment Page
+            "payment_title",
+            # Detect Cup and Dispensing Page
+            "detection_timeout",
+            "dispensing_timeout",
+            # Thank You Page
+            "thank_you_background_image",
+            "thank_you_title",
+            "thank_you_subtitle",
+            "thank_you_font_style",
+            "thank_you_text_color",
+            "thank_you_exit_timeout",
+        ]
 
-    def get_background_image(self, obj):
+    def get_idle_background_image(self, obj):
         request = self.context.get("request")
-        if obj.background_image and request:
-            return request.build_absolute_uri(obj.background_image.url)
+        if obj.idle_background_image and request:
+            return request.build_absolute_uri(obj.idle_background_image.url)
+        return None
+
+    def get_idle_video(self, obj):
+        request = self.context.get("request")
+        if obj.idle_video and request:
+            return request.build_absolute_uri(obj.idle_video.url)
+        return None
+
+    def get_thank_you_background_image(self, obj):
+        request = self.context.get("request")
+        if obj.thank_you_background_image and request:
+            return request.build_absolute_uri(obj.thank_you_background_image.url)
         return None
 
 

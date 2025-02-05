@@ -34,3 +34,16 @@ def validate_image_file_extension(value):
     valid_extensions = [".jpg", ".jpeg", ".png"]
     if not ext.lower() in valid_extensions:
         raise ValidationError("Unsupported file extension")
+
+# Validate GIF size
+def validate_gif_size(image):
+    if image:
+        with Image.open(image) as img:
+            pass
+
+# Validate GIF file extension
+def validate_gif_file_extension(value):
+    ext = os.path.splitext(value.name)[1]  # [1] returns extension
+    valid_extensions = [".gif"]
+    if not ext.lower() in valid_extensions:
+        raise ValidationError("Unsupported file extension")

@@ -1,7 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
 
-axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
+// axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
 // axios.defaults.headers.common["User-Agent"] = "PostmanRuntime/7.42.0";
 
 const baseUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;
@@ -213,6 +213,15 @@ export const setHeaterStrength = async (
     .then((res) => res.data)
     .catch((err) => err.response.data.error);
 };
+
+export const fetchDispensers = async () => {
+  const endpoint = `${baseUrl}/api/dispenser/dispensers`;
+
+  return axios
+    .get(endpoint)
+    .then((res) => res.data)
+    .catch((err) => err.response.data.error);
+}
 
 // This API request is using the same action as setHeaterStrength
 // To-do: Figure out what's the `duration` should be use for from the backend.

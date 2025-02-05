@@ -5,14 +5,16 @@ import {
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { Item } from "../components/Item";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMenuItems } from "../api/dispenser";
 
-const ITEM_SELECTION_HEADER = {
-  title: "Please choose your drink",
-};
-
-export const ItemSelectionPage: React.FC = () => {
+export const ItemSelectionPage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
+  const { item_selection_title, general_title_font_style } = appearanceData;
   const [item, setItem] = useState<string>("");
   const { data } = useQuery({
     queryKey: ["menuItems"],
@@ -25,7 +27,10 @@ export const ItemSelectionPage: React.FC = () => {
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header {...ITEM_SELECTION_HEADER} />
+      <Header
+        title={item_selection_title}
+        fontStyle={general_title_font_style}
+      />
 
       <div className="flex h-full flex-row items-center justify-center">
         <Item
@@ -48,7 +53,11 @@ export const ItemSelectionPage: React.FC = () => {
         />
       </div>
 
-      <Footer nextProps={{ disabled: !item }} nextLink={`/${item}`} />
+      <Footer
+        {...{ appearanceData }}
+        nextProps={{ disabled: !item }}
+        nextLink={`/${item}`}
+      />
     </div>
   );
 };

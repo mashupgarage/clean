@@ -3,22 +3,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import { checkCupPresence, fetchMenuItems } from "../api/dispenser";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
+import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
+import { Background } from "../components/Background";
 import { useQuery } from "@tanstack/react-query";
 
-const THANK_YOU_HEADER = {
-  line1: "Your order is complete. Thank you!",
-  line2: "Tap to order again",
-};
-
-export const ThankYouPage: React.FC = () => {
+export const ThankYouPage = ({
+  appearanceData,
+}: {
+  appearanceData: VendingMachineAppearance;
+}) => {
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
+  const {
+    thank_you_background_image,
+    thank_you_title,
+    thank_you_subtitle,
+    thank_you_text_color,
+    thank_you_font_style,
+    thank_you_exit_timeout,
+  } = appearanceData;
+  const thankYouExitTimeout = thank_you_exit_timeout * 1000;
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null); // Use ref to store the timeout ID
   const { data } = useQuery({
     queryKey: ["menuItems"],
     queryFn: fetchMenuItems,
   });
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null); // Use ref to store the timeout ID
 
   useEffect(() => {
     // Start 30 second timer, then check for cup presence
@@ -47,7 +57,7 @@ export const ThankYouPage: React.FC = () => {
           clearTimeout(timer.current);
         }
       };
-    }, 30000);
+    }, thankYouExitTimeout);
   }, []);
 
   const handleClearTimeout = () => {
@@ -87,12 +97,12 @@ export const ThankYouPage: React.FC = () => {
           subheader="To make a new order, please remove the cup from the tap."
         />
       </Portal>
-
-      {/* <img
-        src="/media/coffee-placeholder.png"
-        className="absolute left-0 top-0 size-full object-cover"
-      /> */}
-
+      <Background
+        {...{
+          backgroundMedia: thank_you_background_image,
+          backgroundColor: "#FFFFFF",
+        }}
+      />
       <div
         className="absolute inset-0 flex flex-row items-center justify-center text-center"
         onClick={() => {
@@ -101,10 +111,24 @@ export const ThankYouPage: React.FC = () => {
         }}
       >
         <div className="w-1/2 rounded-lg bg-transparent p-12 opacity-95">
-          <h1 className="p-10 text-8xl font-extrabold">
-            {THANK_YOU_HEADER.line1}
+          <h1
+            className="text-8xl font-extrabold"
+            style={{
+              fontFamily: thank_you_font_style,
+              color: thank_you_text_color,
+            }}
+          >
+            {thank_you_title}
           </h1>
-          <p className="mt-8 text-3xl font-bold">{THANK_YOU_HEADER.line2}</p>
+          <p
+            className="mt-8 text-3xl font-bold"
+            style={{
+              fontFamily: thank_you_font_style,
+              color: thank_you_text_color,
+            }}
+          >
+            {thank_you_subtitle}
+          </p>
         </div>
 
         <div className="w-[480px] border border-black bg-white p-12 text-left text-sm leading-normal text-black">
