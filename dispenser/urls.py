@@ -80,6 +80,11 @@ urlpatterns = [
         name="turn_off_tap",
     ),
     path(
+        "dispensers/",
+        views.DispenserViewSet.as_view({ 'get': 'list' }),
+        name="dispenser",
+    ),
+    path(
         "report-transaction/",
         views.report_transaction,
         name="report_transaction",
