@@ -1,7 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
 
-axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
+// axios.defaults.headers.common["ngrok-skip-browser-warning"] = true;
 // axios.defaults.headers.common["User-Agent"] = "PostmanRuntime/7.42.0";
 
 const baseUrl = `${import.meta.env.VITE_CLOUD_SERVER_URL}`;

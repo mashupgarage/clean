@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkCupPresence } from "../api/dispenser";
+import { checkCupPresence, fetchMenuItems } from "../api/dispenser";
 import { Portal } from "react-native-paper";
 import { WarningModal } from "../components/WarningModal";
 import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
 import { Background } from "../components/Background";
+import { useQuery } from "@tanstack/react-query";
 
 export const ThankYouPage = ({
   appearanceData,
@@ -14,7 +15,6 @@ export const ThankYouPage = ({
   const navigate = useNavigate();
   const { item, size } = useParams();
   const [visibleWarning, setVisibleWarning] = useState<boolean>(false);
-
   const {
     thank_you_background_image,
     thank_you_title,
@@ -23,10 +23,12 @@ export const ThankYouPage = ({
     thank_you_font_style,
     thank_you_exit_timeout,
   } = appearanceData;
-
   const thankYouExitTimeout = thank_you_exit_timeout * 1000;
-
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null); // Use ref to store the timeout ID
+  const { data } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: fetchMenuItems,
+  });
 
   useEffect(() => {
     // Start 30 second timer, then check for cup presence

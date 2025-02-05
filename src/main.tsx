@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
@@ -8,6 +8,8 @@ import { Platform } from "react-native";
 import App from "./App.tsx";
 import { fetchVendingMachineAppearance } from "./api/dispenser";
 import { VendingMachineAppearance } from "./types/vendingMachineAppearance.ts";
+import { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 // Pages
 import { ErrorPage } from "./error-page.tsx";
@@ -18,8 +20,6 @@ import { DetectCupPage } from "./pages/DetectCupPage.tsx";
 import { DispensingPage } from "./pages/DispensingPage.tsx";
 import { IdlePage } from "./pages/IdlePage.tsx";
 import { ThankYouPage } from "./pages/ThankYouPage.tsx";
-import { QueryClient } from "@tanstack/react-query";
-import { QueryClientProvider } from "@tanstack/react-query";
 
 const Main = () => {
   const [appearanceData, setAppearanceData] =

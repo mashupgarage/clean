@@ -6,35 +6,31 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { Item } from "../components/Item";
 import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
-
-const TAP_A = {
-  name: "Coffee A",
-  price: "HK$ 2.20",
-  description:
-    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
-  imageUrl: "/media/coffee-a.png",
-};
-
-const TAP_B = {
-  name: "Coffee B",
-  price: "HK$ 2.20",
-  description:
-    "Indulge in a warm embrace of rich flavors with our cappuccino. This delightful beverage features a perfect balance of robust espresso, velvety steamed milk, and a cloud-like layer of frothy foam",
-  imageUrl: "/media/coffee-b.png",
-};
+import { useQuery } from "@tanstack/react-query";
+import { fetchMenuItems } from "../api/dispenser";
 
 export const ItemSelectionPage = ({
   appearanceData,
 }: {
   appearanceData: VendingMachineAppearance;
 }) => {
-  const [item, setItem] = useState<string>("");
-
   const { item_selection_title, general_title_font_style } = appearanceData;
+  const [item, setItem] = useState<string>("");
+  const { data } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: fetchMenuItems,
+  });
+
+  // TODO: Add Skeleton loaders whenever the cache is reset, OR increase stale time and only change on refresh
+  const Tap_A = data?.find((dispenser) => dispenser.name === "Tap-A");
+  const Tap_B = data?.find((dispenser) => dispenser.name === "Tap-B");
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
-      <Header title={item_selection_title} fontStyle={general_title_font_style} />
+      <Header
+        title={item_selection_title}
+        fontStyle={general_title_font_style}
+      />
 
       <div className="flex h-full flex-row items-center justify-center">
         <Item
@@ -57,7 +53,11 @@ export const ItemSelectionPage = ({
         />
       </div>
 
-      <Footer {...{appearanceData}} nextProps={{ disabled: !item }} nextLink={`/${item}`} />
+      <Footer
+        {...{ appearanceData }}
+        nextProps={{ disabled: !item }}
+        nextLink={`/${item}`}
+      />
     </div>
   );
 };

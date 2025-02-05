@@ -4,30 +4,23 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { SizeItem } from "../components/SizeItem";
 import { VendingMachineAppearance } from "../types/vendingMachineAppearance";
-
-const SIZE_A = {
-  name: "Small",
-  price: "HK$ 2.20",
-  size: "354 ml (12oz)",
-  imageUrl: "/media/small.png",
-};
-
-const SIZE_B = {
-  name: "Large",
-  price: "HK$ 3.00",
-  size: "473 ml (16oz)",
-  imageUrl: "/media/large.png",
-};
+import { useQuery } from "@tanstack/react-query";
+import { fetchMenuItems } from "../api/dispenser";
 
 export const ItemSizePage = ({
   appearanceData,
 }: {
   appearanceData: VendingMachineAppearance;
 }) => {
+  const { item_size_title, general_title_font_style } = appearanceData;
   const { item } = useParams();
   const [size, setSize] = useState<string>("");
+  const { data } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: fetchMenuItems,
+  });
 
-  const { item_size_title, general_title_font_style } = appearanceData;
+  const Tap = data?.find((dispenser) => dispenser.name === item);
 
   return (
     <div className="grid h-screen w-screen grid-rows-[12%,63%,25%]">
@@ -55,7 +48,7 @@ export const ItemSizePage = ({
       </div>
 
       <Footer
-        {...{appearanceData}}
+        {...{ appearanceData }}
         cancelButton={true}
         nextProps={{ disabled: !size }}
         nextLink={`/${item}/${size}/payment`}
